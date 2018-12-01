@@ -40,14 +40,28 @@ std::ostream& operator<<(std::ostream& out, const GlobalCartesianCoordinate& o) 
     return out << "{global x:" << o.x << " y:" << o.y << "}";
 }
 
-template <CoordinateReference TReference>
-CartesianCoordinate<TReference> operator+(const CartesianCoordinate<TReference>& a, const CartesianCoordinate<TReference>& b) {
-    return CartesianCoordinate<TReference>(a.x + b.x, a.y + b.y);
+GlobalCartesianCoordinate operator+(const GlobalCartesianCoordinate& a, const LocalCartesianCoordinate& b) {
+    return GlobalCartesianCoordinate(a.x + b.x, a.y + b.y);
 }
 
-template <CoordinateReference TReference>
-CartesianCoordinate<TReference> operator-(const CartesianCoordinate<TReference>& a, const CartesianCoordinate<TReference>& b) {
-    return CartesianCoordinate<TReference>(a.x - b.x, a.y - b.y);
+GlobalCartesianCoordinate operator+(const LocalCartesianCoordinate& a, const GlobalCartesianCoordinate& b) {
+    return b + a;
+}
+
+GlobalCartesianCoordinate operator-(const GlobalCartesianCoordinate& a, const LocalCartesianCoordinate& b) {
+    return GlobalCartesianCoordinate(a.x - b.x, a.y - b.y);
+}
+
+LocalCartesianCoordinate operator-(const GlobalCartesianCoordinate& a, const GlobalCartesianCoordinate& b) {
+    return LocalCartesianCoordinate(a.x - b.x, a.y - b.y);
+}
+
+LocalCartesianCoordinate operator+(const LocalCartesianCoordinate& a, const LocalCartesianCoordinate& b) {
+    return LocalCartesianCoordinate(a.x + b.x, a.y + b.y);
+}
+
+LocalCartesianCoordinate operator-(const LocalCartesianCoordinate& a, const LocalCartesianCoordinate& b) {
+    return LocalCartesianCoordinate(a.x - b.x, a.y - b.y);
 }
 
 #endif //CARTESIAN_COORDINATE_HPP

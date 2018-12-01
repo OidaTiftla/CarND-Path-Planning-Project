@@ -28,12 +28,12 @@ std::ostream& operator<<(std::ostream& out, const FrenetCoordinate& o) {
     return out << "{s:" << o.s << " d:" << o.d << "}";
 }
 
-FrenetCoordinate operator+(const FrenetCoordinate& a, const FrenetCoordinate& b) {
-    return FrenetCoordinate(a.s + b.s, a.d + b.d);
-}
+// FrenetCoordinate operator+(const FrenetCoordinate& a, const FrenetCoordinate& b) {
+//     return FrenetCoordinate(a.s + b.s, a.d + b.d);
+// }
 
-FrenetCoordinate operator-(const FrenetCoordinate& a, const FrenetCoordinate& b) {
-    return FrenetCoordinate(a.s - b.s, a.d - b.d);
-}
+// FrenetCoordinate operator-(const FrenetCoordinate& a, const FrenetCoordinate& b) {
+//     return FrenetCoordinate(a.s - b.s, a.d - b.d);
+// }
 
 #endif //FRENET_COORDINATE_HPP
