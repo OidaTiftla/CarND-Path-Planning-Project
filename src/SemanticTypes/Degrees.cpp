@@ -4,7 +4,8 @@
 
 #include "Degrees.h"
 
-Degrees::Degrees(double value) : value(value) {}
+Degrees::Degrees(double value) : value(value) {
+}
 
 Radians Degrees::ToRadians() {
     return Radians(this->value * M_PI / 180);

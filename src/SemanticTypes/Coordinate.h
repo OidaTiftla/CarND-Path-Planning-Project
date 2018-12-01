@@ -24,9 +24,9 @@ public:
     Coordinate();
     Coordinate(TDistance x, TDistance y);
 
-	TDistance DistanceTo(Coordinate<TDistance> c);
+    TDistance DistanceTo(Coordinate<TDistance> c);
     friend std::ostream& operator<< <> (std::ostream& out,
-                                        Coordinate<TDistance>& o);
+        Coordinate<TDistance>& o);
 };
 
 
