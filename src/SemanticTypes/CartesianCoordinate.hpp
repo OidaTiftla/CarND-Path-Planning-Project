@@ -32,9 +32,12 @@ using LocalCartesianCoordinate = CartesianCoordinate<CoordinateReference::Local>
 using GlobalCartesianCoordinate = CartesianCoordinate<CoordinateReference::Global>;
 
 
-template <CoordinateReference TReference>
-std::ostream& operator<<(std::ostream& out, const CartesianCoordinate<TReference>& o) {
-    return out << "{x:" << o.x << " y:" << o.y << "}";
+std::ostream& operator<<(std::ostream& out, const LocalCartesianCoordinate& o) {
+    return out << "{local x:" << o.x << " y:" << o.y << "}";
+}
+
+std::ostream& operator<<(std::ostream& out, const GlobalCartesianCoordinate& o) {
+    return out << "{global x:" << o.x << " y:" << o.y << "}";
 }
 
 template <CoordinateReference TReference>
