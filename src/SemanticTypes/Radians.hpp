@@ -9,20 +9,12 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-class Radians;
-
-#include "Degrees.h"
-
 
 class Radians {
 public:
     const double value;
 
     Radians(double value) : value(value) {}
-
-    Degrees ToRadians() {
-        return Degrees(this->value * 180 / M_PI);
-    }
 
     Radians NormalizeAroundZero() {
         auto v = this->value;
@@ -34,18 +26,19 @@ public:
         }
         return Radians(v);
     }
-
-    friend std::ostream& operator<<(std::ostream& out, Radians& o) {
-        return out << o.value << "rad";
-    }
-
-    friend Radians&& operator+(Radians& a, Radians& b) {
-        return Radians(a.value + b.value);
-    }
-
-    friend Radians&& operator-(Radians& a, Radians& b) {
-        return Radians(a.value - b.value);
-    }
 };
+
+
+std::ostream& operator<<(std::ostream& out, Radians& o) {
+    return out << o.value << "rad";
+}
+
+Radians operator+(Radians& a, Radians& b) {
+    return Radians(a.value + b.value);
+}
+
+Radians operator-(Radians& a, Radians& b) {
+    return Radians(a.value - b.value);
+}
 
 #endif //RADIANS_HPP

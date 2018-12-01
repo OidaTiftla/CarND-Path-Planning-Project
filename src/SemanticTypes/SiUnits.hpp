@@ -12,20 +12,20 @@
 template <int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
 struct SiUnit {
     enum {
-        m = Tm
-        kg = Tkg
-        s = Ts
-        A = TA
-        K = TK
-        mol = Tmol
-        cd = Tcd
+        m = Tm,
+        kg = Tkg,
+        s = Ts,
+        A = TA,
+        K = TK,
+        mol = Tmol,
+        cd = Tcd,
     };
 };
 
 template<typename Unit> // a magnitude with a unit
 struct Value
 {
-    double value; // the magnitude
+    const double value; // the magnitude
     constexpr explicit Value(double d) : value(d) {} // construct a Value from a double
 };
 
@@ -100,7 +100,7 @@ Value<SiUnit<Tm_lhs - Tm_rhs, Tkg_lhs - Tkg_rhs, Ts_lhs - Ts_rhs, TA_lhs - TA_rh
 }
 
 template <int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
-friend std::ostream& operator<<(std::ostream& out, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& o) {
+std::ostream& operator<<(std::ostream& out, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& o) {
     out << o.value;
 
     if (Tm == 0

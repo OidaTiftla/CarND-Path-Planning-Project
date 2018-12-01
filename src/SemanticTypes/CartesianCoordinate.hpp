@@ -25,24 +25,27 @@ public:
     TDistance DistanceTo(CartesianCoordinate<TDistance, TReference> c) {
         return TDistance(sqrt((x - c.x).value*(x - c.x).value + (y - c.y).value*(y - c.y).value));
     }
-
-    friend std::ostream& operator<< <> (std::ostream& out,
-        CartesianCoordinate<TDistance, TReference>& o) {
-        return out << "{x:" << o.x << " y:" << o.y << "}";
-    }
-
-    friend CartesianCoordinate<TDistance, TReference>&& operator+(CartesianCoordinate<TDistance, TReference>& a, CartesianCoordinate<TDistance, TReference>& b) {
-        return CartesianCoordinate<TDistance, TReference>(a.x + b.x, a.y + b.y);
-    }
-
-    friend CartesianCoordinate<TDistance, TReference>&& operator-(CartesianCoordinate<TDistance, TReference>& a, CartesianCoordinate<TDistance, TReference>& b) {
-        return CartesianCoordinate<TDistance, TReference>(a.x - b.x, a.y - b.y);
-    }
 };
 
 template <class TDistance>
 using LocalCartesianCoordinate = CartesianCoordinate<TDistance, CoordinateReference::Local>;
 template <class TDistance>
 using GlobalCartesianCoordinate = CartesianCoordinate<TDistance, CoordinateReference::Global>;
+
+
+template <class TDistance, CoordinateReference TReference>
+std::ostream& operator<<(std::ostream& out, const CartesianCoordinate<TDistance, TReference>& o) {
+    return out << "{x:" << o.x << " y:" << o.y << "}";
+}
+
+template <class TDistance, CoordinateReference TReference>
+CartesianCoordinate<TDistance, TReference> operator+(const CartesianCoordinate<TDistance, TReference>& a, const CartesianCoordinate<TDistance, TReference>& b) {
+    return CartesianCoordinate<TDistance, TReference>(a.x + b.x, a.y + b.y);
+}
+
+template <class TDistance, CoordinateReference TReference>
+CartesianCoordinate<TDistance, TReference> operator-(const CartesianCoordinate<TDistance, TReference>& a, const CartesianCoordinate<TDistance, TReference>& b) {
+    return CartesianCoordinate<TDistance, TReference>(a.x - b.x, a.y - b.y);
+}
 
 #endif //CARTESIAN_COORDINATE_HPP
