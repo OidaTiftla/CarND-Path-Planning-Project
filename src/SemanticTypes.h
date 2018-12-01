@@ -5,11 +5,10 @@
 #ifndef SEMANTICTYPES_H
 #define SEMANTICTYPES_H
 
-#include "SemanticTypes/Meters.h"
-#include "SemanticTypes/Radians.h"
-#include "SemanticTypes/Degrees.h"
-#include "SemanticTypes/Coordinate.h"
-#include "SemanticTypes/Coordinates.h"
-#include "SemanticTypes/MetersPerSecond.h"
+#include "SemanticTypes/SiUnits.hpp"
+#include "SemanticTypes/Radians.hpp"
+#include "SemanticTypes/Degrees.hpp"
+#include "SemanticTypes/CartesianCoordinate.hpp"
+#include "SemanticTypes/FrenetCoordinate.hpp"
 
 #endif //SEMANTICTYPES_H
