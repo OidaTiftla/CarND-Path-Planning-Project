@@ -1,5 +1,6 @@
 #include <fstream>
-#include <math.h>
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <uWS/uWS.h>
 #include <chrono>
 #include <iostream>
