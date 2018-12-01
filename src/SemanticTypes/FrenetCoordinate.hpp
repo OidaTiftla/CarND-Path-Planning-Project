@@ -7,36 +7,33 @@
 
 #include <iostream>
 // #include <math.h>
+#include "SiUnits.hpp"
 
 
-template <class TDistance>
 class FrenetCoordinate {
 public:
-    const TDistance s;
-    const TDistance d;
+    const Distance s;
+    const Distance d;
 
     FrenetCoordinate() : s(0), d(0) {}
-    FrenetCoordinate(TDistance s, TDistance d) : s(s), d(d) {}
+    FrenetCoordinate(Distance s, Distance d) : s(s), d(d) {}
 
-    // TDistance DistanceTo(FrenetCoordinate<TDistance> c) {
-    //     return TDistance(sqrt((s - c.s).value*(s - c.s).value + (d - c.d).value*(d - c.d).value));
+    // Distance DistanceTo(FrenetCoordinate c) {
+    //     return Distance(sqrt((s - c.s).value*(s - c.s).value + (d - c.d).value*(d - c.d).value));
     // }
 };
 
 
-template <class TDistance>
-std::ostream& operator<<(std::ostream& out, const FrenetCoordinate<TDistance>& o) {
+std::ostream& operator<<(std::ostream& out, const FrenetCoordinate& o) {
     return out << "{s:" << o.s << " d:" << o.d << "}";
 }
 
-template <class TDistance>
-FrenetCoordinate<TDistance> operator+(const FrenetCoordinate<TDistance>& a, const FrenetCoordinate<TDistance>& b) {
-    return FrenetCoordinate<TDistance>(a.s + b.s, a.d + b.d);
+FrenetCoordinate operator+(const FrenetCoordinate& a, const FrenetCoordinate& b) {
+    return FrenetCoordinate(a.s + b.s, a.d + b.d);
 }
 
-template <class TDistance>
-FrenetCoordinate<TDistance> operator-(const FrenetCoordinate<TDistance>& a, const FrenetCoordinate<TDistance>& b) {
-    return FrenetCoordinate<TDistance>(a.s - b.s, a.d - b.d);
+FrenetCoordinate operator-(const FrenetCoordinate& a, const FrenetCoordinate& b) {
+    return FrenetCoordinate(a.s - b.s, a.d - b.d);
 }
 
 #endif //FRENET_COORDINATE_HPP

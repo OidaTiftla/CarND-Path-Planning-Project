@@ -7,45 +7,44 @@
 
 #include <iostream>
 #include <math.h>
+#include "SiUnits.hpp"
 
 enum class CoordinateReference {
     Global,
     Local,
 };
 
-template <class TDistance, CoordinateReference TReference>
+template <CoordinateReference TReference>
 class CartesianCoordinate {
 public:
-    const TDistance x;
-    const TDistance y;
+    const Distance x;
+    const Distance y;
 
     CartesianCoordinate() : x(0), y(0) {}
-    CartesianCoordinate(TDistance x, TDistance y) : x(x), y(y) {}
+    CartesianCoordinate(Distance x, Distance y) : x(x), y(y) {}
 
-    TDistance DistanceTo(CartesianCoordinate<TDistance, TReference> c) {
-        return TDistance(sqrt((x - c.x).value*(x - c.x).value + (y - c.y).value*(y - c.y).value));
+    Distance DistanceTo(CartesianCoordinate<TReference> c) {
+        return Distance(sqrt((x - c.x).value*(x - c.x).value + (y - c.y).value*(y - c.y).value));
     }
 };
 
-template <class TDistance>
-using LocalCartesianCoordinate = CartesianCoordinate<TDistance, CoordinateReference::Local>;
-template <class TDistance>
-using GlobalCartesianCoordinate = CartesianCoordinate<TDistance, CoordinateReference::Global>;
+using LocalCartesianCoordinate = CartesianCoordinate<CoordinateReference::Local>;
+using GlobalCartesianCoordinate = CartesianCoordinate<CoordinateReference::Global>;
 
 
-template <class TDistance, CoordinateReference TReference>
-std::ostream& operator<<(std::ostream& out, const CartesianCoordinate<TDistance, TReference>& o) {
+template <CoordinateReference TReference>
+std::ostream& operator<<(std::ostream& out, const CartesianCoordinate<TReference>& o) {
     return out << "{x:" << o.x << " y:" << o.y << "}";
 }
 
-template <class TDistance, CoordinateReference TReference>
-CartesianCoordinate<TDistance, TReference> operator+(const CartesianCoordinate<TDistance, TReference>& a, const CartesianCoordinate<TDistance, TReference>& b) {
-    return CartesianCoordinate<TDistance, TReference>(a.x + b.x, a.y + b.y);
+template <CoordinateReference TReference>
+CartesianCoordinate<TReference> operator+(const CartesianCoordinate<TReference>& a, const CartesianCoordinate<TReference>& b) {
+    return CartesianCoordinate<TReference>(a.x + b.x, a.y + b.y);
 }
 
-template <class TDistance, CoordinateReference TReference>
-CartesianCoordinate<TDistance, TReference> operator-(const CartesianCoordinate<TDistance, TReference>& a, const CartesianCoordinate<TDistance, TReference>& b) {
-    return CartesianCoordinate<TDistance, TReference>(a.x - b.x, a.y - b.y);
+template <CoordinateReference TReference>
+CartesianCoordinate<TReference> operator-(const CartesianCoordinate<TReference>& a, const CartesianCoordinate<TReference>& b) {
+    return CartesianCoordinate<TReference>(a.x - b.x, a.y - b.y);
 }
 
 #endif //CARTESIAN_COORDINATE_HPP
