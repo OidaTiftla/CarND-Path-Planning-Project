@@ -26,7 +26,7 @@ template<typename Unit> // a magnitude with a unit
 struct Value
 {
     const double value; // the magnitude
-    constexpr explicit Value(double d) : value(d) {} // construct a Value from a double
+    constexpr explicit Value(const double d) : value(d) {} // construct a Value from a double
 };
 
 // Semantic Units for SI basic units

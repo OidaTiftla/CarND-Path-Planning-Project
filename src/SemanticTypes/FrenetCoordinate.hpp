@@ -16,9 +16,9 @@ public:
     const Distance d;
 
     FrenetCoordinate() : s(0), d(0) {}
-    FrenetCoordinate(Distance s, Distance d) : s(s), d(d) {}
+    FrenetCoordinate(const Distance s, const Distance d) : s(s), d(d) {}
 
-    // Distance DistanceTo(FrenetCoordinate c) {
+    // Distance DistanceTo(const FrenetCoordinate c) {
     //     return Distance(sqrt((s - c.s).value*(s - c.s).value + (d - c.d).value*(d - c.d).value));
     // }
 };

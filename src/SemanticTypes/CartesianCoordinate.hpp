@@ -21,9 +21,9 @@ public:
     const Distance y;
 
     CartesianCoordinate() : x(0), y(0) {}
-    CartesianCoordinate(Distance x, Distance y) : x(x), y(y) {}
+    CartesianCoordinate(const Distance x, const Distance y) : x(x), y(y) {}
 
-    Distance DistanceTo(CartesianCoordinate<TReference> c) {
+    Distance DistanceTo(const CartesianCoordinate<TReference> c) {
         return Distance(sqrt((x - c.x).value*(x - c.x).value + (y - c.y).value*(y - c.y).value));
     }
 };

@@ -11,7 +11,7 @@ class Degrees {
 public:
     const double value;
 
-    Degrees(double value) : value(value) {}
+    Degrees(const double value) : value(value) {}
 
     Degrees NormalizeAroundZero() {
         auto v = this->value;
@@ -26,15 +26,15 @@ public:
 };
 
 
-std::ostream& operator<<(std::ostream& out, Degrees& o) {
+std::ostream& operator<<(std::ostream& out, const Degrees& o) {
     return out << o.value << "°";
 }
 
-Degrees operator+(Degrees& a, Degrees& b) {
+Degrees operator+(const Degrees& a, const Degrees& b) {
     return Degrees(a.value + b.value);
 }
 
-Degrees operator-(Degrees& a, Degrees& b) {
+Degrees operator-(const Degrees& a, const Degrees& b) {
     return Degrees(a.value - b.value);
 }
 

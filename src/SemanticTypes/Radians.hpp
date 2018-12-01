@@ -14,7 +14,7 @@ class Radians {
 public:
     const double value;
 
-    Radians(double value) : value(value) {}
+    Radians(const double value) : value(value) {}
 
     Radians NormalizeAroundZero() {
         auto v = this->value;
@@ -29,15 +29,15 @@ public:
 };
 
 
-std::ostream& operator<<(std::ostream& out, Radians& o) {
+std::ostream& operator<<(std::ostream& out, const Radians& o) {
     return out << o.value << "rad";
 }
 
-Radians operator+(Radians& a, Radians& b) {
+Radians operator+(const Radians& a, const Radians& b) {
     return Radians(a.value + b.value);
 }
 
-Radians operator-(Radians& a, Radians& b) {
+Radians operator-(const Radians& a, const Radians& b) {
     return Radians(a.value - b.value);
 }
 
