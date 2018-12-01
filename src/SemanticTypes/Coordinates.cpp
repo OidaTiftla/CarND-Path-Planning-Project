@@ -5,17 +5,13 @@
 #include "Coordinates.h"
 
 CarCoordinate::CarCoordinate()
-    : Coordinate() {
-}
+    : Coordinate() {}
 
 CarCoordinate::CarCoordinate(const Meters &x, const Meters &y)
-    : Coordinate(x, y) {
-}
+    : Coordinate(x, y) {}
 
 TrackCoordinate::TrackCoordinate()
-    : Coordinate() {
-}
+    : Coordinate() {}
 
 TrackCoordinate::TrackCoordinate(const Meters &x, const Meters &y)
-    : Coordinate(x, y) {
-}
+    : Coordinate(x, y) {}

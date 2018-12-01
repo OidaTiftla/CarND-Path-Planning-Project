@@ -5,12 +5,10 @@
 #include "Coordinate.h"
 
 template <class TDistance>
-Coordinate<TDistance>::Coordinate() : x(0), y(0) {
-}
+Coordinate<TDistance>::Coordinate() : x(0), y(0) {}
 
 template <class TDistance>
-Coordinate<TDistance>::Coordinate(TDistance x, TDistance y) : x(x), y(y) {
-}
+Coordinate<TDistance>::Coordinate(TDistance x, TDistance y) : x(x), y(y) {}
 
 template<class TDistance>
 TDistance Coordinate<TDistance>::DistanceTo(Coordinate<TDistance> c) {
