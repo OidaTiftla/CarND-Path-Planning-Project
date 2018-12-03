@@ -36,16 +36,12 @@ int main() {
     uWS::Hub h;
 
     // Load up map values for waypoint's x,y,s and d normalized normal vectors
-    vector<double> map_waypoints_x;
-    vector<double> map_waypoints_y;
-    vector<double> map_waypoints_s;
-    vector<double> map_waypoints_dx;
-    vector<double> map_waypoints_dy;
+    vector<WayPoint> map_waypoints;
 
     // Waypoint map to read from
     string map_file_ = "../data/highway_map.csv";
     // The max s value before wrapping around the track back to 0
-    double max_s = 6945.554;
+    auto max_s = 6945.554_m;
 
     ifstream in_map_(map_file_.c_str(), ifstream::in);
 
@@ -62,14 +58,16 @@ int main() {
         iss >> s;
         iss >> d_x;
         iss >> d_y;
-        map_waypoints_x.push_back(x);
-        map_waypoints_y.push_back(y);
-        map_waypoints_s.push_back(s);
-        map_waypoints_dx.push_back(d_x);
-        map_waypoints_dy.push_back(d_y);
+        map_waypoints.push_back(
+            WayPoint(
+                GlobalCartesianCoordinate(Distance(x), Distance(y)),
+                FrenetCoordinate(Distance(s), 0_m),
+                LocalCartesianCoordinate(Distance(d_x), Distance(d_y))));
     }
 
-    h.onMessage([&map_waypoints_x, &map_waypoints_y, &map_waypoints_s, &map_waypoints_dx, &map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+    Map map(map_waypoints, max_s);
+
+    h.onMessage([&map](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
         uWS::OpCode opCode) {
         // "42" at the start of the message means there's a websocket message event.
         // The 4 signifies a websocket message
@@ -89,30 +87,35 @@ int main() {
                     // j[1] is the data JSON object
 
                     // Main car's localization Data
-                    double car_x = j[1]["x"];
-                    double car_y = j[1]["y"];
-                    double car_s = j[1]["s"];
-                    double car_d = j[1]["d"];
-                    double car_yaw = j[1]["yaw"];
-                    double car_speed = j[1]["speed"];
+                    GlobalCartesianPosition car_cartesian(j[1]["x"] * 1_m, j[1]["y"] * 1_m, j[1]["yaw"] * 1_rad);
+                    FrenetCoordinate car_frenet(j[1]["s"] * 1_m, j[1]["d"] * 1_m);
+                    auto car_speed = j[1]["speed"] * 1_m / 1_s;
 
                     // Previous path data given to the Planner
-                    auto previous_path_x = j[1]["previous_path_x"];
-                    auto previous_path_y = j[1]["previous_path_y"];
+                    vector<GlobalCartesianCoordinate> previous_path;
+                    for (int i = 0; i < j[1]["previous_path_x"].size(); ++i) {
+                        previous_path.push_back(GlobalCartesianCoordinate(j[1]["previous_path_x"][i] * 1_m, j[1]["previous_path_y"][i] * 1_m));
+                    }
                     // Previous path's end s and d values
-                    double end_path_s = j[1]["end_path_s"];
-                    double end_path_d = j[1]["end_path_d"];
+                    FrenetCoordinate end_path(j[1]["end_path_s"] * 1_m, j[1]["end_path_d"] * 1_m);
 
                     // Sensor Fusion Data, a list of all other cars on the same side of the road.
                     auto sensor_fusion = j[1]["sensor_fusion"];
+
+
+                    // TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
+                    vector<GlobalCartesianCoordinate> next_path;
+
 
                     json msgJson;
 
                     vector<double> next_x_vals;
                     vector<double> next_y_vals;
+                    for (auto pos : next_path) {
+                        next_x_vals.push_back(pos.x.value);
+                        next_y_vals.push_back(pos.y.value);
+                    }
 
-
-                    // TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
                     msgJson["next_x"] = next_x_vals;
                     msgJson["next_y"] = next_y_vals;
 
@@ -120,7 +123,6 @@ int main() {
 
                     //this_thread::sleep_for(chrono::milliseconds(1000));
                     ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-
                 }
             } else {
                 // Manual driving

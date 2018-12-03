@@ -15,9 +15,10 @@
 class Map {
 public:
     std::vector<WayPoint> wayPoints;
+    Distance max_s;
 
-    Map() : wayPoints() {}
-    Map(std::vector<WayPoint> wayPoints) : wayPoints(wayPoints) {}
+    Map() : wayPoints(), max_s(0) {}
+    Map(std::vector<WayPoint> wayPoints, Distance max_s) : wayPoints(wayPoints), max_s(max_s) {}
 
     int ClosestWayPointIndex(const GlobalCartesianCoordinate pos) const {
         Distance closestLen = 1000000_m; // large number
