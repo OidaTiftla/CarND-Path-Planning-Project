@@ -105,6 +105,18 @@ int main() {
 
                     // TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
                     vector<GlobalCartesianCoordinate> next_path;
+                    GlobalCartesianCoordinate last = car_cartesian.coord;
+                    for (int i = 0; i < 50; ++i) {
+                        if (i < previous_path.size()) {
+                            last = previous_path[i];
+                            next_path.push_back(last);
+                        } else {
+                            auto speed = 5_m / 1_s;
+                            auto delta_t = 0.02_s;
+                            last = last + LocalCartesianCoordinate(speed * delta_t, 0_m);
+                            next_path.push_back(last);
+                        }
+                    }
 
 
                     json msgJson;
@@ -114,6 +126,7 @@ int main() {
                     for (auto pos : next_path) {
                         next_x_vals.push_back(pos.x.value);
                         next_y_vals.push_back(pos.y.value);
+                        // cout << pos << endl;
                     }
 
                     msgJson["next_x"] = next_x_vals;
