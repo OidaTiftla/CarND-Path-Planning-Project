@@ -90,7 +90,7 @@ public:
     }
 
     // Transform from Frenet s,d coordinates to Cartesian x,y
-    GlobalCartesianCoordinate getXY(const FrenetCoordinate pos, const std::vector<double> &maps_s) {
+    GlobalCartesianCoordinate ConvertToCartesian(const FrenetCoordinate pos, const std::vector<double> &maps_s) {
         int prev_wp = -1;
 
         while (pos.s > this->wayPoints[prev_wp + 1].frenet.s && (prev_wp < (int)(this->wayPoints.size() - 1))) {
