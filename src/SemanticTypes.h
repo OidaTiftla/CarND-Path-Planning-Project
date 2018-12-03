@@ -8,5 +8,6 @@
 #include "SemanticTypes/Units.hpp"
 #include "SemanticTypes/CartesianCoordinate.hpp"
 #include "SemanticTypes/FrenetCoordinate.hpp"
+#include "SemanticTypes/CartesianPosition.hpp"
 
 #endif //SEMANTICTYPES_H

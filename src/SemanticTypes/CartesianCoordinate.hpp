@@ -23,8 +23,12 @@ public:
     CartesianCoordinate() : x(0), y(0) {}
     CartesianCoordinate(const Distance x, const Distance y) : x(x), y(y) {}
 
-    Distance DistanceTo(const CartesianCoordinate<TReference> c) {
+    Distance DistanceTo(const CartesianCoordinate<TReference> c) const {
         return Distance(sqrt((x - c.x).value*(x - c.x).value + (y - c.y).value*(y - c.y).value));
+    }
+
+    AngleRad AngleTo(const CartesianCoordinate<TReference> p) const {
+        return NormalizeAroundZero(AngleRad(atan2((p.y - y).value, (p.x - x).value)));
     }
 };
 
