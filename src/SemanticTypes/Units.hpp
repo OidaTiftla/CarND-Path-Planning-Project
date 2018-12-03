@@ -1,11 +1,14 @@
 //
 // Created by chmst on 10/11/2016.
+// The idea came from Compiler-enforced semantic types (https://stackoverflow.com/questions/39412785/compiler-enforced-semantic-types)
 //
 
-#ifndef SIUNITS_HPP
-#define SIUNITS_HPP
+#ifndef UNITS_HPP
+#define UNITS_HPP
 
 #include <iostream>
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 // metre, kilogram, second, ampere, kelvin, mole, candela
 // https://en.wikipedia.org/wiki/International_System_of_Units
@@ -22,14 +25,51 @@ struct SiUnit {
     };
 };
 
-template<typename Unit> // a magnitude with a unit
-struct Value
-{
-    const double value; // the magnitude
+// radian, degree
+template <bool Trad, bool Tdeg>
+struct AngleUnit {
+    enum {
+        rad = Trad,
+        deg = Tdeg,
+    };
+};
+
+template<typename TUnit> // a magnitude with a unit
+struct Value {
+    double value; // the magnitude
     constexpr explicit Value(const double d) : value(d) {} // construct a Value from a double
+
+    Value operator-() const {
+        return Value(-this->value);
+    }
+
+    Value& operator+() const {
+        return *this;
+    }
+
+    Value& operator+=(const Value& rhs) {
+        this->value += rhs.value;
+        return *this;
+    }
+
+    Value& operator-=(const Value& rhs) {
+        this->value -= rhs.value;
+        return *this;
+    }
+
+    Value& operator*=(const double rhs) {
+        this->value *= rhs;
+        return *this;
+    }
+
+    Value& operator/=(const double rhs) {
+        this->value /= rhs;
+        return *this;
+    }
 };
 
 // Semantic Units for SI basic units
+using NoUnit = SiUnit<0, 0, 0, 0, 0, 0, 0>;
 using Meter = SiUnit<1, 0, 0, 0, 0, 0, 0>;
 using Kilogram = SiUnit<0, 1, 0, 0, 0, 0, 0>;
 using Second = SiUnit<0, 0, 1, 0, 0, 0, 0>;
@@ -54,7 +94,12 @@ using Tesla = SiUnit<0, 1, -2, -1, 0, 0, 0>; // is kilogram/second^2/ampere (T)
 using Henry = SiUnit<2, 1, -2, -2, 0, 0, 0>; // is kilogram*meter^2/second^2/ampere^2 (H)
 using Lux = SiUnit<-2, 0, 0, 0, 0, 0, 1>; // is candela/meter^2 (lx)
 
+// Semantic Units for angle units
+using Radian = AngleUnit<true, false>;
+using Degree = AngleUnit<false, true>;
+
 // Semantic Value Types for SI basic units
+using Number = Value<NoUnit>;
 using Distance = Value<Meter>;
 using Mass = Value<Kilogram>;
 using Time = Value<Second>;
@@ -81,7 +126,11 @@ using MagneticFluxDensity = Value<Tesla>; // is T
 using Inductance = Value<Henry>; // is H
 using Illuminance = Value<Lux>; // is lx
 
-// Operator overloads to properly calculate units
+// Semantic Value Types for angle units
+using AngleRad = Value<Radian>; // is rad
+using AngleDeg = Value<Degree>; // is °
+
+// Operator overloads to properly calculate units for SI units
 template <int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
 Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>> operator+(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& lhs, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& rhs) {
     return Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>(lhs.value + rhs.value);
@@ -99,10 +148,60 @@ Value<SiUnit<Tm_lhs - Tm_rhs, Tkg_lhs - Tkg_rhs, Ts_lhs - Ts_rhs, TA_lhs - TA_rh
     return Value<SiUnit<Tm_lhs - Tm_rhs, Tkg_lhs - Tkg_rhs, Ts_lhs - Ts_rhs, TA_lhs - TA_rhs, TK_lhs - TK_rhs, Tmol_lhs - Tmol_rhs, Tcd_lhs - Tcd_rhs>>(lhs.value / rhs.value);
 }
 
+// Operator overloads to properly calculate units for angle units
+template <typename TUnit>
+Value<TUnit> operator+(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+    return Value<TUnit>(lhs.value + rhs.value);
+}
+template <typename TUnit>
+Value<TUnit> operator-(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+    return Value<TUnit>(lhs.value - rhs.value);
+}
+template <typename TUnit>
+Value<TUnit> operator*(const Value<TUnit>& lhs, const double rhs) {
+    return Value<TUnit>(lhs.value * rhs);
+}
+template <typename TUnit>
+Value<TUnit> operator*(const double lhs, const Value<TUnit>& rhs) {
+    return Value<TUnit>(lhs * rhs.value);
+}
+template <typename TUnit>
+Value<TUnit> operator/(const Value<TUnit>& lhs, const double rhs) {
+    return Value<TUnit>(lhs.value / rhs);
+}
+
+// Operator overloads to properly compare values
+template <typename TUnit>
+bool operator<(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+    return lhs.value < rhs.value;
+}
+template <typename TUnit>
+bool operator<=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+    return lhs.value <= rhs.value;
+}
+template <typename TUnit>
+bool operator>(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+    return lhs.value > rhs.value;
+}
+template <typename TUnit>
+bool operator>=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+    return lhs.value >= rhs.value;
+}
+template <typename TUnit>
+bool operator==(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+    return lhs.value == rhs.value;
+}
+template <typename TUnit>
+bool operator!=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+    return lhs.value != rhs.value;
+}
+
+// write to stream with units for SI units
 template <int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
 std::ostream& operator<<(std::ostream& out, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& o) {
     out << o.value;
 
+    // check for SI derived units
     if (Tm == 0
         && Tkg == 0
         && Ts == -1
@@ -216,6 +315,7 @@ std::ostream& operator<<(std::ostream& out, const Value<SiUnit<Tm, Tkg, Ts, TA, 
         && Tcd == 1) {
         return out << "lx";
     } else {
+        // use SI basic units
         bool first = true;
         if (Tm != 0) {
             if (!first) {
@@ -298,92 +398,215 @@ std::ostream& operator<<(std::ostream& out, const Value<SiUnit<Tm, Tkg, Ts, TA, 
     }
 }
 
+// write to stream with units for angle units
+std::ostream& operator<<(std::ostream& out, const AngleRad& o) {
+    return out << o.value << "rad";
+}
+std::ostream& operator<<(std::ostream& out, const AngleDeg& o) {
+    return out << o.value << "°";
+}
+
+
 // Define literals for SI basic units
-constexpr Distance operator"" _m(long double ld)
-{
+constexpr Distance operator"" _m(long double ld) {
     return Distance(static_cast<double>(ld));
 }
-constexpr Mass operator"" _kg(long double ld)
-{
+constexpr Distance operator"" _m(unsigned long long ull) {
+    return Distance(static_cast<double>(ull));
+}
+constexpr Mass operator"" _kg(long double ld) {
     return Mass(static_cast<double>(ld));
 }
-constexpr Time operator"" _s(long double ld)
-{
+constexpr Mass operator"" _kg(unsigned long long ull) {
+    return Mass(static_cast<double>(ull));
+}
+constexpr Time operator"" _s(long double ld) {
     return Time(static_cast<double>(ld));
 }
-constexpr Current operator"" _A(long double ld)
-{
+constexpr Time operator"" _s(unsigned long long ull) {
+    return Time(static_cast<double>(ull));
+}
+constexpr Current operator"" _A(long double ld) {
     return Current(static_cast<double>(ld));
 }
-constexpr Temperature operator"" _K(long double ld)
-{
+constexpr Current operator"" _A(unsigned long long ull) {
+    return Current(static_cast<double>(ull));
+}
+constexpr Temperature operator"" _K(long double ld) {
     return Temperature(static_cast<double>(ld));
 }
-constexpr AmountOfSubstance operator"" _mol(long double ld)
-{
+constexpr Temperature operator"" _K(unsigned long long ull) {
+    return Temperature(static_cast<double>(ull));
+}
+constexpr AmountOfSubstance operator"" _mol(long double ld) {
     return AmountOfSubstance(static_cast<double>(ld));
 }
-constexpr LuminousIntensity operator"" _cd(long double ld)
-{
+constexpr AmountOfSubstance operator"" _mol(unsigned long long ull) {
+    return AmountOfSubstance(static_cast<double>(ull));
+}
+constexpr LuminousIntensity operator"" _cd(long double ld) {
     return LuminousIntensity(static_cast<double>(ld));
+}
+constexpr LuminousIntensity operator"" _cd(unsigned long long ull) {
+    return LuminousIntensity(static_cast<double>(ull));
 }
 
 // Define literals for SI derived units
-constexpr Frequency operator"" _Hz(long double ld)
-{
+constexpr Frequency operator"" _Hz(long double ld) {
     return Frequency(static_cast<double>(ld));
 }
-constexpr Force operator"" _N(long double ld)
-{
+constexpr Frequency operator"" _Hz(unsigned long long ull) {
+    return Frequency(static_cast<double>(ull));
+}
+constexpr Force operator"" _N(long double ld) {
     return Force(static_cast<double>(ld));
 }
-constexpr Pressure operator"" _Pa(long double ld)
-{
+constexpr Force operator"" _N(unsigned long long ull) {
+    return Force(static_cast<double>(ull));
+}
+constexpr Pressure operator"" _Pa(long double ld) {
     return Pressure(static_cast<double>(ld));
 }
-constexpr Energy operator"" _J(long double ld)
-{
+constexpr Pressure operator"" _Pa(unsigned long long ull) {
+    return Pressure(static_cast<double>(ull));
+}
+constexpr Energy operator"" _J(long double ld) {
     return Energy(static_cast<double>(ld));
 }
-constexpr Power operator"" _W(long double ld)
-{
+constexpr Energy operator"" _J(unsigned long long ull) {
+    return Energy(static_cast<double>(ull));
+}
+constexpr Power operator"" _W(long double ld) {
     return Power(static_cast<double>(ld));
 }
-constexpr ElectricCharge operator"" _C(long double ld)
-{
+constexpr Power operator"" _W(unsigned long long ull) {
+    return Power(static_cast<double>(ull));
+}
+constexpr ElectricCharge operator"" _C(long double ld) {
     return ElectricCharge(static_cast<double>(ld));
 }
-constexpr Voltage operator"" _V(long double ld)
-{
+constexpr ElectricCharge operator"" _C(unsigned long long ull) {
+    return ElectricCharge(static_cast<double>(ull));
+}
+constexpr Voltage operator"" _V(long double ld) {
     return Voltage(static_cast<double>(ld));
 }
-constexpr Capacitance operator"" _F(long double ld)
-{
+constexpr Voltage operator"" _V(unsigned long long ull) {
+    return Voltage(static_cast<double>(ull));
+}
+constexpr Capacitance operator"" _F(long double ld) {
     return Capacitance(static_cast<double>(ld));
 }
-constexpr Resistance operator"" _Ohm(long double ld)
-{
+constexpr Capacitance operator"" _F(unsigned long long ull) {
+    return Capacitance(static_cast<double>(ull));
+}
+constexpr Resistance operator"" _Ohm(long double ld) {
     return Resistance(static_cast<double>(ld));
 }
-constexpr ElectricalConductance operator"" _S(long double ld)
-{
+constexpr Resistance operator"" _Ohm(unsigned long long ull) {
+    return Resistance(static_cast<double>(ull));
+}
+constexpr ElectricalConductance operator"" _S(long double ld) {
     return ElectricalConductance(static_cast<double>(ld));
 }
-constexpr MagneticFlux operator"" _Wb(long double ld)
-{
+constexpr ElectricalConductance operator"" _S(unsigned long long ull) {
+    return ElectricalConductance(static_cast<double>(ull));
+}
+constexpr MagneticFlux operator"" _Wb(long double ld) {
     return MagneticFlux(static_cast<double>(ld));
 }
-constexpr MagneticFluxDensity operator"" _T(long double ld)
-{
+constexpr MagneticFlux operator"" _Wb(unsigned long long ull) {
+    return MagneticFlux(static_cast<double>(ull));
+}
+constexpr MagneticFluxDensity operator"" _T(long double ld) {
     return MagneticFluxDensity(static_cast<double>(ld));
 }
-constexpr Inductance operator"" _H(long double ld)
-{
+constexpr MagneticFluxDensity operator"" _T(unsigned long long ull) {
+    return MagneticFluxDensity(static_cast<double>(ull));
+}
+constexpr Inductance operator"" _H(long double ld) {
     return Inductance(static_cast<double>(ld));
 }
-constexpr Illuminance operator"" _lx(long double ld)
-{
+constexpr Inductance operator"" _H(unsigned long long ull) {
+    return Inductance(static_cast<double>(ull));
+}
+constexpr Illuminance operator"" _lx(long double ld) {
     return Illuminance(static_cast<double>(ld));
 }
+constexpr Illuminance operator"" _lx(unsigned long long ull) {
+    return Illuminance(static_cast<double>(ull));
+}
 
-#endif //SIUNITS_HPP
+// Define literals for angle units
+constexpr AngleRad operator"" _rad(long double ld) {
+    return AngleRad(static_cast<double>(ld));
+}
+constexpr AngleRad operator"" _rad(unsigned long long ull) {
+    return AngleRad(static_cast<double>(ull));
+}
+constexpr AngleDeg operator"" _deg(long double ld) {
+    return AngleDeg(static_cast<double>(ld));
+}
+constexpr AngleDeg operator"" _deg(unsigned long long ull) {
+    return AngleDeg(static_cast<double>(ull));
+}
+
+// Define some helper functions
+template <typename TUnit>
+Value<TUnit> abs(const Value<TUnit>& v) {
+    return Value<TUnit>(abs(v.value));
+}
+
+AngleRad ToRadian(const AngleDeg& deg) {
+    return AngleRad(deg.value * M_PI / 180);
+}
+
+AngleDeg ToDegree(const AngleRad& rad) {
+    return AngleDeg(rad.value * 180 / M_PI);
+}
+
+AngleDeg NormalizeAroundZero(AngleDeg v) {
+    while (v > 180_deg) {
+        v -= 360_deg;
+    }
+    while (v < -180_deg) {
+        v += 360_deg;
+    }
+    return v;
+}
+
+AngleRad NormalizeAroundZero(AngleRad v) {
+    while (v > AngleRad(M_PI)) {
+        v -= AngleRad(M_2_PI);
+    }
+    while (v < AngleRad(-M_PI)) {
+        v += AngleRad(M_2_PI);
+    }
+    return v;
+}
+
+double sin(const AngleRad& rad) {
+    return sin(rad.value);
+}
+
+double cos(const AngleRad& rad) {
+    return cos(rad.value);
+}
+
+double tan(const AngleRad& rad) {
+    return tan(rad.value);
+}
+
+double sin(const AngleDeg& deg) {
+    return sin(ToRadian(deg));
+}
+
+double cos(const AngleDeg& deg) {
+    return cos(ToRadian(deg));
+}
+
+double tan(const AngleDeg& deg) {
+    return tan(ToRadian(deg));
+}
+
+#endif //UNITS_HPP
