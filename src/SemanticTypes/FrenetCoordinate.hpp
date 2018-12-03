@@ -12,8 +12,8 @@
 
 class FrenetCoordinate {
 public:
-    const Distance s;
-    const Distance d;
+    Distance s;
+    Distance d;
 
     FrenetCoordinate() : s(0), d(0) {}
     FrenetCoordinate(const Distance s, const Distance d) : s(s), d(d) {}

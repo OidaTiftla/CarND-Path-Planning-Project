@@ -17,8 +17,8 @@ enum class CoordinateReference {
 template <CoordinateReference TReference>
 class CartesianCoordinate {
 public:
-    const Distance x;
-    const Distance y;
+    Distance x;
+    Distance y;
 
     CartesianCoordinate() : x(0), y(0) {}
     CartesianCoordinate(const Distance x, const Distance y) : x(x), y(y) {}

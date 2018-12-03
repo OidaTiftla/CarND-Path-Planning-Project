@@ -14,8 +14,8 @@
 template <CoordinateReference TReference>
 class CartesianPosition {
 public:
-    const CartesianCoordinate<TReference> coord;
-    const AngleRad theta;
+    CartesianCoordinate<TReference> coord;
+    AngleRad theta;
 
     CartesianPosition() : coord(), theta(0) {}
     CartesianPosition(const Distance x, const Distance y, const AngleRad theta) : coord(x, y), theta(theta) {}
