@@ -10,7 +10,7 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
 #include "SemanticTypes.h"
-#include "Map.hpp"
+#include "Map.h"
 
 using namespace std;
 
