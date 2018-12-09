@@ -24,15 +24,15 @@ public:
 };
 
 
-std::ostream& operator<<(std::ostream& out, const FrenetCoordinate& o) {
+inline std::ostream& operator<<(std::ostream& out, const FrenetCoordinate& o) {
     return out << "{s:" << o.s << " d:" << o.d << "}";
 }
 
-// FrenetCoordinate operator+(const FrenetCoordinate& a, const FrenetCoordinate& b) {
+// inline FrenetCoordinate operator+(const FrenetCoordinate& a, const FrenetCoordinate& b) {
 //     return FrenetCoordinate(a.s + b.s, a.d + b.d);
 // }
 
-// FrenetCoordinate operator-(const FrenetCoordinate& a, const FrenetCoordinate& b) {
+// inline FrenetCoordinate operator-(const FrenetCoordinate& a, const FrenetCoordinate& b) {
 //     return FrenetCoordinate(a.s - b.s, a.d - b.d);
 // }
 

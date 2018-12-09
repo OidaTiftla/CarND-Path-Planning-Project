@@ -132,73 +132,73 @@ using AngleDeg = Value<Degree>; // is °
 
 // Operator overloads to properly calculate units for SI units
 template <int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
-Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>> operator+(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& lhs, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& rhs) {
+inline Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>> operator+(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& lhs, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& rhs) {
     return Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>(lhs.value + rhs.value);
 }
 template <int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
-Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>> operator-(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& lhs, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& rhs) {
+inline Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>> operator-(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& lhs, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& rhs) {
     return Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>(lhs.value - rhs.value);
 }
 template <int Tm_lhs, int Tkg_lhs, int Ts_lhs, int TA_lhs, int TK_lhs, int Tmol_lhs, int Tcd_lhs, int Tm_rhs, int Tkg_rhs, int Ts_rhs, int TA_rhs, int TK_rhs, int Tmol_rhs, int Tcd_rhs>
-Value<SiUnit<Tm_lhs + Tm_rhs, Tkg_lhs + Tkg_rhs, Ts_lhs + Ts_rhs, TA_lhs + TA_rhs, TK_lhs + TK_rhs, Tmol_lhs + Tmol_rhs, Tcd_lhs + Tcd_rhs>> operator*(const Value<SiUnit<Tm_lhs, Tkg_lhs, Ts_lhs, TA_lhs, TK_lhs, Tmol_lhs, Tcd_lhs>>& lhs, const Value<SiUnit<Tm_rhs, Tkg_rhs, Ts_rhs, TA_rhs, TK_rhs, Tmol_rhs, Tcd_rhs>>& rhs) {
+inline Value<SiUnit<Tm_lhs + Tm_rhs, Tkg_lhs + Tkg_rhs, Ts_lhs + Ts_rhs, TA_lhs + TA_rhs, TK_lhs + TK_rhs, Tmol_lhs + Tmol_rhs, Tcd_lhs + Tcd_rhs>> operator*(const Value<SiUnit<Tm_lhs, Tkg_lhs, Ts_lhs, TA_lhs, TK_lhs, Tmol_lhs, Tcd_lhs>>& lhs, const Value<SiUnit<Tm_rhs, Tkg_rhs, Ts_rhs, TA_rhs, TK_rhs, Tmol_rhs, Tcd_rhs>>& rhs) {
     return Value<SiUnit<Tm_lhs + Tm_rhs, Tkg_lhs + Tkg_rhs, Ts_lhs + Ts_rhs, TA_lhs + TA_rhs, TK_lhs + TK_rhs, Tmol_lhs + Tmol_rhs, Tcd_lhs + Tcd_rhs>>(lhs.value * rhs.value);
 }
 template <int Tm_lhs, int Tkg_lhs, int Ts_lhs, int TA_lhs, int TK_lhs, int Tmol_lhs, int Tcd_lhs, int Tm_rhs, int Tkg_rhs, int Ts_rhs, int TA_rhs, int TK_rhs, int Tmol_rhs, int Tcd_rhs>
-Value<SiUnit<Tm_lhs - Tm_rhs, Tkg_lhs - Tkg_rhs, Ts_lhs - Ts_rhs, TA_lhs - TA_rhs, TK_lhs - TK_rhs, Tmol_lhs - Tmol_rhs, Tcd_lhs - Tcd_rhs>> operator/(const Value<SiUnit<Tm_lhs, Tkg_lhs, Ts_lhs, TA_lhs, TK_lhs, Tmol_lhs, Tcd_lhs>>& lhs, const Value<SiUnit<Tm_rhs, Tkg_rhs, Ts_rhs, TA_rhs, TK_rhs, Tmol_rhs, Tcd_rhs>>& rhs) {
+inline Value<SiUnit<Tm_lhs - Tm_rhs, Tkg_lhs - Tkg_rhs, Ts_lhs - Ts_rhs, TA_lhs - TA_rhs, TK_lhs - TK_rhs, Tmol_lhs - Tmol_rhs, Tcd_lhs - Tcd_rhs>> operator/(const Value<SiUnit<Tm_lhs, Tkg_lhs, Ts_lhs, TA_lhs, TK_lhs, Tmol_lhs, Tcd_lhs>>& lhs, const Value<SiUnit<Tm_rhs, Tkg_rhs, Ts_rhs, TA_rhs, TK_rhs, Tmol_rhs, Tcd_rhs>>& rhs) {
     return Value<SiUnit<Tm_lhs - Tm_rhs, Tkg_lhs - Tkg_rhs, Ts_lhs - Ts_rhs, TA_lhs - TA_rhs, TK_lhs - TK_rhs, Tmol_lhs - Tmol_rhs, Tcd_lhs - Tcd_rhs>>(lhs.value / rhs.value);
 }
 
 // Operator overloads to properly calculate units for angle units
 template <typename TUnit>
-Value<TUnit> operator+(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline Value<TUnit> operator+(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return Value<TUnit>(lhs.value + rhs.value);
 }
 template <typename TUnit>
-Value<TUnit> operator-(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline Value<TUnit> operator-(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return Value<TUnit>(lhs.value - rhs.value);
 }
 template <typename TUnit>
-Value<TUnit> operator*(const Value<TUnit>& lhs, const double rhs) {
+inline Value<TUnit> operator*(const Value<TUnit>& lhs, const double rhs) {
     return Value<TUnit>(lhs.value * rhs);
 }
 template <typename TUnit>
-Value<TUnit> operator*(const double lhs, const Value<TUnit>& rhs) {
+inline Value<TUnit> operator*(const double lhs, const Value<TUnit>& rhs) {
     return Value<TUnit>(lhs * rhs.value);
 }
 template <typename TUnit>
-Value<TUnit> operator/(const Value<TUnit>& lhs, const double rhs) {
+inline Value<TUnit> operator/(const Value<TUnit>& lhs, const double rhs) {
     return Value<TUnit>(lhs.value / rhs);
 }
 
 // Operator overloads to properly compare values
 template <typename TUnit>
-bool operator<(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline bool operator<(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return lhs.value < rhs.value;
 }
 template <typename TUnit>
-bool operator<=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline bool operator<=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return lhs.value <= rhs.value;
 }
 template <typename TUnit>
-bool operator>(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline bool operator>(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return lhs.value > rhs.value;
 }
 template <typename TUnit>
-bool operator>=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline bool operator>=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return lhs.value >= rhs.value;
 }
 template <typename TUnit>
-bool operator==(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline bool operator==(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return lhs.value == rhs.value;
 }
 template <typename TUnit>
-bool operator!=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline bool operator!=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return lhs.value != rhs.value;
 }
 
 // write to stream with units for SI units
 template <int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
-std::ostream& operator<<(std::ostream& out, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& o) {
+inline std::ostream& operator<<(std::ostream& out, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& o) {
     out << o.value;
 
     // check for SI derived units
@@ -399,173 +399,173 @@ std::ostream& operator<<(std::ostream& out, const Value<SiUnit<Tm, Tkg, Ts, TA, 
 }
 
 // write to stream with units for angle units
-std::ostream& operator<<(std::ostream& out, const AngleRad& o) {
+inline std::ostream& operator<<(std::ostream& out, const AngleRad& o) {
     return out << o.value << "rad";
 }
-std::ostream& operator<<(std::ostream& out, const AngleDeg& o) {
+inline std::ostream& operator<<(std::ostream& out, const AngleDeg& o) {
     return out << o.value << "°";
 }
 
 
 // Define literals for SI basic units
-constexpr Distance operator"" _m(long double ld) {
+inline constexpr Distance operator"" _m(long double ld) {
     return Distance(static_cast<double>(ld));
 }
-constexpr Distance operator"" _m(unsigned long long ull) {
+inline constexpr Distance operator"" _m(unsigned long long ull) {
     return Distance(static_cast<double>(ull));
 }
-constexpr Mass operator"" _kg(long double ld) {
+inline constexpr Mass operator"" _kg(long double ld) {
     return Mass(static_cast<double>(ld));
 }
-constexpr Mass operator"" _kg(unsigned long long ull) {
+inline constexpr Mass operator"" _kg(unsigned long long ull) {
     return Mass(static_cast<double>(ull));
 }
-constexpr Time operator"" _s(long double ld) {
+inline constexpr Time operator"" _s(long double ld) {
     return Time(static_cast<double>(ld));
 }
-constexpr Time operator"" _s(unsigned long long ull) {
+inline constexpr Time operator"" _s(unsigned long long ull) {
     return Time(static_cast<double>(ull));
 }
-constexpr Current operator"" _A(long double ld) {
+inline constexpr Current operator"" _A(long double ld) {
     return Current(static_cast<double>(ld));
 }
-constexpr Current operator"" _A(unsigned long long ull) {
+inline constexpr Current operator"" _A(unsigned long long ull) {
     return Current(static_cast<double>(ull));
 }
-constexpr Temperature operator"" _K(long double ld) {
+inline constexpr Temperature operator"" _K(long double ld) {
     return Temperature(static_cast<double>(ld));
 }
-constexpr Temperature operator"" _K(unsigned long long ull) {
+inline constexpr Temperature operator"" _K(unsigned long long ull) {
     return Temperature(static_cast<double>(ull));
 }
-constexpr AmountOfSubstance operator"" _mol(long double ld) {
+inline constexpr AmountOfSubstance operator"" _mol(long double ld) {
     return AmountOfSubstance(static_cast<double>(ld));
 }
-constexpr AmountOfSubstance operator"" _mol(unsigned long long ull) {
+inline constexpr AmountOfSubstance operator"" _mol(unsigned long long ull) {
     return AmountOfSubstance(static_cast<double>(ull));
 }
-constexpr LuminousIntensity operator"" _cd(long double ld) {
+inline constexpr LuminousIntensity operator"" _cd(long double ld) {
     return LuminousIntensity(static_cast<double>(ld));
 }
-constexpr LuminousIntensity operator"" _cd(unsigned long long ull) {
+inline constexpr LuminousIntensity operator"" _cd(unsigned long long ull) {
     return LuminousIntensity(static_cast<double>(ull));
 }
 
 // Define literals for SI derived units
-constexpr Frequency operator"" _Hz(long double ld) {
+inline constexpr Frequency operator"" _Hz(long double ld) {
     return Frequency(static_cast<double>(ld));
 }
-constexpr Frequency operator"" _Hz(unsigned long long ull) {
+inline constexpr Frequency operator"" _Hz(unsigned long long ull) {
     return Frequency(static_cast<double>(ull));
 }
-constexpr Force operator"" _N(long double ld) {
+inline constexpr Force operator"" _N(long double ld) {
     return Force(static_cast<double>(ld));
 }
-constexpr Force operator"" _N(unsigned long long ull) {
+inline constexpr Force operator"" _N(unsigned long long ull) {
     return Force(static_cast<double>(ull));
 }
-constexpr Pressure operator"" _Pa(long double ld) {
+inline constexpr Pressure operator"" _Pa(long double ld) {
     return Pressure(static_cast<double>(ld));
 }
-constexpr Pressure operator"" _Pa(unsigned long long ull) {
+inline constexpr Pressure operator"" _Pa(unsigned long long ull) {
     return Pressure(static_cast<double>(ull));
 }
-constexpr Energy operator"" _J(long double ld) {
+inline constexpr Energy operator"" _J(long double ld) {
     return Energy(static_cast<double>(ld));
 }
-constexpr Energy operator"" _J(unsigned long long ull) {
+inline constexpr Energy operator"" _J(unsigned long long ull) {
     return Energy(static_cast<double>(ull));
 }
-constexpr Power operator"" _W(long double ld) {
+inline constexpr Power operator"" _W(long double ld) {
     return Power(static_cast<double>(ld));
 }
-constexpr Power operator"" _W(unsigned long long ull) {
+inline constexpr Power operator"" _W(unsigned long long ull) {
     return Power(static_cast<double>(ull));
 }
-constexpr ElectricCharge operator"" _C(long double ld) {
+inline constexpr ElectricCharge operator"" _C(long double ld) {
     return ElectricCharge(static_cast<double>(ld));
 }
-constexpr ElectricCharge operator"" _C(unsigned long long ull) {
+inline constexpr ElectricCharge operator"" _C(unsigned long long ull) {
     return ElectricCharge(static_cast<double>(ull));
 }
-constexpr Voltage operator"" _V(long double ld) {
+inline constexpr Voltage operator"" _V(long double ld) {
     return Voltage(static_cast<double>(ld));
 }
-constexpr Voltage operator"" _V(unsigned long long ull) {
+inline constexpr Voltage operator"" _V(unsigned long long ull) {
     return Voltage(static_cast<double>(ull));
 }
-constexpr Capacitance operator"" _F(long double ld) {
+inline constexpr Capacitance operator"" _F(long double ld) {
     return Capacitance(static_cast<double>(ld));
 }
-constexpr Capacitance operator"" _F(unsigned long long ull) {
+inline constexpr Capacitance operator"" _F(unsigned long long ull) {
     return Capacitance(static_cast<double>(ull));
 }
-constexpr Resistance operator"" _Ohm(long double ld) {
+inline constexpr Resistance operator"" _Ohm(long double ld) {
     return Resistance(static_cast<double>(ld));
 }
-constexpr Resistance operator"" _Ohm(unsigned long long ull) {
+inline constexpr Resistance operator"" _Ohm(unsigned long long ull) {
     return Resistance(static_cast<double>(ull));
 }
-constexpr ElectricalConductance operator"" _S(long double ld) {
+inline constexpr ElectricalConductance operator"" _S(long double ld) {
     return ElectricalConductance(static_cast<double>(ld));
 }
-constexpr ElectricalConductance operator"" _S(unsigned long long ull) {
+inline constexpr ElectricalConductance operator"" _S(unsigned long long ull) {
     return ElectricalConductance(static_cast<double>(ull));
 }
-constexpr MagneticFlux operator"" _Wb(long double ld) {
+inline constexpr MagneticFlux operator"" _Wb(long double ld) {
     return MagneticFlux(static_cast<double>(ld));
 }
-constexpr MagneticFlux operator"" _Wb(unsigned long long ull) {
+inline constexpr MagneticFlux operator"" _Wb(unsigned long long ull) {
     return MagneticFlux(static_cast<double>(ull));
 }
-constexpr MagneticFluxDensity operator"" _T(long double ld) {
+inline constexpr MagneticFluxDensity operator"" _T(long double ld) {
     return MagneticFluxDensity(static_cast<double>(ld));
 }
-constexpr MagneticFluxDensity operator"" _T(unsigned long long ull) {
+inline constexpr MagneticFluxDensity operator"" _T(unsigned long long ull) {
     return MagneticFluxDensity(static_cast<double>(ull));
 }
-constexpr Inductance operator"" _H(long double ld) {
+inline constexpr Inductance operator"" _H(long double ld) {
     return Inductance(static_cast<double>(ld));
 }
-constexpr Inductance operator"" _H(unsigned long long ull) {
+inline constexpr Inductance operator"" _H(unsigned long long ull) {
     return Inductance(static_cast<double>(ull));
 }
-constexpr Illuminance operator"" _lx(long double ld) {
+inline constexpr Illuminance operator"" _lx(long double ld) {
     return Illuminance(static_cast<double>(ld));
 }
-constexpr Illuminance operator"" _lx(unsigned long long ull) {
+inline constexpr Illuminance operator"" _lx(unsigned long long ull) {
     return Illuminance(static_cast<double>(ull));
 }
 
 // Define literals for angle units
-constexpr AngleRad operator"" _rad(long double ld) {
+inline constexpr AngleRad operator"" _rad(long double ld) {
     return AngleRad(static_cast<double>(ld));
 }
-constexpr AngleRad operator"" _rad(unsigned long long ull) {
+inline constexpr AngleRad operator"" _rad(unsigned long long ull) {
     return AngleRad(static_cast<double>(ull));
 }
-constexpr AngleDeg operator"" _deg(long double ld) {
+inline constexpr AngleDeg operator"" _deg(long double ld) {
     return AngleDeg(static_cast<double>(ld));
 }
-constexpr AngleDeg operator"" _deg(unsigned long long ull) {
+inline constexpr AngleDeg operator"" _deg(unsigned long long ull) {
     return AngleDeg(static_cast<double>(ull));
 }
 
 // Define some helper functions
 template <typename TUnit>
-Value<TUnit> abs(const Value<TUnit>& v) {
+inline Value<TUnit> abs(const Value<TUnit>& v) {
     return Value<TUnit>(abs(v.value));
 }
 
-AngleRad ToRadian(const AngleDeg& deg) {
+inline AngleRad ToRadian(const AngleDeg& deg) {
     return AngleRad(deg.value * M_PI / 180);
 }
 
-AngleDeg ToDegree(const AngleRad& rad) {
+inline AngleDeg ToDegree(const AngleRad& rad) {
     return AngleDeg(rad.value * 180 / M_PI);
 }
 
-AngleDeg NormalizeAroundZero(AngleDeg v) {
+inline AngleDeg NormalizeAroundZero(AngleDeg v) {
     while (v > 180_deg) {
         v -= 360_deg;
     }
@@ -575,7 +575,7 @@ AngleDeg NormalizeAroundZero(AngleDeg v) {
     return v;
 }
 
-AngleRad NormalizeAroundZero(AngleRad v) {
+inline AngleRad NormalizeAroundZero(AngleRad v) {
     while (v > AngleRad(M_PI)) {
         v -= AngleRad(M_2_PI);
     }
@@ -585,27 +585,27 @@ AngleRad NormalizeAroundZero(AngleRad v) {
     return v;
 }
 
-double sin(const AngleRad& rad) {
+inline double sin(const AngleRad& rad) {
     return sin(rad.value);
 }
 
-double cos(const AngleRad& rad) {
+inline double cos(const AngleRad& rad) {
     return cos(rad.value);
 }
 
-double tan(const AngleRad& rad) {
+inline double tan(const AngleRad& rad) {
     return tan(rad.value);
 }
 
-double sin(const AngleDeg& deg) {
+inline double sin(const AngleDeg& deg) {
     return sin(ToRadian(deg));
 }
 
-double cos(const AngleDeg& deg) {
+inline double cos(const AngleDeg& deg) {
     return cos(ToRadian(deg));
 }
 
-double tan(const AngleDeg& deg) {
+inline double tan(const AngleDeg& deg) {
     return tan(ToRadian(deg));
 }
 

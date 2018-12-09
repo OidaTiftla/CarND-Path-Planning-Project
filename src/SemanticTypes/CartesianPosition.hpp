@@ -41,11 +41,11 @@ using LocalCartesianPosition = CartesianPosition<CoordinateReference::Local>;
 using GlobalCartesianPosition = CartesianPosition<CoordinateReference::Global>;
 
 
-std::ostream& operator<<(std::ostream& out, const LocalCartesianPosition& o) {
+inline std::ostream& operator<<(std::ostream& out, const LocalCartesianPosition& o) {
     return out << "{local x:" << o.coord.x << " y:" << o.coord.y << " theta:" << o.theta << "}";
 }
 
-std::ostream& operator<<(std::ostream& out, const GlobalCartesianPosition& o) {
+inline std::ostream& operator<<(std::ostream& out, const GlobalCartesianPosition& o) {
     return out << "{global x:" << o.coord.x << " y:" << o.coord.y << " theta:" << o.theta << "}";
 }
 

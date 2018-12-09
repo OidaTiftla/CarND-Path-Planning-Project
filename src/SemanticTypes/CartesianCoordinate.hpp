@@ -36,35 +36,35 @@ using LocalCartesianCoordinate = CartesianCoordinate<CoordinateReference::Local>
 using GlobalCartesianCoordinate = CartesianCoordinate<CoordinateReference::Global>;
 
 
-std::ostream& operator<<(std::ostream& out, const LocalCartesianCoordinate& o) {
+inline std::ostream& operator<<(std::ostream& out, const LocalCartesianCoordinate& o) {
     return out << "{local x:" << o.x << " y:" << o.y << "}";
 }
 
-std::ostream& operator<<(std::ostream& out, const GlobalCartesianCoordinate& o) {
+inline std::ostream& operator<<(std::ostream& out, const GlobalCartesianCoordinate& o) {
     return out << "{global x:" << o.x << " y:" << o.y << "}";
 }
 
-GlobalCartesianCoordinate operator+(const GlobalCartesianCoordinate& a, const LocalCartesianCoordinate& b) {
+inline GlobalCartesianCoordinate operator+(const GlobalCartesianCoordinate& a, const LocalCartesianCoordinate& b) {
     return GlobalCartesianCoordinate(a.x + b.x, a.y + b.y);
 }
 
-GlobalCartesianCoordinate operator+(const LocalCartesianCoordinate& a, const GlobalCartesianCoordinate& b) {
+inline GlobalCartesianCoordinate operator+(const LocalCartesianCoordinate& a, const GlobalCartesianCoordinate& b) {
     return b + a;
 }
 
-GlobalCartesianCoordinate operator-(const GlobalCartesianCoordinate& a, const LocalCartesianCoordinate& b) {
+inline GlobalCartesianCoordinate operator-(const GlobalCartesianCoordinate& a, const LocalCartesianCoordinate& b) {
     return GlobalCartesianCoordinate(a.x - b.x, a.y - b.y);
 }
 
-LocalCartesianCoordinate operator-(const GlobalCartesianCoordinate& a, const GlobalCartesianCoordinate& b) {
+inline LocalCartesianCoordinate operator-(const GlobalCartesianCoordinate& a, const GlobalCartesianCoordinate& b) {
     return LocalCartesianCoordinate(a.x - b.x, a.y - b.y);
 }
 
-LocalCartesianCoordinate operator+(const LocalCartesianCoordinate& a, const LocalCartesianCoordinate& b) {
+inline LocalCartesianCoordinate operator+(const LocalCartesianCoordinate& a, const LocalCartesianCoordinate& b) {
     return LocalCartesianCoordinate(a.x + b.x, a.y + b.y);
 }
 
-LocalCartesianCoordinate operator-(const LocalCartesianCoordinate& a, const LocalCartesianCoordinate& b) {
+inline LocalCartesianCoordinate operator-(const LocalCartesianCoordinate& a, const LocalCartesianCoordinate& b) {
     return LocalCartesianCoordinate(a.x - b.x, a.y - b.y);
 }
 
