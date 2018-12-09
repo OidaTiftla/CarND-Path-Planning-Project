@@ -11,6 +11,9 @@
 #include "json.hpp"
 #include "SemanticTypes.h"
 #include "Map.h"
+#include "Vehicle.hpp"
+#include "BehaviorPlanner.h"
+#include "TrajectoryPlanner.h"
 
 using namespace std;
 
@@ -66,8 +69,9 @@ int main() {
     }
 
     Map map(map_waypoints, max_s);
+    BehaviorPlanner bPlanner(map);
 
-    h.onMessage([&map](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+    h.onMessage([&map, &bPlanner](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
         uWS::OpCode opCode) {
         // "42" at the start of the message means there's a websocket message event.
         // The 4 signifies a websocket message
@@ -90,6 +94,7 @@ int main() {
                     GlobalCartesianPosition car_cartesian(j[1]["x"] * 1_m, j[1]["y"] * 1_m, j[1]["yaw"] * 1_rad);
                     FrenetCoordinate car_frenet(j[1]["s"] * 1_m, j[1]["d"] * 1_m);
                     auto car_speed = j[1]["speed"] * 1_m / 1_s;
+                    Vehicle car(car_cartesian, car_frenet, car_speed);
 
                     // Previous path data given to the Planner
                     vector<GlobalCartesianCoordinate> previous_path;
@@ -103,8 +108,12 @@ int main() {
                     auto sensor_fusion = j[1]["sensor_fusion"];
 
 
+                    auto behavior = bPlanner.PlanNextBehavior(car/*, sensor_fusion*/);
+                    TrajectoryPlanner tPlanner(map, car, previous_path, end_path/*, sensor_fusion*/);
+                    auto trajectory = tPlanner.PlanNextTrajectory(behavior);
+
                     // TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-                    vector<GlobalCartesianCoordinate> next_path;
+                    vector<GlobalCartesianCoordinate> next_path = trajectory;
                     GlobalCartesianCoordinate last = car_cartesian.coord;
                     for (int i = 0; i < 50; ++i) {
                         if (i < previous_path.size()) {
