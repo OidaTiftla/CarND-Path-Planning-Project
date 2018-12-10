@@ -110,7 +110,20 @@ int main() {
                     FrenetCoordinate end_path(j[1]["end_path_s"] * 1_m, j[1]["end_path_d"] * 1_m);
 
                     // Sensor Fusion Data, a list of all other cars on the same side of the road.
-                    auto sensor_fusion = j[1]["sensor_fusion"];
+                    vector<VehicleState> sensor_fusion;
+                    for (auto vehicle_fusion : j[1]["sensor_fusion"]) {
+                        int id = vehicle_fusion[0];
+                        auto x = vehicle_fusion[0] * 1_m;
+                        auto y = vehicle_fusion[0] * 1_m;
+                        auto vx = vehicle_fusion[0] * 1_m / 1_s;
+                        auto vy = vehicle_fusion[0] * 1_m / 1_s;
+                        auto s = vehicle_fusion[0] * 1_m;
+                        auto d = vehicle_fusion[0] * 1_m;
+                        GlobalCartesianCoordinate cartesian(x, y);
+                        FrenetCoordinate frenet(s, d);
+                        auto speed = j[1]["speed"] * 1_m / 1_s;
+                        sensor_fusion.push_back(VehicleState(id, cartesian, frenet, vx, vy));
+                    }
 
 
                     // TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
