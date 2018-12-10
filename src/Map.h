@@ -31,6 +31,7 @@ public:
     GlobalCartesianCoordinate ConvertToCartesian(const FrenetCoordinate pos);
 
     int GetLaneFrom(const FrenetCoordinate frenet) const;
+    Distance GetFrenetDFromLane(const int lane) const;
 };
 
 #endif //MAP_H

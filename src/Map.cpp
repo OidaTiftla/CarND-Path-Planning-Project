@@ -102,3 +102,7 @@ GlobalCartesianCoordinate Map::ConvertToCartesian(const FrenetCoordinate pos) {
 int Map::GetLaneFrom(const FrenetCoordinate frenet) const {
     return floor(frenet.d / this->lane_width);
 }
+
+Distance Map::GetFrenetDFromLane(const int lane) const {
+    return lane * this->lane_width + (0.5 * this->lane_width);
+}
