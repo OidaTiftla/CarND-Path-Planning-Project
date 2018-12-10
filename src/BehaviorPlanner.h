@@ -25,7 +25,7 @@ public:
 
     BehaviorPlanner(const Map& map, const Speed max_speed, const Time min_distance_travel_time) : map(map), max_speed(max_speed), min_distance_travel_time(min_distance_travel_time) {}
 
-    Behavior PlanNextBehavior(const VehicleState& car/*, const Prediction& sensor_fusion*/) const;
+    Behavior PlanNextBehavior(const VehicleState& car, const std::vector<VehicleState>& sensor_fusion) const;
 };
 
 #endif //BEHAVIOR_PLANNER_H

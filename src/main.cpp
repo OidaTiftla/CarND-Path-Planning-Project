@@ -127,8 +127,8 @@ int main() {
 
 
                     // TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-                    auto behavior = bPlanner.PlanNextBehavior(car/*, sensor_fusion*/);
-                    TrajectoryPlanner tPlanner(map, car, previous_path, end_path/*, sensor_fusion*/);
+                    auto behavior = bPlanner.PlanNextBehavior(car, sensor_fusion);
+                    TrajectoryPlanner tPlanner(map, car, previous_path, end_path, sensor_fusion);
                     auto trajectory = tPlanner.PlanNextTrajectory(behavior, timestep, time_horizon);
 
 
