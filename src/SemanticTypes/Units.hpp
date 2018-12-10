@@ -25,6 +25,32 @@ struct SiUnit {
     };
 };
 
+// Semantic Units for SI basic units
+using NoUnit = SiUnit<0, 0, 0, 0, 0, 0, 0>;
+using Meter = SiUnit<1, 0, 0, 0, 0, 0, 0>;
+using Kilogram = SiUnit<0, 1, 0, 0, 0, 0, 0>;
+using Second = SiUnit<0, 0, 1, 0, 0, 0, 0>;
+using Ampere = SiUnit<0, 0, 0, 1, 0, 0, 0>;
+using Kelvin = SiUnit<0, 0, 0, 0, 1, 0, 0>;
+using Mole = SiUnit<0, 0, 0, 0, 0, 1, 0>;
+using Candela = SiUnit<0, 0, 0, 0, 0, 0, 1>;
+
+// Semantic Units for SI derived units
+using Hertz = SiUnit<0, 0, -1, 0, 0, 0, 0>; // is 1/second (Hz)
+using Newton = SiUnit<1, 1, -2, 0, 0, 0, 0>; // is kilogram*meters/second^2 (N)
+using Pascal = SiUnit<-1, 1, -2, 0, 0, 0, 0>; // is kilogram/meters/second^2 (Pa)
+using Joule = SiUnit<2, 1, -2, 0, 0, 0, 0>; // is kilogram*meters^2/second^2 (J)
+using Watt = SiUnit<2, 1, -3, 0, 0, 0, 0>; // is kilogram*meters^2/second^3 (W)
+using Coulomb = SiUnit<0, 0, 1, 1, 0, 0, 0>; // is second*ampere (C)
+using Volt = SiUnit<1, 1, -3, -1, 0, 0, 0>; // is kilogram*meters^2/second^3/ampere (V)
+using Farad = SiUnit<-2, -1, 4, 2, 0, 0, 0>; // is second^4*ampere^2/kilogram/meters^2 (F)
+using Ohm = SiUnit<2, 1, -3, -2, 0, 0, 0>; // is kilogram*meters^2/second^3/ampere^2 (Ohm)
+using Siemens = SiUnit<-2, -1, 3, 2, 0, 0, 0>; // is second^3*ampere^2/kilogram/meters^2 (S)
+using Weber = SiUnit<2, 1, -2, -1, 0, 0, 0>; // is kilogram*meter^2/second^2/ampere (Wb)
+using Tesla = SiUnit<0, 1, -2, -1, 0, 0, 0>; // is kilogram/second^2/ampere (T)
+using Henry = SiUnit<2, 1, -2, -2, 0, 0, 0>; // is kilogram*meter^2/second^2/ampere^2 (H)
+using Lux = SiUnit<-2, 0, 0, 0, 0, 0, 1>; // is candela/meter^2 (lx)
+
 // radian, degree
 template <bool Trad, bool Tdeg>
 struct AngleUnit {
@@ -33,6 +59,10 @@ struct AngleUnit {
         deg = Tdeg,
     };
 };
+
+// Semantic Units for angle units
+using Radian = AngleUnit<true, false>;
+using Degree = AngleUnit<false, true>;
 
 template<typename TUnit> // a magnitude with a unit
 struct Value {
@@ -66,37 +96,12 @@ struct Value {
         this->value /= rhs;
         return *this;
     }
+
+    operator double() {
+        static_assert(std::equal(NoUnit, TUnit));
+        return value;
+    }
 };
-
-// Semantic Units for SI basic units
-using NoUnit = SiUnit<0, 0, 0, 0, 0, 0, 0>;
-using Meter = SiUnit<1, 0, 0, 0, 0, 0, 0>;
-using Kilogram = SiUnit<0, 1, 0, 0, 0, 0, 0>;
-using Second = SiUnit<0, 0, 1, 0, 0, 0, 0>;
-using Ampere = SiUnit<0, 0, 0, 1, 0, 0, 0>;
-using Kelvin = SiUnit<0, 0, 0, 0, 1, 0, 0>;
-using Mole = SiUnit<0, 0, 0, 0, 0, 1, 0>;
-using Candela = SiUnit<0, 0, 0, 0, 0, 0, 1>;
-
-// Semantic Units for SI derived units
-using Hertz = SiUnit<0, 0, -1, 0, 0, 0, 0>; // is 1/second (Hz)
-using Newton = SiUnit<1, 1, -2, 0, 0, 0, 0>; // is kilogram*meters/second^2 (N)
-using Pascal = SiUnit<-1, 1, -2, 0, 0, 0, 0>; // is kilogram/meters/second^2 (Pa)
-using Joule = SiUnit<2, 1, -2, 0, 0, 0, 0>; // is kilogram*meters^2/second^2 (J)
-using Watt = SiUnit<2, 1, -3, 0, 0, 0, 0>; // is kilogram*meters^2/second^3 (W)
-using Coulomb = SiUnit<0, 0, 1, 1, 0, 0, 0>; // is second*ampere (C)
-using Volt = SiUnit<1, 1, -3, -1, 0, 0, 0>; // is kilogram*meters^2/second^3/ampere (V)
-using Farad = SiUnit<-2, -1, 4, 2, 0, 0, 0>; // is second^4*ampere^2/kilogram/meters^2 (F)
-using Ohm = SiUnit<2, 1, -3, -2, 0, 0, 0>; // is kilogram*meters^2/second^3/ampere^2 (Ohm)
-using Siemens = SiUnit<-2, -1, 3, 2, 0, 0, 0>; // is second^3*ampere^2/kilogram/meters^2 (S)
-using Weber = SiUnit<2, 1, -2, -1, 0, 0, 0>; // is kilogram*meter^2/second^2/ampere (Wb)
-using Tesla = SiUnit<0, 1, -2, -1, 0, 0, 0>; // is kilogram/second^2/ampere (T)
-using Henry = SiUnit<2, 1, -2, -2, 0, 0, 0>; // is kilogram*meter^2/second^2/ampere^2 (H)
-using Lux = SiUnit<-2, 0, 0, 0, 0, 0, 1>; // is candela/meter^2 (lx)
-
-// Semantic Units for angle units
-using Radian = AngleUnit<true, false>;
-using Degree = AngleUnit<false, true>;
 
 // Semantic Value Types for SI basic units
 using Number = Value<NoUnit>;
