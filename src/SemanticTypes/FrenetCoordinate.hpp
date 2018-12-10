@@ -19,7 +19,7 @@ public:
     FrenetCoordinate(const Distance s, const Distance d) : s(s), d(d) {}
 
     // Distance DistanceTo(const FrenetCoordinate c) const {
-    //     return Distance(sqrt((s - c.s).value*(s - c.s).value + (d - c.d).value*(d - c.d).value));
+    //     return Distance(sqrt(pow<2>(s - c.s) + pow<2>(d - c.d)));
     // }
 };
 
