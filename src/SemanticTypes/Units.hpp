@@ -137,67 +137,67 @@ using AngleDeg = Value<Degree>; // is °
 
 // Operator overloads to properly calculate units for SI units
 template <int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
-inline Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>> operator+(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& lhs, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& rhs) {
+inline constexpr Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>> operator+(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& lhs, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& rhs) {
     return Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>(lhs.value + rhs.value);
 }
 template <int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
-inline Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>> operator-(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& lhs, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& rhs) {
+inline constexpr Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>> operator-(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& lhs, const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& rhs) {
     return Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>(lhs.value - rhs.value);
 }
 template <int Tm_lhs, int Tkg_lhs, int Ts_lhs, int TA_lhs, int TK_lhs, int Tmol_lhs, int Tcd_lhs, int Tm_rhs, int Tkg_rhs, int Ts_rhs, int TA_rhs, int TK_rhs, int Tmol_rhs, int Tcd_rhs>
-inline Value<SiUnit<Tm_lhs + Tm_rhs, Tkg_lhs + Tkg_rhs, Ts_lhs + Ts_rhs, TA_lhs + TA_rhs, TK_lhs + TK_rhs, Tmol_lhs + Tmol_rhs, Tcd_lhs + Tcd_rhs>> operator*(const Value<SiUnit<Tm_lhs, Tkg_lhs, Ts_lhs, TA_lhs, TK_lhs, Tmol_lhs, Tcd_lhs>>& lhs, const Value<SiUnit<Tm_rhs, Tkg_rhs, Ts_rhs, TA_rhs, TK_rhs, Tmol_rhs, Tcd_rhs>>& rhs) {
+inline constexpr Value<SiUnit<Tm_lhs + Tm_rhs, Tkg_lhs + Tkg_rhs, Ts_lhs + Ts_rhs, TA_lhs + TA_rhs, TK_lhs + TK_rhs, Tmol_lhs + Tmol_rhs, Tcd_lhs + Tcd_rhs>> operator*(const Value<SiUnit<Tm_lhs, Tkg_lhs, Ts_lhs, TA_lhs, TK_lhs, Tmol_lhs, Tcd_lhs>>& lhs, const Value<SiUnit<Tm_rhs, Tkg_rhs, Ts_rhs, TA_rhs, TK_rhs, Tmol_rhs, Tcd_rhs>>& rhs) {
     return Value<SiUnit<Tm_lhs + Tm_rhs, Tkg_lhs + Tkg_rhs, Ts_lhs + Ts_rhs, TA_lhs + TA_rhs, TK_lhs + TK_rhs, Tmol_lhs + Tmol_rhs, Tcd_lhs + Tcd_rhs>>(lhs.value * rhs.value);
 }
 template <int Tm_lhs, int Tkg_lhs, int Ts_lhs, int TA_lhs, int TK_lhs, int Tmol_lhs, int Tcd_lhs, int Tm_rhs, int Tkg_rhs, int Ts_rhs, int TA_rhs, int TK_rhs, int Tmol_rhs, int Tcd_rhs>
-inline Value<SiUnit<Tm_lhs - Tm_rhs, Tkg_lhs - Tkg_rhs, Ts_lhs - Ts_rhs, TA_lhs - TA_rhs, TK_lhs - TK_rhs, Tmol_lhs - Tmol_rhs, Tcd_lhs - Tcd_rhs>> operator/(const Value<SiUnit<Tm_lhs, Tkg_lhs, Ts_lhs, TA_lhs, TK_lhs, Tmol_lhs, Tcd_lhs>>& lhs, const Value<SiUnit<Tm_rhs, Tkg_rhs, Ts_rhs, TA_rhs, TK_rhs, Tmol_rhs, Tcd_rhs>>& rhs) {
+inline constexpr Value<SiUnit<Tm_lhs - Tm_rhs, Tkg_lhs - Tkg_rhs, Ts_lhs - Ts_rhs, TA_lhs - TA_rhs, TK_lhs - TK_rhs, Tmol_lhs - Tmol_rhs, Tcd_lhs - Tcd_rhs>> operator/(const Value<SiUnit<Tm_lhs, Tkg_lhs, Ts_lhs, TA_lhs, TK_lhs, Tmol_lhs, Tcd_lhs>>& lhs, const Value<SiUnit<Tm_rhs, Tkg_rhs, Ts_rhs, TA_rhs, TK_rhs, Tmol_rhs, Tcd_rhs>>& rhs) {
     return Value<SiUnit<Tm_lhs - Tm_rhs, Tkg_lhs - Tkg_rhs, Ts_lhs - Ts_rhs, TA_lhs - TA_rhs, TK_lhs - TK_rhs, Tmol_lhs - Tmol_rhs, Tcd_lhs - Tcd_rhs>>(lhs.value / rhs.value);
 }
 
 // Operator overloads to properly calculate units for angle units
 template <typename TUnit>
-inline Value<TUnit> operator+(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline constexpr Value<TUnit> operator+(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return Value<TUnit>(lhs.value + rhs.value);
 }
 template <typename TUnit>
-inline Value<TUnit> operator-(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline constexpr Value<TUnit> operator-(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return Value<TUnit>(lhs.value - rhs.value);
 }
 template <typename TUnit>
-inline Value<TUnit> operator*(const Value<TUnit>& lhs, const double rhs) {
+inline constexpr Value<TUnit> operator*(const Value<TUnit>& lhs, const double rhs) {
     return Value<TUnit>(lhs.value * rhs);
 }
 template <typename TUnit>
-inline Value<TUnit> operator*(const double lhs, const Value<TUnit>& rhs) {
+inline constexpr Value<TUnit> operator*(const double lhs, const Value<TUnit>& rhs) {
     return Value<TUnit>(lhs * rhs.value);
 }
 template <typename TUnit>
-inline Value<TUnit> operator/(const Value<TUnit>& lhs, const double rhs) {
+inline constexpr Value<TUnit> operator/(const Value<TUnit>& lhs, const double rhs) {
     return Value<TUnit>(lhs.value / rhs);
 }
 
 // Operator overloads to properly compare values
 template <typename TUnit>
-inline bool operator<(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline constexpr bool operator<(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return lhs.value < rhs.value;
 }
 template <typename TUnit>
-inline bool operator<=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline constexpr bool operator<=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return lhs.value <= rhs.value;
 }
 template <typename TUnit>
-inline bool operator>(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline constexpr bool operator>(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return lhs.value > rhs.value;
 }
 template <typename TUnit>
-inline bool operator>=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline constexpr bool operator>=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return lhs.value >= rhs.value;
 }
 template <typename TUnit>
-inline bool operator==(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline constexpr bool operator==(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return lhs.value == rhs.value;
 }
 template <typename TUnit>
-inline bool operator!=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
+inline constexpr bool operator!=(const Value<TUnit>& lhs, const Value<TUnit>& rhs) {
     return lhs.value != rhs.value;
 }
 
