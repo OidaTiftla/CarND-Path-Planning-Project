@@ -566,15 +566,15 @@ inline constexpr Speed operator"" _mph(unsigned long long ull) {
 
 // Define some helper functions
 template <typename TUnit>
-inline Value<TUnit> abs(const Value<TUnit>& v) {
+inline constexpr Value<TUnit> abs(const Value<TUnit>& v) {
     return Value<TUnit>(abs(v.value));
 }
 
-inline AngleRad ToRadian(const AngleDeg& deg) {
+inline constexpr AngleRad ToRadian(const AngleDeg& deg) {
     return AngleRad(deg.value * M_PI / 180);
 }
 
-inline AngleDeg ToDegree(const AngleRad& rad) {
+inline constexpr AngleDeg ToDegree(const AngleRad& rad) {
     return AngleDeg(rad.value * 180 / M_PI);
 }
 
@@ -598,27 +598,27 @@ inline AngleRad NormalizeAroundZero(AngleRad v) {
     return v;
 }
 
-inline double sin(const AngleRad& rad) {
+inline constexpr double sin(const AngleRad& rad) {
     return sin(rad.value);
 }
 
-inline double cos(const AngleRad& rad) {
+inline constexpr double cos(const AngleRad& rad) {
     return cos(rad.value);
 }
 
-inline double tan(const AngleRad& rad) {
+inline constexpr double tan(const AngleRad& rad) {
     return tan(rad.value);
 }
 
-inline double sin(const AngleDeg& deg) {
+inline constexpr double sin(const AngleDeg& deg) {
     return sin(ToRadian(deg));
 }
 
-inline double cos(const AngleDeg& deg) {
+inline constexpr double cos(const AngleDeg& deg) {
     return cos(ToRadian(deg));
 }
 
-inline double tan(const AngleDeg& deg) {
+inline constexpr double tan(const AngleDeg& deg) {
     return tan(ToRadian(deg));
 }
 
