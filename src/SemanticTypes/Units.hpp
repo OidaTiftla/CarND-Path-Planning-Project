@@ -97,8 +97,8 @@ struct Value {
         return *this;
     }
 
-    operator double() {
-        static_assert(std::is_same<NoUnit, TUnit>::value);
+    template<typename TUnit_ = TUnit>
+    operator typename std::enable_if<std::is_same<TUnit_, NoUnit>::value, double>::type() {
         return value;
     }
 };
