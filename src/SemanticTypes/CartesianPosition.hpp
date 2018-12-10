@@ -6,7 +6,7 @@
 #define CARTESIAN_POSITION_HPP
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include "Units.hpp"
 #include "CartesianCoordinate.hpp"
 

@@ -6,7 +6,7 @@
 #define WAY_POINT_HPP
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include "SemanticTypes.h"
 
 

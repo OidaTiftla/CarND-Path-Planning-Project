@@ -6,7 +6,7 @@
 #define VEHICLE_HPP
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include "SemanticTypes.h"
 
 

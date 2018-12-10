@@ -6,7 +6,7 @@
 #define CARTESIAN_COORDINATE_HPP
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include "Units.hpp"
 
 enum class CoordinateReference {
