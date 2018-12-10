@@ -556,6 +556,14 @@ inline constexpr AngleDeg operator"" _deg(unsigned long long ull) {
     return AngleDeg(static_cast<double>(ull));
 }
 
+// Define literals for imperial units
+inline constexpr Speed operator"" _mph(long double ld) {
+    return static_cast<double>(ld) * (1609.344_m / 3600_s);
+}
+inline constexpr Speed operator"" _mph(unsigned long long ull) {
+    return static_cast<double>(ull) * (1609.344_m / 3600_s);
+}
+
 // Define some helper functions
 template <typename TUnit>
 inline Value<TUnit> abs(const Value<TUnit>& v) {
