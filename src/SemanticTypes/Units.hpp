@@ -622,4 +622,30 @@ inline constexpr double tan(const AngleDeg& deg) {
     return tan(ToRadian(deg));
 }
 
+template <typename TUnit>
+inline constexpr AngleRad atan2(const Value<TUnit>& y, const Value<TUnit>& x) {
+    return AngleRad(atan2(y.value, x.value));
+}
+
+template <typename TUnit>
+inline constexpr AngleRad atan(const Value<TUnit>& y, const Value<TUnit>& x) {
+    return AngleRad(atan(y.value, x.value));
+}
+
+template <int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
+inline constexpr
+typename std::enable_if<Tm % 2 == 0 && Tkg % 2 == 0 && Ts % 2 == 0 && TA % 2 == 0 && TK % 2 == 0 && Tmol % 2 == 0 && Tcd % 2 == 0,
+    Value<SiUnit<Tm / 2, Tkg / 2, Ts / 2, TA / 2, TK / 2, Tmol / 2, Tcd / 2>>>::type sqrt(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& v) {
+    return Value<SiUnit<Tm / 2, Tkg / 2, Ts / 2, TA / 2, TK / 2, Tmol / 2, Tcd / 2>>(sqrt(v.value));
+}
+
+template <int exp, int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
+inline Value<SiUnit<Tm * exp, Tkg * exp, Ts * exp, TA * exp, TK * exp, Tmol * exp, Tcd * exp>> pow(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& v) {
+    double value = v.value;
+    for (int i = 1; i < exp; ++i) {
+        value *= value;
+    }
+    return Value<SiUnit<Tm * exp, Tkg * exp, Ts * exp, TA * exp, TK * exp, Tmol * exp, Tcd * exp>>(value);
+}
+
 #endif //UNITS_HPP
