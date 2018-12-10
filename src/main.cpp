@@ -11,7 +11,7 @@
 #include "json.hpp"
 #include "SemanticTypes.h"
 #include "Map.h"
-#include "Vehicle.hpp"
+#include "VehicleState.hpp"
 #include "BehaviorPlanner.h"
 #include "TrajectoryPlanner.h"
 
@@ -99,7 +99,7 @@ int main() {
                     GlobalCartesianPosition car_cartesian(j[1]["x"] * 1_m, j[1]["y"] * 1_m, j[1]["yaw"] * 1_rad);
                     FrenetCoordinate car_frenet(j[1]["s"] * 1_m, j[1]["d"] * 1_m);
                     auto car_speed = j[1]["speed"] * 1_m / 1_s;
-                    Vehicle car(car_cartesian, car_frenet, car_speed);
+                    VehicleState car(-1, car_cartesian, car_frenet, car_speed);
 
                     // Previous path data given to the Planner
                     vector<GlobalCartesianCoordinate> previous_path;

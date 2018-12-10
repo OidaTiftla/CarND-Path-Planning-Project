@@ -5,7 +5,7 @@
 #include "BehaviorPlanner.h"
 
 
-Behavior BehaviorPlanner::PlanNextBehavior(const Vehicle& car/*, const Prediction& sensor_fusion*/) const {
+Behavior BehaviorPlanner::PlanNextBehavior(const VehicleState& car/*, const Prediction& sensor_fusion*/) const {
     Behavior behavior;
     behavior.lane = this->map.GetLaneFrom(car.frenet);
     behavior.max_speed = this->max_speed;
