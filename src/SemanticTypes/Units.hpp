@@ -98,7 +98,7 @@ struct Value {
     }
 
     operator double() {
-        static_assert(std::equal(NoUnit, TUnit));
+        static_assert(std::is_same<NoUnit, TUnit>::value);
         return value;
     }
 };
