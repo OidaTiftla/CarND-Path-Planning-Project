@@ -7,5 +7,9 @@
 
 Behavior BehaviorPlanner::PlanNextBehavior(const Vehicle& car/*, const Prediction& sensor_fusion*/) const {
     Behavior behavior;
+    behavior.lane = this->map.GetLaneFrom(car.frenet);
+    behavior.max_speed = this->max_speed;
+    behavior.min_distance = this->min_distance_travel_time * this->max_speed;
+    behavior.vehicle_id = -1;
     return behavior;
 }

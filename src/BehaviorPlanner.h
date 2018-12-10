@@ -20,8 +20,10 @@ struct Behavior {
 class BehaviorPlanner {
 public:
     Map map;
+    Speed max_speed;
+    Time min_distance_travel_time;
 
-    BehaviorPlanner(const Map& map) : map(map) {}
+    BehaviorPlanner(const Map& map, const Speed max_speed, const Time min_distance_travel_time) : map(map), max_speed(max_speed), min_distance_travel_time(min_distance_travel_time) {}
 
     Behavior PlanNextBehavior(const Vehicle& car/*, const Prediction& sensor_fusion*/) const;
 };

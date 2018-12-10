@@ -73,10 +73,10 @@ int main() {
                 LocalCartesianCoordinate(Distance(d_x), Distance(d_y))));
     }
 
-    Map map(map_waypoints, max_s);
-    BehaviorPlanner bPlanner(map);
+    Map map(map_waypoints, max_s, lane_width);
+    BehaviorPlanner bPlanner(map, max_speed, min_distance_travel_time);
 
-    h.onMessage([&map, &bPlanner](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+    h.onMessage([&map, &bPlanner, &timestep, &time_horizon](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
         uWS::OpCode opCode) {
         // "42" at the start of the message means there's a websocket message event.
         // The 4 signifies a websocket message
@@ -113,31 +113,17 @@ int main() {
                     auto sensor_fusion = j[1]["sensor_fusion"];
 
 
+                    // TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
                     auto behavior = bPlanner.PlanNextBehavior(car/*, sensor_fusion*/);
                     TrajectoryPlanner tPlanner(map, car, previous_path, end_path/*, sensor_fusion*/);
-                    auto trajectory = tPlanner.PlanNextTrajectory(behavior);
-
-                    // TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-                    vector<GlobalCartesianCoordinate> next_path = trajectory;
-                    GlobalCartesianCoordinate last = car_cartesian.coord;
-                    for (int i = 0; i < 50; ++i) {
-                        if (i < previous_path.size()) {
-                            last = previous_path[i];
-                            next_path.push_back(last);
-                        } else {
-                            auto speed = 5_m / 1_s;
-                            auto delta_t = 0.02_s;
-                            last = last + LocalCartesianCoordinate(speed * delta_t, 0_m);
-                            next_path.push_back(last);
-                        }
-                    }
+                    auto trajectory = tPlanner.PlanNextTrajectory(behavior, timestep, time_horizon);
 
 
                     json msgJson;
 
                     vector<double> next_x_vals;
                     vector<double> next_y_vals;
-                    for (auto pos : next_path) {
+                    for (auto pos : trajectory) {
                         next_x_vals.push_back(pos.x.value);
                         next_y_vals.push_back(pos.y.value);
                         // cout << pos << endl;
