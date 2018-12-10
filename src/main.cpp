@@ -45,6 +45,11 @@ int main() {
     string map_file_ = "../data/highway_map.csv";
     // The max s value before wrapping around the track back to 0
     auto max_s = 6945.554_m;
+    auto lane_width = 4_m;
+    auto max_speed = 50_mph;
+    auto min_distance_travel_time = 0.5_s;
+    auto timestep = 0.02_s;
+    auto time_horizon = 1.0_s;
 
     ifstream in_map_(map_file_.c_str(), ifstream::in);
 
