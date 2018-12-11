@@ -75,7 +75,7 @@ FrenetCoordinate Map::ConvertToFrenet(const GlobalCartesianPosition pos) const {
 }
 
 // Transform from Frenet s,d coordinates to Cartesian x,y
-GlobalCartesianCoordinate Map::ConvertToCartesian(const FrenetCoordinate pos) {
+GlobalCartesianCoordinate Map::ConvertToCartesian(const FrenetCoordinate pos) const {
     int prev_wp = -1;
 
     while (pos.s > this->wayPoints[prev_wp + 1].frenet.s && (prev_wp < (int)(this->wayPoints.size() - 1))) {
