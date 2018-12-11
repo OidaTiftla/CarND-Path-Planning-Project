@@ -9,5 +9,6 @@
 #include "SemanticTypes/CartesianCoordinate.hpp"
 #include "SemanticTypes/FrenetCoordinate.hpp"
 #include "SemanticTypes/CartesianPosition.hpp"
+#include "SemanticTypes/CoordinateSystemReference.hpp"
 
 #endif //SEMANTICTYPES_H
