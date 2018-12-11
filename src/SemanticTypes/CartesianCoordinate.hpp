@@ -28,7 +28,7 @@ public:
     }
 
     AngleRad AngleTo(const CartesianCoordinate<TReference> p) const {
-        return NormalizeAroundZero(AngleRad(atan2(p.y - y, p.x - x)));
+        return NormalizeAroundZero(atan2(p.y - y, p.x - x));
     }
 };
 
