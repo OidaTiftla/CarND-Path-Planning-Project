@@ -22,8 +22,10 @@ public:
     Map map;
     Speed max_speed;
     Time min_distance_travel_time;
+    Acceleration max_acceleration;
+    Jerk max_jerk;
 
-    BehaviorPlanner(const Map& map, const Speed max_speed, const Time min_distance_travel_time) : map(map), max_speed(max_speed), min_distance_travel_time(min_distance_travel_time) {}
+    BehaviorPlanner(const Map& map, const Speed max_speed, const Time min_distance_travel_time, const Acceleration max_acceleration, const Jerk max_jerk) : map(map), max_speed(max_speed), min_distance_travel_time(min_distance_travel_time), max_acceleration(max_acceleration), max_jerk(max_jerk) {}
 
     Behavior PlanNextBehavior(const VehicleState& car, const std::vector<VehicleState>& sensor_fusion) const;
 };

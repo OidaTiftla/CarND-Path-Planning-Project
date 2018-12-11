@@ -9,6 +9,7 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
+#include "log.h"
 #include "SemanticTypes.h"
 #include "Map.h"
 #include "VehicleState.hpp"
@@ -48,8 +49,23 @@ int main() {
     auto lane_width = 4_m;
     auto max_speed = 50_mph;
     auto min_distance_travel_time = 0.5_s;
+    auto max_acceleration = 10_m / 1_s / 1_s;
+    auto max_jerk = 10_m / 1_s / 1_s / 1_s;
     auto timestep = 0.02_s;
-    auto time_horizon = 1.0_s;
+    auto time_horizon = 2.0_s;
+
+    // output config
+    log(0) << endl;
+    log(0) << "Configuration settings:" << endl;
+    log(0) << "-----------------------" << endl;
+    log(0) << "max_s: " << max_s << endl;
+    log(0) << "lane_width: " << lane_width << endl;
+    log(0) << "max_speed: " << max_speed << endl;
+    log(0) << "min_distance_travel_time: " << min_distance_travel_time << endl;
+    log(0) << "max_acceleration: " << max_acceleration << endl;
+    log(0) << "max_jerk: " << max_jerk << endl;
+    log(0) << "timestep: " << timestep << endl;
+    log(0) << "time_horizon: " << time_horizon << endl;
 
     ifstream in_map_(map_file_.c_str(), ifstream::in);
 
@@ -74,9 +90,9 @@ int main() {
     }
 
     Map map(map_waypoints, max_s, lane_width);
-    BehaviorPlanner bPlanner(map, max_speed, min_distance_travel_time);
+    BehaviorPlanner bPlanner(map, max_speed, min_distance_travel_time, max_acceleration, max_jerk);
 
-    h.onMessage([&map, &bPlanner, &timestep, &time_horizon](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+    h.onMessage([&map, &bPlanner, &timestep, &time_horizon, &max_acceleration, &max_jerk](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
         uWS::OpCode opCode) {
         // "42" at the start of the message means there's a websocket message event.
         // The 4 signifies a websocket message
@@ -127,8 +143,31 @@ int main() {
 
 
                     // TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
+
+                    // output car
+                    log(1) << endl;
+                    log(1) << "Car:" << endl;
+                    log(1) << "----" << endl;
+                    log(1) << "s: " << car.frenet.s << endl;
+                    log(1) << "d: " << car.frenet.d << endl;
+                    log(1) << "speed: " << car.speed << endl;
+                    log(1) << "x: " << car.cartesian.coord.x << endl;
+                    log(1) << "y: " << car.cartesian.coord.y << endl;
+                    log(1) << "theta: " << ToDegree(car.cartesian.theta) << endl;
+                    log(1) << "speed x: " << car.speed_x << endl;
+                    log(1) << "speed y: " << car.speed_y << endl;
+
                     auto behavior = bPlanner.PlanNextBehavior(car, sensor_fusion);
-                    TrajectoryPlanner tPlanner(map, car, previous_path, end_path, sensor_fusion);
+                    // output behavior
+                    log(1) << endl;
+                    log(1) << "Behavior:" << endl;
+                    log(1) << "---------" << endl;
+                    log(1) << "lane: " << behavior.lane << endl;
+                    log(1) << "max_speed: " << behavior.max_speed << endl;
+                    log(1) << "min_distance_travel_time: " << behavior.min_distance_travel_time << endl;
+                    log(1) << "vehicle_id: " << behavior.vehicle_id << endl;
+
+                    TrajectoryPlanner tPlanner(map, max_acceleration, max_jerk, car, previous_path, end_path, sensor_fusion);
                     auto trajectory = tPlanner.PlanNextTrajectory(behavior, timestep, time_horizon);
 
 
