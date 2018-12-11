@@ -96,7 +96,7 @@ int main() {
                     // j[1] is the data JSON object
 
                     // Main car's localization Data
-                    GlobalCartesianPosition car_cartesian(j[1]["x"] * 1_m, j[1]["y"] * 1_m, j[1]["yaw"] * 1_rad);
+                    GlobalCartesianPosition car_cartesian(j[1]["x"] * 1_m, j[1]["y"] * 1_m, ToRadian(j[1]["yaw"] * 1_deg));
                     FrenetCoordinate car_frenet(j[1]["s"] * 1_m, j[1]["d"] * 1_m);
                     auto car_speed = j[1]["speed"] * 1_m / 1_s;
                     VehicleState car(-1, car_cartesian, car_frenet, car_speed);
