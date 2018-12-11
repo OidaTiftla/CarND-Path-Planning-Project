@@ -10,6 +10,7 @@
 #include <vector>
 #include "WayPoint.hpp"
 #include "SemanticTypes.h"
+#include "VehicleState.hpp"
 
 
 class Map {
@@ -32,6 +33,9 @@ public:
 
     int GetLaneFrom(const FrenetCoordinate frenet) const;
     Distance GetFrenetDFromLane(const int lane) const;
+    Distance GetFrenetSDistanceFromTo(const Distance from, const Distance to) const;
+
+    VehicleState PredictIntoFuture(const VehicleState& vehicle, const Time time_horizon) const;
 };
 
 #endif //MAP_H

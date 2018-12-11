@@ -106,3 +106,23 @@ int Map::GetLaneFrom(const FrenetCoordinate frenet) const {
 Distance Map::GetFrenetDFromLane(const int lane) const {
     return lane * this->lane_width + (0.5 * this->lane_width);
 }
+
+Distance Map::GetFrenetSDistanceFromTo(const Distance from, const Distance to) const {
+    auto dist = to - from;
+    if (dist <= 0_m) {
+        dist += this->max_s;
+    }
+    return dist;
+}
+
+VehicleState Map::PredictIntoFuture(const VehicleState& vehicle, const Time time_horizon) const {
+    GlobalCartesianPosition future_pos(
+        vehicle.cartesian.coord.x + vehicle.speed_x * time_horizon,
+        vehicle.cartesian.coord.y + vehicle.speed_y * time_horizon,
+        vehicle.cartesian.theta);
+    return VehicleState(
+        vehicle.id,
+        future_pos,
+        this->ConvertToFrenet(future_pos),
+        vehicle.speed);
+}

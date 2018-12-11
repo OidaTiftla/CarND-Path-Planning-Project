@@ -6,6 +6,7 @@
 #define TRAJECTORY_PLANNER_H
 
 #include <vector>
+#include <algorithm>
 #include "SemanticTypes.h"
 #include "Map.h"
 #include "VehicleState.hpp"

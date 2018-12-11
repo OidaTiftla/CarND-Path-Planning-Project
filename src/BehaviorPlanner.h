@@ -13,7 +13,7 @@
 struct Behavior {
     int vehicle_id = -1;
     Speed max_speed = 0_m / 1_s;
-    Distance min_distance = 0_m;
+    Time min_distance_travel_time = 0_s;
     int lane = -1;
 };
 
