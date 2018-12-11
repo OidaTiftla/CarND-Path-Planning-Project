@@ -116,6 +116,7 @@ using LuminousIntensity = Value<Candela>;
 // Semantic Value Types for SI derived units
 using Speed = Value<SiUnit<1, 0, -1, 0, 0, 0, 0>>; // is meters/second
 using Acceleration = Value<SiUnit<1, 0, -2, 0, 0, 0, 0>>; // is meters/second^2
+using Jerk = Value<SiUnit<1, 0, -3, 0, 0, 0, 0>>; // is meters/second^3
 using Frequency = Value<Hertz>; // is Hz
 using Force = Value<Newton>; // is N
 using Pressure = Value<Pascal>; // is Pa
