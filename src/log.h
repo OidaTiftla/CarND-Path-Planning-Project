@@ -9,7 +9,7 @@
 #include <sstream>
 
 
-#define LOG_LEVEL 0
+#define LOG_LEVEL 1
 
 static std::stringstream nullstream;
 

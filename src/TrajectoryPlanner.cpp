@@ -6,13 +6,21 @@
 
 
 std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(const Behavior& behavior, const Time timestep, const Time time_horizon) const {
+    log(1) << std::endl;
+    log(1) << "Target state:" << std::endl;
+    log(1) << "-------------" << std::endl;
+    log(1) << "timestep: " << timestep << std::endl;
+    log(1) << "time horizon: " << time_horizon << std::endl;
+
     FrenetCoordinate target_frenet(
         this->car.frenet.s + behavior.max_speed * time_horizon,
         this->map.GetFrenetDFromLane(behavior.lane));
     auto acceleration = (behavior.max_speed - this->car.speed) / time_horizon;
     if (acceleration > this->max_acceleration) {
+        log(1) << "exceed max acceleration" << std::endl;
         acceleration = this->max_acceleration;
     } else if (acceleration < -this->max_acceleration) {
+        log(1) << "exceed max deceleration" << std::endl;
         acceleration = -this->max_acceleration;
     }
     auto target_speed = this->car.speed + acceleration * time_horizon;
@@ -26,6 +34,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
         auto rel_s_target = this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, target_frenet.s);
         if (rel_s_target_vehicle_prediction - min_distance_with_target_speed < rel_s_target) {
             // to fast -> drive with speed of target vehicle
+            log(1) << "too fast for vehicle in front of us" << std::endl;
             target_speed = target_vehicle_prediction.speed;
             auto min_distance_with_target_vehicle_speed = behavior.min_distance_travel_time * target_vehicle_prediction.speed;
             target_frenet.s = target_vehicle_prediction.frenet.s - min_distance_with_target_vehicle_speed;
@@ -38,11 +47,6 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
     VehicleState target_state(-1, GlobalCartesianPosition(target_cartesian.x, target_cartesian.y, target_theta), target_frenet, target_speed);
 
     // output target state
-    log(1) << std::endl;
-    log(1) << "Target state:" << std::endl;
-    log(1) << "-------------" << std::endl;
-    log(1) << "timestep: " << timestep << std::endl;
-    log(1) << "time horizon: " << time_horizon << std::endl;
     log(1) << "s: " << target_state.frenet.s << std::endl;
     log(1) << "d: " << target_state.frenet.d << std::endl;
     log(1) << "speed: " << target_state.speed << std::endl;

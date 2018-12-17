@@ -5,6 +5,7 @@
 #ifndef BEHAVIOR_PLANNER_H
 #define BEHAVIOR_PLANNER_H
 
+#include "log.h"
 #include "SemanticTypes.h"
 #include "Map.h"
 #include "VehicleState.hpp"
