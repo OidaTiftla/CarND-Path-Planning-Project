@@ -114,7 +114,7 @@ int main() {
                     // Main car's localization Data
                     GlobalCartesianPosition car_cartesian(j[1]["x"] * 1_m, j[1]["y"] * 1_m, ToRadian(j[1]["yaw"] * 1_deg));
                     FrenetCoordinate car_frenet(j[1]["s"] * 1_m, j[1]["d"] * 1_m);
-                    auto car_speed = j[1]["speed"] * 1_m / 1_s;
+                    auto car_speed = j[1]["speed"] * 1_mph;
                     VehicleState car(-1, car_cartesian, car_frenet, car_speed);
 
                     // Previous path data given to the Planner
@@ -131,13 +131,13 @@ int main() {
                         int id = vehicle_fusion[0];
                         auto x = vehicle_fusion[0] * 1_m;
                         auto y = vehicle_fusion[0] * 1_m;
-                        auto vx = vehicle_fusion[0] * 1_m / 1_s;
-                        auto vy = vehicle_fusion[0] * 1_m / 1_s;
+                        auto vx = vehicle_fusion[0] * 1_mph;
+                        auto vy = vehicle_fusion[0] * 1_mph;
                         auto s = vehicle_fusion[0] * 1_m;
                         auto d = vehicle_fusion[0] * 1_m;
                         GlobalCartesianCoordinate cartesian(x, y);
                         FrenetCoordinate frenet(s, d);
-                        auto speed = j[1]["speed"] * 1_m / 1_s;
+                        auto speed = j[1]["speed"] * 1_mph;
                         sensor_fusion.push_back(VehicleState(id, cartesian, frenet, vx, vy));
                     }
 
