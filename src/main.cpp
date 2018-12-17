@@ -129,15 +129,14 @@ int main() {
                     vector<VehicleState> sensor_fusion;
                     for (auto vehicle_fusion : j[1]["sensor_fusion"]) {
                         int id = vehicle_fusion[0];
-                        auto x = vehicle_fusion[0] * 1_m;
-                        auto y = vehicle_fusion[0] * 1_m;
-                        auto vx = vehicle_fusion[0] * 1_mph;
-                        auto vy = vehicle_fusion[0] * 1_mph;
-                        auto s = vehicle_fusion[0] * 1_m;
-                        auto d = vehicle_fusion[0] * 1_m;
+                        auto x = vehicle_fusion[1] * 1_m;
+                        auto y = vehicle_fusion[2] * 1_m;
+                        auto vx = vehicle_fusion[3] * 1_mph;
+                        auto vy = vehicle_fusion[4] * 1_mph;
+                        auto s = vehicle_fusion[5] * 1_m;
+                        auto d = vehicle_fusion[6] * 1_m;
                         GlobalCartesianCoordinate cartesian(x, y);
                         FrenetCoordinate frenet(s, d);
-                        auto speed = j[1]["speed"] * 1_mph;
                         sensor_fusion.push_back(VehicleState(id, cartesian, frenet, vx, vy));
                     }
 
