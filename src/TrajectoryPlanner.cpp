@@ -15,7 +15,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
     } else if (acceleration < -this->max_acceleration) {
         acceleration = -this->max_acceleration;
     }
-    auto target_speed = acceleration * time_horizon;
+    auto target_speed = this->car.speed + acceleration * time_horizon;
 
     auto target_vehicle_iter = std::find_if(this->sensor_fusion.begin(), this->sensor_fusion.end(), [&behavior] (const VehicleState& vehicle) { return behavior.vehicle_id == vehicle.id; } );
     if (target_vehicle_iter != this->sensor_fusion.end()) {
