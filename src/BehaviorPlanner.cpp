@@ -18,7 +18,7 @@ Behavior BehaviorPlanner::PlanNextBehavior(const VehicleState& car, const std::v
     // find nearest vehicle in same lane in front of us
     auto nearest = this->map.max_s;
     for (auto vehicle : sensor_fusion) {
-        log(1) << "distance to " << vehicle.id << " (" << vehicle.cartesian << "): " << vehicle.cartesian.DistanceTo(car.cartesian) << std::endl;
+        log(1) << "distance to " << vehicle.id << " (" << vehicle.cartesian << ", " << vehicle.speed << "): " << vehicle.cartesian.DistanceTo(car.cartesian) << std::endl;
         if (this->map.GetLaneFrom(vehicle.frenet) == behavior.lane) {
             auto dist = this->map.GetFrenetSDistanceFromTo(car.frenet.s, vehicle.frenet.s);
             if (dist < nearest) {
