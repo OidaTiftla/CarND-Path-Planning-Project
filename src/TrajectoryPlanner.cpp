@@ -12,6 +12,8 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
     auto acceleration = (behavior.max_speed - this->car.speed) / time_horizon;
     if (acceleration > this->max_acceleration) {
         acceleration = this->max_acceleration;
+    } else if (acceleration < -this->max_acceleration) {
+        acceleration = -this->max_acceleration;
     }
     auto target_speed = acceleration * time_horizon;
 
