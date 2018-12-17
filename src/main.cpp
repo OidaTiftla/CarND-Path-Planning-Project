@@ -163,9 +163,9 @@ int main() {
                     log(1) << "Behavior:" << endl;
                     log(1) << "---------" << endl;
                     log(1) << "lane: " << behavior.lane << endl;
-                    log(1) << "max_speed: " << behavior.max_speed << endl;
-                    log(1) << "min_distance_travel_time: " << behavior.min_distance_travel_time << endl;
-                    log(1) << "vehicle_id: " << behavior.vehicle_id << endl;
+                    log(1) << "max speed: " << behavior.max_speed << endl;
+                    log(1) << "min distance travel time: " << behavior.min_distance_travel_time << endl;
+                    log(1) << "vehicle id: " << behavior.vehicle_id << endl;
 
                     TrajectoryPlanner tPlanner(map, max_acceleration, max_jerk, car, previous_path, end_path, sensor_fusion);
                     auto trajectory = tPlanner.PlanNextTrajectory(behavior, timestep, time_horizon);

@@ -40,7 +40,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
     log(1) << "Target state:" << std::endl;
     log(1) << "-------------" << std::endl;
     log(1) << "timestep: " << timestep << std::endl;
-    log(1) << "time_horizon: " << time_horizon << std::endl;
+    log(1) << "time horizon: " << time_horizon << std::endl;
     log(1) << "s: " << target_state.frenet.s << std::endl;
     log(1) << "d: " << target_state.frenet.d << std::endl;
     log(1) << "speed: " << target_state.speed << std::endl;
