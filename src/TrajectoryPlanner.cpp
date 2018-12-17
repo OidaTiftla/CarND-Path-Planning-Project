@@ -88,7 +88,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
         if (this->car.speed <= 0.1_m / 1_s) {
             // current car has no speed
             // set new start speed
-            auto speed = 0.1_m / 1_s;
+            auto speed = this->max_acceleration * timestep;
             speed_x = speed * cos(this->car.cartesian.theta);
             speed_y = speed * sin(this->car.cartesian.theta);
             log(2) << "set speed to " << speed << " (" << speed_x << ", " << speed_y << ")" << std::endl;
