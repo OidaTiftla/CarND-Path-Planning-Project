@@ -131,8 +131,8 @@ int main() {
                         int id = vehicle_fusion[0];
                         auto x = vehicle_fusion[1] * 1_m;
                         auto y = vehicle_fusion[2] * 1_m;
-                        auto vx = vehicle_fusion[3] * 1_mph;
-                        auto vy = vehicle_fusion[4] * 1_mph;
+                        auto vx = vehicle_fusion[3] * 1_m / 1_s;
+                        auto vy = vehicle_fusion[4] * 1_m / 1_s;
                         auto s = vehicle_fusion[5] * 1_m;
                         auto d = vehicle_fusion[6] * 1_m;
                         GlobalCartesianCoordinate cartesian(x, y);
