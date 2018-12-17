@@ -24,7 +24,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
         auto min_distance_with_target_speed = behavior.min_distance_travel_time * target_speed;
         auto rel_s_target_vehicle_prediction = this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, target_vehicle_prediction.frenet.s);
         auto rel_s_target = this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, target_frenet.s);
-        if (rel_s_target_vehicle_prediction < rel_s_target) {
+        if (rel_s_target_vehicle_prediction - min_distance_with_target_speed < rel_s_target) {
             // to fast -> drive with speed of target vehicle
             target_speed = target_vehicle_prediction.speed;
             auto min_distance_with_target_vehicle_speed = behavior.min_distance_travel_time * target_vehicle_prediction.speed;
