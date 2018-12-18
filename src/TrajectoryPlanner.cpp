@@ -107,6 +107,15 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
     }
 
     // define end points
+    FrenetCoordinate frenet_half_target(
+        (car.frenet.s + target_state.frenet.s) / 2,
+        (car.frenet.d + target_state.frenet.d) / 2);
+    auto cartesian_half_target = this->map.ConvertToCartesian(frenet_half_target);
+    auto local_half_target = local_system.ToLocal(cartesian_half_target);
+    X.push_back(local_half_target.x.value);
+    Y.push_back(local_half_target.y.value);
+    log(2) << "add local waypoint " << local_half_target << std::endl;
+
     GlobalCartesianCoordinate cartesian_0_2_time_horizon_before_target(
         target_state.cartesian.coord.x - (time_horizon * 0.2) * target_state.speed_x,
         target_state.cartesian.coord.y - (time_horizon * 0.2) * target_state.speed_y);
