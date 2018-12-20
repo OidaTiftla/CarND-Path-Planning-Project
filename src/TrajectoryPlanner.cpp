@@ -12,7 +12,28 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
     log(1) << "timestep: " << timestep << std::endl;
     log(1) << "time horizon: " << time_horizon << std::endl;
 
-    auto acceleration = (behavior.max_speed - this->car.speed) / time_horizon;
+    // reuse some previous points
+    int count_previous = ceil(time_horizon * 0.2 / timestep);
+    count_previous = std::min(count_previous, (int)this->previous_path.size());
+    // are there enough previous points?
+    if (count_previous < 2) {
+        count_previous = 0;
+    }
+
+    // set start state
+    auto start_state = this->car;
+    auto remaining_time_horizon = time_horizon;
+    if (count_previous >= 2) {
+        auto last = this->previous_path[count_previous - 1];
+        auto last2 = this->previous_path[count_previous - 2];
+        GlobalCartesianPosition pos(last.x, last.y, last2.AngleTo(last));
+        auto frenet = this->map.ConvertToFrenet(pos);
+        auto speed = last2.DistanceTo(last) / timestep;
+        start_state = VehicleState(-1, pos, frenet, speed);
+        remaining_time_horizon = time_horizon - count_previous * timestep;
+    }
+
+    auto acceleration = (behavior.max_speed - start_state.speed) / remaining_time_horizon;
     if (acceleration > this->max_acceleration) {
         log(1) << "exceed max acceleration" << std::endl;
         acceleration = this->max_acceleration;
@@ -20,9 +41,9 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
         log(1) << "exceed max deceleration" << std::endl;
         acceleration = -this->max_acceleration;
     }
-    auto target_speed = this->car.speed + acceleration * time_horizon;
+    auto target_speed = start_state.speed + acceleration * remaining_time_horizon;
     FrenetCoordinate target_frenet(
-        this->car.frenet.s + this->car.speed * time_horizon + 0.5 * acceleration * pow<2>(time_horizon),
+        start_state.frenet.s + start_state.speed * remaining_time_horizon + 0.5 * acceleration * pow<2>(remaining_time_horizon),
         this->map.GetFrenetDFromLane(behavior.lane));
 
     auto preceding_vehicle_iter = std::find_if(this->sensor_fusion.begin(), this->sensor_fusion.end(), [&behavior] (const VehicleState& vehicle) { return behavior.vehicle_id == vehicle.id; } );
@@ -48,7 +69,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
                 // minus the minimum distance to vehicle in front of us, if we drive with its speed
                 auto min_distance_with_preceding_vehicle_speed = behavior.min_distance_travel_time * preceding_vehicle_prediction.speed;
                 target_frenet.s = preceding_vehicle_prediction.frenet.s - min_distance_with_preceding_vehicle_speed;
-                acceleration = (target_speed - this->car.speed) / time_horizon;
+                acceleration = (target_speed - start_state.speed) / remaining_time_horizon;
             }
         }
     }
@@ -62,17 +83,17 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
     log(1) << "s: " << target_state.frenet.s << std::endl;
     log(1) << "d: " << target_state.frenet.d << std::endl;
     log(1) << "speed: " << target_state.speed << std::endl;
-    log(1) << "acceleration: " << (target_state.speed - this->car.speed) / time_horizon << std::endl;
+    log(1) << "acceleration: " << (target_state.speed - start_state.speed) / remaining_time_horizon << std::endl;
     log(1) << "x: " << target_state.cartesian.coord.x << std::endl;
     log(1) << "y: " << target_state.cartesian.coord.y << std::endl;
     log(1) << "theta: " << ToDegree(target_state.cartesian.theta) << std::endl;
     log(1) << "speed x: " << target_state.speed_x << std::endl;
     log(1) << "speed y: " << target_state.speed_y << std::endl;
 
-    return this->CalculateTrajectory(target_state, timestep, time_horizon);
+    return this->CalculateTrajectory(count_previous, target_state, timestep, time_horizon);
 }
 
-std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(const VehicleState& target_state, const Time timestep, const Time time_horizon) const {
+std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(const int count_previous, const VehicleState& target_state, const Time timestep, const Time time_horizon) const {
     CoordinateSystemReference local_system(this->car.cartesian);
 
     log(2) << std::endl;
@@ -83,8 +104,6 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
     std::vector<double> X, Y;
 
     // define starting points
-    int count_previous = ceil(time_horizon * 0.2 / timestep);
-    count_previous = std::min(count_previous, (int)this->previous_path.size());
     if (count_previous >= 2) {
         log(2) << "reuse " << count_previous << " waypoints" << std::endl;
         for (int i = 0; i < count_previous; ++i) {
