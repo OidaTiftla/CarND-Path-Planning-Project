@@ -135,14 +135,14 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
     }
 
     // define end points
-    FrenetCoordinate frenet_half_target(
-        (car.frenet.s + target_state.frenet.s) / 2,
-        (car.frenet.d + target_state.frenet.d) / 2);
-    auto cartesian_half_target = this->map.ConvertToCartesian(frenet_half_target);
-    auto local_half_target = local_system.ToLocal(cartesian_half_target);
-    X.push_back(local_half_target.x.value);
-    Y.push_back(local_half_target.y.value);
-    log(2) << "add local waypoint " << local_half_target << std::endl;
+    FrenetCoordinate frenet_0_5_target(
+        car.frenet.s + 0.5 * (target_state.frenet.s - car.frenet.s),
+        car.frenet.d + 0.5 * (target_state.frenet.d - car.frenet.d));
+    auto cartesian_0_5_target = this->map.ConvertToCartesian(frenet_0_5_target);
+    auto local_0_5_target = local_system.ToLocal(cartesian_0_5_target);
+    X.push_back(local_0_5_target.x.value);
+    Y.push_back(local_0_5_target.y.value);
+    log(2) << "add local waypoint " << local_0_5_target << std::endl;
 
     FrenetCoordinate frenet_0_8_target(
         car.frenet.s + 0.8 * (target_state.frenet.s - car.frenet.s),
