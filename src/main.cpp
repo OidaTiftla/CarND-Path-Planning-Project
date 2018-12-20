@@ -58,14 +58,14 @@ int main() {
     log(0) << endl;
     log(0) << "Configuration settings:" << endl;
     log(0) << "-----------------------" << endl;
-    log(0) << "max_s: " << max_s << endl;
-    log(0) << "lane_width: " << lane_width << endl;
-    log(0) << "max_speed: " << max_speed << endl;
-    log(0) << "min_distance_travel_time: " << min_distance_travel_time << endl;
-    log(0) << "max_acceleration: " << max_acceleration << endl;
-    log(0) << "max_jerk: " << max_jerk << endl;
+    log(0) << "max s: " << max_s << endl;
+    log(0) << "lane width: " << lane_width << endl;
+    log(0) << "max speed: " << max_speed << endl;
+    log(0) << "min distance travel time: " << min_distance_travel_time << endl;
+    log(0) << "max acceleration: " << max_acceleration << endl;
+    log(0) << "max jerk: " << max_jerk << endl;
     log(0) << "timestep: " << timestep << endl;
-    log(0) << "time_horizon: " << time_horizon << endl;
+    log(0) << "time horizon: " << time_horizon << endl;
 
     ifstream in_map_(map_file_.c_str(), ifstream::in);
 

@@ -27,6 +27,6 @@ Behavior BehaviorPlanner::PlanNextBehavior(const VehicleState& car, const std::v
             }
         }
     }
-    log(1) << "nearest: " << nearest << " (" << behavior.vehicle_id << ")" << std::endl;
+    log(1) << "nearest: " << nearest << " (id: " << behavior.vehicle_id << ")" << std::endl;
     return behavior;
 }
