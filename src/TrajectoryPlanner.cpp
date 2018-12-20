@@ -12,9 +12,6 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
     log(1) << "timestep: " << timestep << std::endl;
     log(1) << "time horizon: " << time_horizon << std::endl;
 
-    FrenetCoordinate target_frenet(
-        this->car.frenet.s + behavior.max_speed * time_horizon,
-        this->map.GetFrenetDFromLane(behavior.lane));
     auto acceleration = (behavior.max_speed - this->car.speed) / time_horizon;
     if (acceleration > this->max_acceleration) {
         log(1) << "exceed max acceleration" << std::endl;
@@ -24,6 +21,9 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
         acceleration = -this->max_acceleration;
     }
     auto target_speed = this->car.speed + acceleration * time_horizon;
+    FrenetCoordinate target_frenet(
+        this->car.frenet.s + this->car.speed * time_horizon + 0.5 * acceleration * pow<2>(time_horizon),
+        this->map.GetFrenetDFromLane(behavior.lane));
 
     auto preceding_vehicle_iter = std::find_if(this->sensor_fusion.begin(), this->sensor_fusion.end(), [&behavior] (const VehicleState& vehicle) { return behavior.vehicle_id == vehicle.id; } );
     if (preceding_vehicle_iter != this->sensor_fusion.end()) {
