@@ -31,14 +31,21 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
         if (this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, preceding_vehicle.frenet.s) > 0_m) {
             // preceding vehicle is currently in front of us
 
+            // preceding vehicle position, in the future
             auto preceding_vehicle_prediction = this->map.PredictIntoFuture(preceding_vehicle, time_horizon);
+            // minimum distance to vehicle in front of us, if we drive with desired target speed
             auto min_distance_with_target_speed = behavior.min_distance_travel_time * target_speed;
+            // calculate s for both (the preceding vehicle in the future and me in the future if I drive with the desired target speed)
+            // calculate s relative to my current car position (combats the fact, that s jumps when I drive over the starting line (s=0 wraparound))
             auto rel_s_preceding_vehicle_prediction = this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, preceding_vehicle_prediction.frenet.s);
             auto rel_s_target = this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, target_frenet.s);
             if (rel_s_preceding_vehicle_prediction - min_distance_with_target_speed < rel_s_target) {
-                // to fast -> drive with speed of preceding vehicle
+                // to fast -> no safety zone -> drive with speed of preceding vehicle and with safety zone
                 log(1) << "too fast for vehicle in front of us" << std::endl;
+                // set target speed to speed of vehicle in front of us
                 target_speed = preceding_vehicle_prediction.speed;
+                // and set the target s value to the s value of the preceding vehicle
+                // minus the minimum distance to vehicle in front of us, if we drive with its speed
                 auto min_distance_with_preceding_vehicle_speed = behavior.min_distance_travel_time * preceding_vehicle_prediction.speed;
                 target_frenet.s = preceding_vehicle_prediction.frenet.s - min_distance_with_preceding_vehicle_speed;
             }
