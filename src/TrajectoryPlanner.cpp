@@ -62,6 +62,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
     log(1) << "s: " << target_state.frenet.s << std::endl;
     log(1) << "d: " << target_state.frenet.d << std::endl;
     log(1) << "speed: " << target_state.speed << std::endl;
+    log(1) << "acceleration: " << (target_state.speed - this->car.speed) / time_horizon << std::endl;
     log(1) << "x: " << target_state.cartesian.coord.x << std::endl;
     log(1) << "y: " << target_state.cartesian.coord.y << std::endl;
     log(1) << "theta: " << ToDegree(target_state.cartesian.theta) << std::endl;
