@@ -14,7 +14,7 @@
 struct Behavior {
     int vehicle_id = -1;
     Speed max_speed = 0_m / 1_s;
-    Time min_distance_travel_time = 0_s;
+    Time min_safety_zone_time = 0_s;
     int lane = -1;
 };
 
@@ -22,11 +22,11 @@ class BehaviorPlanner {
 public:
     Map map;
     Speed max_speed;
-    Time min_distance_travel_time;
+    Time min_safety_zone_time;
     Acceleration max_acceleration;
     Jerk max_jerk;
 
-    BehaviorPlanner(const Map& map, const Speed max_speed, const Time min_distance_travel_time, const Acceleration max_acceleration, const Jerk max_jerk) : map(map), max_speed(max_speed), min_distance_travel_time(min_distance_travel_time), max_acceleration(max_acceleration), max_jerk(max_jerk) {}
+    BehaviorPlanner(const Map& map, const Speed max_speed, const Time min_safety_zone_time, const Acceleration max_acceleration, const Jerk max_jerk) : map(map), max_speed(max_speed), min_safety_zone_time(min_safety_zone_time), max_acceleration(max_acceleration), max_jerk(max_jerk) {}
 
     Behavior PlanNextBehavior(const VehicleState& car, const std::vector<VehicleState>& sensor_fusion) const;
 };

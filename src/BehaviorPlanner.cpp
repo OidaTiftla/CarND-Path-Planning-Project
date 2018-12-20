@@ -13,7 +13,7 @@ Behavior BehaviorPlanner::PlanNextBehavior(const VehicleState& car, const std::v
     Behavior behavior;
     behavior.lane = this->map.GetLaneFrom(car.frenet);
     behavior.max_speed = this->max_speed;
-    behavior.min_distance_travel_time = this->min_distance_travel_time;
+    behavior.min_safety_zone_time = this->min_safety_zone_time;
     behavior.vehicle_id = -1;
     // find nearest vehicle in same lane in front of us
     auto nearest = this->map.max_s;

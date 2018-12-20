@@ -48,7 +48,7 @@ int main() {
     auto max_s = 6945.554_m;
     auto lane_width = 4_m;
     auto max_speed = 50_mph;
-    auto min_distance_travel_time = 0.5_s;
+    auto min_safety_zone_time = 0.5_s;
     auto max_acceleration = 10_m / 1_s / 1_s;
     auto max_jerk = 10_m / 1_s / 1_s / 1_s;
     auto timestep = 0.02_s;
@@ -61,7 +61,7 @@ int main() {
     log(0) << "max s: " << max_s << endl;
     log(0) << "lane width: " << lane_width << endl;
     log(0) << "max speed: " << max_speed << endl;
-    log(0) << "min distance travel time: " << min_distance_travel_time << endl;
+    log(0) << "min safety zone time: " << min_safety_zone_time << endl;
     log(0) << "max acceleration: " << max_acceleration << endl;
     log(0) << "max jerk: " << max_jerk << endl;
     log(0) << "timestep: " << timestep << endl;
@@ -90,7 +90,7 @@ int main() {
     }
 
     Map map(map_waypoints, max_s, lane_width);
-    BehaviorPlanner bPlanner(map, max_speed, min_distance_travel_time, max_acceleration, max_jerk);
+    BehaviorPlanner bPlanner(map, max_speed, min_safety_zone_time, max_acceleration, max_jerk);
 
     h.onMessage([&map, &bPlanner, &timestep, &time_horizon, &max_acceleration, &max_jerk](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
         uWS::OpCode opCode) {
@@ -163,7 +163,7 @@ int main() {
                     log(1) << "---------" << endl;
                     log(1) << "lane: " << behavior.lane << endl;
                     log(1) << "max speed: " << behavior.max_speed << endl;
-                    log(1) << "min distance travel time: " << behavior.min_distance_travel_time << endl;
+                    log(1) << "min safety zone time: " << behavior.min_safety_zone_time << endl;
                     log(1) << "vehicle id: " << behavior.vehicle_id << endl;
 
                     TrajectoryPlanner tPlanner(map, max_acceleration, max_jerk, car, previous_path, end_path, sensor_fusion);
