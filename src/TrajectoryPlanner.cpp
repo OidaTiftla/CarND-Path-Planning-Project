@@ -28,16 +28,20 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
     auto preceding_vehicle_iter = std::find_if(this->sensor_fusion.begin(), this->sensor_fusion.end(), [&behavior] (const VehicleState& vehicle) { return behavior.vehicle_id == vehicle.id; } );
     if (preceding_vehicle_iter != this->sensor_fusion.end()) {
         auto preceding_vehicle = *preceding_vehicle_iter;
-        auto preceding_vehicle_prediction = this->map.PredictIntoFuture(preceding_vehicle, time_horizon);
-        auto min_distance_with_target_speed = behavior.min_distance_travel_time * target_speed;
-        auto rel_s_preceding_vehicle_prediction = this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, preceding_vehicle_prediction.frenet.s);
-        auto rel_s_target = this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, target_frenet.s);
-        if (rel_s_preceding_vehicle_prediction - min_distance_with_target_speed < rel_s_target) {
-            // to fast -> drive with speed of preceding vehicle
-            log(1) << "too fast for vehicle in front of us" << std::endl;
-            target_speed = preceding_vehicle_prediction.speed;
-            auto min_distance_with_preceding_vehicle_speed = behavior.min_distance_travel_time * preceding_vehicle_prediction.speed;
-            target_frenet.s = preceding_vehicle_prediction.frenet.s - min_distance_with_preceding_vehicle_speed;
+        if (this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, preceding_vehicle.frenet.s) > 0_m) {
+            // preceding vehicle is currently in front of us
+
+            auto preceding_vehicle_prediction = this->map.PredictIntoFuture(preceding_vehicle, time_horizon);
+            auto min_distance_with_target_speed = behavior.min_distance_travel_time * target_speed;
+            auto rel_s_preceding_vehicle_prediction = this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, preceding_vehicle_prediction.frenet.s);
+            auto rel_s_target = this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, target_frenet.s);
+            if (rel_s_preceding_vehicle_prediction - min_distance_with_target_speed < rel_s_target) {
+                // to fast -> drive with speed of preceding vehicle
+                log(1) << "too fast for vehicle in front of us" << std::endl;
+                target_speed = preceding_vehicle_prediction.speed;
+                auto min_distance_with_preceding_vehicle_speed = behavior.min_distance_travel_time * preceding_vehicle_prediction.speed;
+                target_frenet.s = preceding_vehicle_prediction.frenet.s - min_distance_with_preceding_vehicle_speed;
+            }
         }
     }
 
