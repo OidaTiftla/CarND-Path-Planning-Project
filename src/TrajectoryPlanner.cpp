@@ -148,21 +148,23 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
     Y.push_back(local_half_target.y.value);
     log(2) << "add local waypoint " << local_half_target << std::endl;
 
-    GlobalCartesianCoordinate cartesian_0_2_time_horizon_before_target(
-        target_state.cartesian.coord.x - (time_horizon * 0.2) * target_state.speed_x,
-        target_state.cartesian.coord.y - (time_horizon * 0.2) * target_state.speed_y);
-    auto local_0_2_time_horizon_before_target = local_system.ToLocal(cartesian_0_2_time_horizon_before_target);
-    X.push_back(local_0_2_time_horizon_before_target.x.value);
-    Y.push_back(local_0_2_time_horizon_before_target.y.value);
-    log(2) << "add local waypoint " << local_0_2_time_horizon_before_target << std::endl;
+    FrenetCoordinate frenet_0_8_target(
+        car.frenet.s + 0.8 * (target_state.frenet.s - car.frenet.s),
+        car.frenet.d + 0.8 * (target_state.frenet.d - car.frenet.d));
+    auto cartesian_0_8_target = this->map.ConvertToCartesian(frenet_0_8_target);
+    auto local_0_8_target = local_system.ToLocal(cartesian_0_8_target);
+    X.push_back(local_0_8_target.x.value);
+    Y.push_back(local_0_8_target.y.value);
+    log(2) << "add local waypoint " << local_0_8_target << std::endl;
 
-    GlobalCartesianCoordinate cartesian_0_1_time_horizon_before_target(
-        target_state.cartesian.coord.x - (time_horizon * 0.1) * target_state.speed_x,
-        target_state.cartesian.coord.y - (time_horizon * 0.1) * target_state.speed_y);
-    auto local_0_1_time_horizon_before_target = local_system.ToLocal(cartesian_0_1_time_horizon_before_target);
-    X.push_back(local_0_1_time_horizon_before_target.x.value);
-    Y.push_back(local_0_1_time_horizon_before_target.y.value);
-    log(2) << "add local waypoint " << local_0_1_time_horizon_before_target << std::endl;
+    FrenetCoordinate frenet_0_9_target(
+        car.frenet.s + 0.9 * (target_state.frenet.s - car.frenet.s),
+        car.frenet.d + 0.9 * (target_state.frenet.d - car.frenet.d));
+    auto cartesian_0_9_target = this->map.ConvertToCartesian(frenet_0_9_target);
+    auto local_0_9_target = local_system.ToLocal(cartesian_0_9_target);
+    X.push_back(local_0_9_target.x.value);
+    Y.push_back(local_0_9_target.y.value);
+    log(2) << "add local waypoint " << local_0_9_target << std::endl;
 
     auto local_target = local_system.ToLocal(target_state.cartesian.coord);
     X.push_back(local_target.x.value);
