@@ -42,8 +42,8 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
     }
 
     auto target_cartesian = this->map.ConvertToCartesian(target_frenet);
-    auto target_cartesian_1m = this->map.ConvertToCartesian(FrenetCoordinate(target_frenet.s + 1_m, target_frenet.d));
-    auto target_theta = target_cartesian.AngleTo(target_cartesian_1m);
+    auto target_cartesian_5m = this->map.ConvertToCartesian(FrenetCoordinate(target_frenet.s + 5_m, target_frenet.d));
+    auto target_theta = target_cartesian.AngleTo(target_cartesian_5m);
     VehicleState target_state(-1, GlobalCartesianPosition(target_cartesian.x, target_cartesian.y, target_theta), target_frenet, target_speed);
 
     // output target state
