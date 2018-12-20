@@ -125,13 +125,13 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
             speed_y = speed * sin(this->car.cartesian.theta);
             log(2) << "set speed to " << speed << " (" << speed_x << ", " << speed_y << ")" << std::endl;
         }
-        GlobalCartesianCoordinate cartesian_0_1_time_horizon_after_current(
+        GlobalCartesianCoordinate cartesian_0_1_target(
             this->car.cartesian.coord.x + (time_horizon * 0.1) * speed_x,
             this->car.cartesian.coord.y + (time_horizon * 0.1) * speed_y);
-        auto local_0_1_time_horizon_after_current = local_system.ToLocal(cartesian_0_1_time_horizon_after_current);
-        X.push_back(local_0_1_time_horizon_after_current.x.value);
-        Y.push_back(local_0_1_time_horizon_after_current.y.value);
-        log(2) << "add local waypoint " << local_0_1_time_horizon_after_current << std::endl;
+        auto local_0_1_target = local_system.ToLocal(cartesian_0_1_target);
+        X.push_back(local_0_1_target.x.value);
+        Y.push_back(local_0_1_target.y.value);
+        log(2) << "add local waypoint " << local_0_1_target << std::endl;
     }
 
     // define end points
