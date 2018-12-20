@@ -65,7 +65,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
             // and set the target s value to the s value of the preceding vehicle
             // minus the minimum distance to vehicle in front of us, if we drive with its speed
             auto min_distance_with_preceding_vehicle_speed = behavior.min_safety_zone_time * preceding_vehicle_prediction.speed;
-            target_frenet.s = preceding_vehicle_prediction.frenet.s - min_distance_with_preceding_vehicle_speed;
+            target_frenet.s = this->map.NormalizeS(preceding_vehicle_prediction.frenet.s - min_distance_with_preceding_vehicle_speed);
             acceleration = (target_speed - start_state.speed) / remaining_time_horizon;
         }
     }
@@ -136,7 +136,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
 
     // define end points
     FrenetCoordinate frenet_0_5_target(
-        car.frenet.s + 0.5 * (target_state.frenet.s - car.frenet.s),
+        car.frenet.s + 0.5 * this->map.GetFrenetSDistanceFromTo(car.frenet.s, target_state.frenet.s),
         car.frenet.d + 0.5 * (target_state.frenet.d - car.frenet.d));
     auto cartesian_0_5_target = this->map.ConvertToCartesian(frenet_0_5_target);
     auto local_0_5_target = local_system.ToLocal(cartesian_0_5_target);
@@ -145,7 +145,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
     log(2) << "add local waypoint " << local_0_5_target << std::endl;
 
     FrenetCoordinate frenet_0_8_target(
-        car.frenet.s + 0.8 * (target_state.frenet.s - car.frenet.s),
+        car.frenet.s + 0.8 * this->map.GetFrenetSDistanceFromTo(car.frenet.s, target_state.frenet.s),
         car.frenet.d + 0.8 * (target_state.frenet.d - car.frenet.d));
     auto cartesian_0_8_target = this->map.ConvertToCartesian(frenet_0_8_target);
     auto local_0_8_target = local_system.ToLocal(cartesian_0_8_target);
@@ -154,7 +154,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
     log(2) << "add local waypoint " << local_0_8_target << std::endl;
 
     FrenetCoordinate frenet_0_9_target(
-        car.frenet.s + 0.9 * (target_state.frenet.s - car.frenet.s),
+        car.frenet.s + 0.9 * this->map.GetFrenetSDistanceFromTo(car.frenet.s, target_state.frenet.s),
         car.frenet.d + 0.9 * (target_state.frenet.d - car.frenet.d));
     auto cartesian_0_9_target = this->map.ConvertToCartesian(frenet_0_9_target);
     auto local_0_9_target = local_system.ToLocal(cartesian_0_9_target);
