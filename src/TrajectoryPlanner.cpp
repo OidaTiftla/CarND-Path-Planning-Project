@@ -48,6 +48,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
                 // minus the minimum distance to vehicle in front of us, if we drive with its speed
                 auto min_distance_with_preceding_vehicle_speed = behavior.min_distance_travel_time * preceding_vehicle_prediction.speed;
                 target_frenet.s = preceding_vehicle_prediction.frenet.s - min_distance_with_preceding_vehicle_speed;
+                acceleration = (target_speed - this->car.speed) / time_horizon;
             }
         }
     }
