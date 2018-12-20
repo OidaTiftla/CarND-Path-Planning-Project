@@ -12,12 +12,12 @@
 
 class VehicleState {
 public:
-    const int id;
-    const GlobalCartesianPosition cartesian;
-    const FrenetCoordinate frenet;
-    const Speed speed_x;
-    const Speed speed_y;
-    const Speed speed;
+    int id;
+    GlobalCartesianPosition cartesian;
+    FrenetCoordinate frenet;
+    Speed speed_x;
+    Speed speed_y;
+    Speed speed;
 
     VehicleState(int id, const GlobalCartesianPosition cartesian, const FrenetCoordinate frenet, const Speed speed)
         : id(id),
