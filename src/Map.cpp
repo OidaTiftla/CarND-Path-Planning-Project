@@ -77,12 +77,7 @@ FrenetCoordinate Map::ConvertToFrenet(const GlobalCartesianPosition pos) const {
 // Transform from Frenet s,d coordinates to Cartesian x,y
 GlobalCartesianCoordinate Map::ConvertToCartesian(FrenetCoordinate pos) const {
     // normalize input for s: 0 < s < max_s
-    while (pos.s >= this->max_s) {
-        pos.s -= this->max_s;
-    }
-    while (pos.s < 0_m) {
-        pos.s += this->max_s;
-    }
+    pos.s = this->NormalizeS(pos.s);
 
     int prev_wp = -1;
 
@@ -117,10 +112,17 @@ Distance Map::GetFrenetDFromLane(const int lane) const {
 
 Distance Map::GetFrenetSDistanceFromTo(const Distance from, const Distance to) const {
     auto dist = to - from;
-    while (dist <= 0_m) {
-        dist += this->max_s;
+    return this->NormalizeS(dist);
+}
+
+Distance Map::NormalizeS(Distance s) const {
+    while (s >= this->max_s) {
+        s -= this->max_s;
     }
-    return dist;
+    while (s < 0_m) {
+        s += this->max_s;
+    }
+    return s;
 }
 
 VehicleState Map::PredictIntoFuture(const VehicleState& vehicle, const Time time_horizon) const {

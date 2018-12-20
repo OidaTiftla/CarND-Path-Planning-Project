@@ -34,6 +34,7 @@ public:
     int GetLaneFrom(const FrenetCoordinate frenet) const;
     Distance GetFrenetDFromLane(const int lane) const;
     Distance GetFrenetSDistanceFromTo(const Distance from, const Distance to) const;
+    Distance NormalizeS(Distance s) const;
 
     VehicleState PredictIntoFuture(const VehicleState& vehicle, const Time time_horizon) const;
 };
