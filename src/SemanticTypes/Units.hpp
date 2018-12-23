@@ -642,8 +642,8 @@ typename std::enable_if<Tm % 2 == 0 && Tkg % 2 == 0 && Ts % 2 == 0 && TA % 2 == 
 
 template <int exp, int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
 inline Value<SiUnit<Tm * exp, Tkg * exp, Ts * exp, TA * exp, TK * exp, Tmol * exp, Tcd * exp>> pow(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& v) {
-    double value = v.value;
-    for (int i = 1; i < exp; ++i) {
+    double value = 1;
+    for (int i = 0; i < exp; ++i) {
         value *= v.value;
     }
     return Value<SiUnit<Tm * exp, Tkg * exp, Ts * exp, TA * exp, TK * exp, Tmol * exp, Tcd * exp>>(value);
