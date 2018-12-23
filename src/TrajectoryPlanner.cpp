@@ -32,6 +32,8 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
         start_state = VehicleState(-1, pos, frenet, speed);
         remaining_time_horizon = time_horizon - count_previous * timestep;
     }
+    log(1) << "start: " << start_state.frenet << ", " << start_state.speed << std::endl;
+    log(1) << "remaining time horizon: " << remaining_time_horizon << std::endl;
 
     auto acceleration = (behavior.max_speed - start_state.speed) / remaining_time_horizon;
     if (acceleration > this->max_acceleration) {

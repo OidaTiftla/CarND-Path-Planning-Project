@@ -19,9 +19,9 @@ Behavior BehaviorPlanner::PlanNextBehavior(const VehicleState& car, const std::v
     // set initial value to the maximum search distance
     auto nearest = 2 * this->max_speed * (time_horizon + this->min_safety_zone_time);
     for (auto vehicle : sensor_fusion) {
-        log(1) << "distance to " << vehicle.id << " (" << vehicle.cartesian << ", " << vehicle.speed << "): " << vehicle.cartesian.DistanceTo(car.cartesian) << std::endl;
         if (this->map.GetLaneFrom(vehicle.frenet) == behavior.lane) {
             auto dist = this->map.GetFrenetSDistanceFromTo(car.frenet.s, vehicle.frenet.s);
+            log(1) << "distance to " << vehicle.id << " (" << vehicle.frenet << ", " << vehicle.speed << "): " << dist << std::endl;
             if (dist < nearest) {
                 nearest = dist;
                 behavior.vehicle_id = vehicle.id;
