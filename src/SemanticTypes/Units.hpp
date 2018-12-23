@@ -644,7 +644,7 @@ template <int exp, int Tm, int Tkg, int Ts, int TA, int TK, int Tmol, int Tcd>
 inline Value<SiUnit<Tm * exp, Tkg * exp, Ts * exp, TA * exp, TK * exp, Tmol * exp, Tcd * exp>> pow(const Value<SiUnit<Tm, Tkg, Ts, TA, TK, Tmol, Tcd>>& v) {
     double value = v.value;
     for (int i = 1; i < exp; ++i) {
-        value *= value;
+        value *= v.value;
     }
     return Value<SiUnit<Tm * exp, Tkg * exp, Ts * exp, TA * exp, TK * exp, Tmol * exp, Tcd * exp>>(value);
 }
