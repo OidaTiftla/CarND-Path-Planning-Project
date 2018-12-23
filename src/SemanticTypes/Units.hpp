@@ -646,6 +646,9 @@ inline Value<SiUnit<Tm * exp, Tkg * exp, Ts * exp, TA * exp, TK * exp, Tmol * ex
     for (int i = 0; i < exp; ++i) {
         value *= v.value;
     }
+    if (exp < 0) {
+        value = 1 / value;
+    }
     return Value<SiUnit<Tm * exp, Tkg * exp, Ts * exp, TA * exp, TK * exp, Tmol * exp, Tcd * exp>>(value);
 }
 
