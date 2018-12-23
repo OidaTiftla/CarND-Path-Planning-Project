@@ -66,7 +66,43 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
             // minus the minimum distance to vehicle in front of us, if we drive with its speed
             auto min_distance_with_preceding_vehicle_speed = behavior.min_safety_zone_time * preceding_vehicle_prediction.speed;
             target_frenet.s = this->map.NormalizeS(preceding_vehicle_prediction.frenet.s - min_distance_with_preceding_vehicle_speed);
+
+            // validate speed
+            if (target_speed > behavior.max_speed) {
+                log(1) << "exceed max speed (preceding vehicle)" << std::endl;
+                target_speed = behavior.max_speed;
+            } else if (target_speed < 0_m / 1_s) {
+                log(1) << "exceed max backwards speed (preceding vehicle)" << std::endl;
+                target_speed = 0_m / 1_s;
+            }
+
+            // calculate resulting acceleration
             acceleration = (target_speed - start_state.speed) / remaining_time_horizon;
+
+            // validate acceleration
+            if (acceleration > this->max_acceleration) {
+                log(1) << "exceed max acceleration (preceding vehicle)" << std::endl;
+                acceleration = this->max_acceleration;
+            } else if (acceleration < -this->max_acceleration) {
+                log(1) << "exceed max deceleration (preceding vehicle)" << std::endl;
+                acceleration = -this->max_acceleration;
+            }
+
+            // validate target state based on the physics of the car
+            auto calc_target_speed = start_state.speed + acceleration * remaining_time_horizon;
+            if (abs(target_speed - calc_target_speed) > 0.1_m / 1_s) {
+                // target speed not matching the calculations -> target speed not possible
+                // correct it (based on the physics of the car)
+                log(1) << "update target speed from " << target_speed  << " to " << calc_target_speed  << std::endl;
+                target_speed = calc_target_speed;
+            }
+            auto calc_s = start_state.frenet.s + start_state.speed * remaining_time_horizon + 0.5 * acceleration * pow<2>(remaining_time_horizon);
+            if (abs(target_frenet.s - calc_s) > 0.1_m) {
+                // target s not matching the calculations -> target s not possible
+                // correct it (based on the physics of the car)
+                log(1) << "update target s from " << target_frenet.s  << " to " << calc_s  << std::endl;
+                target_frenet.s = calc_s;
+            }
         }
     }
 
