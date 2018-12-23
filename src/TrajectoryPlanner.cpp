@@ -59,7 +59,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
         auto rel_s_target = this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, target_frenet.s);
         if (rel_s_preceding_vehicle_prediction - min_distance_with_target_speed < rel_s_target) {
             // to fast -> no safety zone -> drive with speed of preceding vehicle and with safety zone
-            log(1) << "too fast for vehicle in front of us" << std::endl;
+            log(1) << "too fast for vehicle in front of us (s prediction: " << preceding_vehicle_prediction.frenet.s << ")" << std::endl;
             // set target speed to speed of vehicle in front of us
             target_speed = preceding_vehicle_prediction.speed;
             // and set the target s value to the s value of the preceding vehicle
@@ -139,6 +139,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
     auto local_pos = LocalCartesianPosition(previous_last.x, previous_last.y, previous_last2.AngleTo(previous_last));
     auto cartesian_start = local_system.ToGlobal(local_pos);
     auto frenet_start = this->map.ConvertToFrenet(cartesian_start);
+    log(2) << "last pos " << local_pos << " " << cartesian_start << " " << frenet_start << std::endl;
 
     // define end points
     FrenetCoordinate frenet_0_5_target(
