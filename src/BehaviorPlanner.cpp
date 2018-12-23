@@ -5,7 +5,7 @@
 #include "BehaviorPlanner.h"
 
 
-Behavior BehaviorPlanner::PlanNextBehavior(const VehicleState& car, const std::vector<VehicleState>& sensor_fusion) const {
+Behavior BehaviorPlanner::PlanNextBehavior(const VehicleState& car, const std::vector<VehicleState>& sensor_fusion, const Time timestep, const Time time_horizon) const {
     log(1) << std::endl;
     log(1) << "Sensor fusion:" << std::endl;
     log(1) << "--------------" << std::endl;
@@ -16,7 +16,8 @@ Behavior BehaviorPlanner::PlanNextBehavior(const VehicleState& car, const std::v
     behavior.min_safety_zone_time = this->min_safety_zone_time;
     behavior.vehicle_id = -1;
     // find nearest vehicle in same lane in front of us
-    auto nearest = this->map.max_s;
+    // set initial value to the maximum search distance
+    auto nearest = 2 * this->max_speed * (time_horizon + this->min_safety_zone_time);
     for (auto vehicle : sensor_fusion) {
         log(1) << "distance to " << vehicle.id << " (" << vehicle.cartesian << ", " << vehicle.speed << "): " << vehicle.cartesian.DistanceTo(car.cartesian) << std::endl;
         if (this->map.GetLaneFrom(vehicle.frenet) == behavior.lane) {

@@ -28,7 +28,7 @@ public:
 
     BehaviorPlanner(const Map& map, const Speed max_speed, const Time min_safety_zone_time, const Acceleration max_acceleration, const Jerk max_jerk) : map(map), max_speed(max_speed), min_safety_zone_time(min_safety_zone_time), max_acceleration(max_acceleration), max_jerk(max_jerk) {}
 
-    Behavior PlanNextBehavior(const VehicleState& car, const std::vector<VehicleState>& sensor_fusion) const;
+    Behavior PlanNextBehavior(const VehicleState& car, const std::vector<VehicleState>& sensor_fusion, const Time timestep, const Time time_horizon) const;
 };
 
 #endif //BEHAVIOR_PLANNER_H

@@ -156,7 +156,7 @@ int main() {
                     log(1) << "speed x: " << car.speed_x << endl;
                     log(1) << "speed y: " << car.speed_y << endl;
 
-                    auto behavior = bPlanner.PlanNextBehavior(car, sensor_fusion);
+                    auto behavior = bPlanner.PlanNextBehavior(car, sensor_fusion, timestep, time_horizon);
                     // output behavior
                     log(1) << endl;
                     log(1) << "Behavior:" << endl;
