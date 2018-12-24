@@ -26,7 +26,7 @@ public:
     int NextWayPointIndex(const GlobalCartesianPosition pos) const;
 
     // Transform from Cartesian x,y coordinates to Frenet s,d coordinates
-    FrenetCoordinate ConvertToFrenet(const GlobalCartesianPosition pos) const;
+    FrenetCoordinate ConvertToFrenet(const GlobalCartesianCoordinate pos) const;
 
     // Transform from Frenet s,d coordinates to Cartesian x,y
     GlobalCartesianCoordinate ConvertToCartesian(FrenetCoordinate pos) const;

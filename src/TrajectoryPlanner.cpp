@@ -27,7 +27,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
         auto last = this->previous_path[count_previous - 1];
         auto last2 = this->previous_path[count_previous - 2];
         GlobalCartesianPosition pos(last.x, last.y, last2.AngleTo(last));
-        auto frenet = this->map.ConvertToFrenet(pos);
+        auto frenet = this->map.ConvertToFrenet(pos.coord);
         auto speed = last2.DistanceTo(last) / timestep;
         start_state = VehicleState(-1, pos, frenet, speed);
         remaining_time_horizon = time_horizon - count_previous * timestep;

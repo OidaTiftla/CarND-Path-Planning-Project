@@ -38,14 +38,17 @@ int Map::NextWayPointIndex(const GlobalCartesianPosition pos) const {
 }
 
 // Transform from Cartesian x,y coordinates to Frenet s,d coordinates
-FrenetCoordinate Map::ConvertToFrenet(const GlobalCartesianPosition pos) const {
-    int next_wp = this->NextWayPointIndex(pos);
+FrenetCoordinate Map::ConvertToFrenet(const GlobalCartesianCoordinate pos) const {
+    int wp = this->ClosestWayPointIndex(pos);
+    auto angle = LocalCartesianCoordinate(0_m, 0_m).AngleTo(this->wayPoints[wp].normalized_normal_vector) + ToRadian(90_deg);
+
+    int next_wp = this->NextWayPointIndex(GlobalCartesianPosition(pos.x, pos.y, angle));
 
     int prev_wp;
     prev_wp = (next_wp - 1) % this->wayPoints.size();
 
     auto n = this->wayPoints[next_wp].cartesian - this->wayPoints[prev_wp].cartesian;
-    auto x = pos.coord - this->wayPoints[prev_wp].cartesian;
+    auto x = pos - this->wayPoints[prev_wp].cartesian;
 
     // find the projection of x onto n
     auto proj_norm = (x.x * n.x + x.y * n.y) / (n.x * n.x + n.y * n.y);
@@ -133,6 +136,6 @@ VehicleState Map::PredictIntoFuture(const VehicleState& vehicle, const Time time
     return VehicleState(
         vehicle.id,
         future_pos,
-        this->ConvertToFrenet(future_pos),
+        this->ConvertToFrenet(future_pos.coord),
         vehicle.speed);
 }
