@@ -13,6 +13,7 @@
 #include "VehicleState.hpp"
 #include "BehaviorPlanner.h"
 #include "spline.h"
+#include "JMT.h"
 
 
 class TrajectoryPlanner {

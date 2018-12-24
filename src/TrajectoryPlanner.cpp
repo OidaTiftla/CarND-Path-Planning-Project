@@ -16,14 +16,14 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
     int count_previous = ceil(time_horizon * 0.2 / timestep);
     count_previous = std::min(count_previous, (int)this->previous_path.size());
     // are there enough previous points?
-    if (count_previous < 2) {
+    if (count_previous < 3) {
         count_previous = 0;
     }
 
     // set start state
     auto start_state = this->car;
     auto remaining_time_horizon = time_horizon;
-    if (count_previous >= 2) {
+    if (count_previous >= 3) {
         auto last = this->previous_path[count_previous - 1];
         auto last2 = this->previous_path[count_previous - 2];
         GlobalCartesianPosition pos(last.x, last.y, last2.AngleTo(last));
@@ -131,95 +131,87 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
     CoordinateSystemReference local_system(this->car.cartesian);
 
     log(2) << std::endl;
-    log(2) << "Calculate spline:" << std::endl;
-    log(2) << "-----------------" << std::endl;
+    log(2) << "Calculate JMT:" << std::endl;
+    log(2) << "--------------" << std::endl;
 
-    // spline control points
-    std::vector<double> X, Y;
+    State start_x, start_y, end_x, end_y;
 
-    // define starting points
-    if (count_previous >= 2) {
-        log(2) << "reuse " << count_previous << " waypoints" << std::endl;
-        for (int i = 0; i < count_previous; ++i) {
-            auto local = local_system.ToLocal(this->previous_path[i]);
-            X.push_back(local.x.value);
-            Y.push_back(local.y.value);
-            log(2) << "reuse local waypoint " << local << std::endl;
-        }
+    // define starting state
+    auto remaining_time_horizon = time_horizon;
+    LocalCartesianCoordinate wp_last, wp_last2, wp_last3;
+    if (count_previous >= 3) {
+        remaining_time_horizon = time_horizon - count_previous * timestep;
+        log(2) << "create starting state from last 3 waypoints" << std::endl;
+        wp_last = local_system.ToLocal(this->previous_path[count_previous - 1]);
+        wp_last2 = local_system.ToLocal(this->previous_path[count_previous - 2]);
+        wp_last3 = local_system.ToLocal(this->previous_path[count_previous - 3]);
     } else {
-        log(2) << "create initial waypoints" << std::endl;
-        auto local_current = local_system.ToLocal(this->car.cartesian.coord);
-        X.push_back(local_current.x.value);
-        Y.push_back(local_current.y.value);
-        log(2) << "add local waypoint " << local_current << std::endl;
-
-        auto speed_x = this->car.speed_x;
-        auto speed_y = this->car.speed_y;
-        if (this->car.speed <= 0.1_m / 1_s) {
-            // current car has no speed
-            // set new start speed
-            auto speed = this->max_acceleration * timestep;
-            speed_x = speed * cos(this->car.cartesian.theta);
-            speed_y = speed * sin(this->car.cartesian.theta);
-            log(2) << "set speed to " << speed << " (" << speed_x << ", " << speed_y << ")" << std::endl;
-        }
-        GlobalCartesianCoordinate cartesian_0_1_target(
-            this->car.cartesian.coord.x + (time_horizon * 0.1) * speed_x,
-            this->car.cartesian.coord.y + (time_horizon * 0.1) * speed_y);
-        auto local_0_1_target = local_system.ToLocal(cartesian_0_1_target);
-        X.push_back(local_0_1_target.x.value);
-        Y.push_back(local_0_1_target.y.value);
-        log(2) << "add local waypoint " << local_0_1_target << std::endl;
+        log(2) << "create starting state from current position" << std::endl;
+        wp_last = local_system.ToLocal(this->car.cartesian.coord);
+        wp_last2 = local_system.ToLocal(this->map.PredictIntoFuture(this->car, -timestep).cartesian.coord);
+        wp_last3 = local_system.ToLocal(this->map.PredictIntoFuture(this->car, -timestep * 2).cartesian.coord);
     }
+    auto wp_last_v_x = (wp_last.x - wp_last2.x) / timestep;
+    auto wp_last_v_y = (wp_last.y - wp_last2.y) / timestep;
+    auto wp_last_v2_x = (wp_last2.x - wp_last3.x) / timestep;
+    auto wp_last_v2_y = (wp_last2.y - wp_last3.y) / timestep;
+    start_x.x = wp_last.x;
+    start_y.x = wp_last.y;
+    start_x.x_dot = wp_last_v_x;
+    start_y.x_dot = wp_last_v_y;
+    start_x.x_dot_dot = (wp_last_v_x - wp_last_v2_x) / timestep;
+    start_y.x_dot_dot = (wp_last_v_y - wp_last_v2_y) / timestep;
+    log(2) << "starting state:" << std::endl;
+    log(2) << "x: " << start_x.x << std::endl;
+    log(2) << "y: " << start_y.x << std::endl;
+    log(2) << "speed x: " << start_x.x_dot << std::endl;
+    log(2) << "speed y: " << start_y.x_dot << std::endl;
+    log(2) << "acceleration x: " << start_x.x_dot_dot << std::endl;
+    log(2) << "acceleration y: " << start_y.x_dot_dot << std::endl;
 
-    auto previous_last = LocalCartesianCoordinate(Distance(X[X.size() - 1]), Distance(Y[Y.size() - 1]));
-    auto previous_last2 = LocalCartesianCoordinate(Distance(X[X.size() - 2]), Distance(Y[Y.size() - 2]));
-    auto local_pos = LocalCartesianPosition(previous_last.x, previous_last.y, previous_last2.AngleTo(previous_last));
-    auto cartesian_start = local_system.ToGlobal(local_pos);
-    auto frenet_start = this->map.ConvertToFrenet(cartesian_start);
-    log(2) << "last pos " << local_pos << " " << cartesian_start << " " << frenet_start << std::endl;
+    // define end state
+    auto future_time_for_direction = 10 * timestep;
+    auto wp_target = local_system.ToLocal(target_state.cartesian.coord);
+    auto wp_target2 = local_system.ToLocal(this->map.PredictIntoFuture(target_state, future_time_for_direction).cartesian.coord);
+    end_x.x = wp_target.x;
+    end_y.x = wp_target.y;
+    end_x.x_dot = (wp_target2.x - wp_target.x) / future_time_for_direction; // speed in local coordinate system
+    end_y.x_dot = (wp_target2.y - wp_target.y) / future_time_for_direction; // speed in local coordinate system
+    end_x.x_dot_dot = 0_m / 1_s / 1_s;
+    end_y.x_dot_dot = 0_m / 1_s / 1_s;
+    log(2) << "end state:" << std::endl;
+    log(2) << "x: " << end_x.x << std::endl;
+    log(2) << "y: " << end_y.x << std::endl;
+    log(2) << "speed x: " << end_x.x_dot << std::endl;
+    log(2) << "speed y: " << end_y.x_dot << std::endl;
+    log(2) << "acceleration x: " << end_x.x_dot_dot << std::endl;
+    log(2) << "acceleration y: " << end_y.x_dot_dot << std::endl;
 
-    // define end points
-    FrenetCoordinate frenet_0_5_target(
-        frenet_start.s + 0.5 * this->map.GetFrenetSDistanceFromTo(frenet_start.s, target_state.frenet.s),
-        frenet_start.d + 0.5 * (target_state.frenet.d - frenet_start.d));
-    auto cartesian_0_5_target = this->map.ConvertToCartesian(frenet_0_5_target);
-    auto local_0_5_target = local_system.ToLocal(cartesian_0_5_target);
-    X.push_back(local_0_5_target.x.value);
-    Y.push_back(local_0_5_target.y.value);
-    log(2) << "add local waypoint " << local_0_5_target << std::endl;
-
-    FrenetCoordinate frenet_0_8_target(
-        frenet_start.s + 0.8 * this->map.GetFrenetSDistanceFromTo(frenet_start.s, target_state.frenet.s),
-        frenet_start.d + 0.8 * (target_state.frenet.d - frenet_start.d));
-    auto cartesian_0_8_target = this->map.ConvertToCartesian(frenet_0_8_target);
-    auto local_0_8_target = local_system.ToLocal(cartesian_0_8_target);
-    X.push_back(local_0_8_target.x.value);
-    Y.push_back(local_0_8_target.y.value);
-    log(2) << "add local waypoint " << local_0_8_target << std::endl;
-
-    FrenetCoordinate frenet_0_9_target(
-        frenet_start.s + 0.9 * this->map.GetFrenetSDistanceFromTo(frenet_start.s, target_state.frenet.s),
-        frenet_start.d + 0.9 * (target_state.frenet.d - frenet_start.d));
-    auto cartesian_0_9_target = this->map.ConvertToCartesian(frenet_0_9_target);
-    auto local_0_9_target = local_system.ToLocal(cartesian_0_9_target);
-    X.push_back(local_0_9_target.x.value);
-    Y.push_back(local_0_9_target.y.value);
-    log(2) << "add local waypoint " << local_0_9_target << std::endl;
-
-    auto local_target = local_system.ToLocal(target_state.cartesian.coord);
-    X.push_back(local_target.x.value);
-    Y.push_back(local_target.y.value);
-    log(2) << "add local waypoint " << local_target << std::endl;
-
-    // create spline
-    tk::spline s;
-    s.set_points(X, Y); // currently it is required that X is already sorted
+    // calculate JMT
+    auto coeffs_x = JMT(start_x, end_x, remaining_time_horizon);
+    auto coeffs_y = JMT(start_y, end_y, remaining_time_horizon);
+    log(2) << "coeffs:" << std::endl;
+    log(2) << "x: "
+        << coeffs_x.a_0 << ", "
+        << coeffs_x.a_1 << ", "
+        << coeffs_x.a_2 << ", "
+        << coeffs_x.a_3 << ", "
+        << coeffs_x.a_4 << ", "
+        << coeffs_x.a_5 << ", "
+        << std::endl;
+    log(2) << "y: "
+        << coeffs_y.a_0 << ", "
+        << coeffs_y.a_1 << ", "
+        << coeffs_y.a_2 << ", "
+        << coeffs_y.a_3 << ", "
+        << coeffs_y.a_4 << ", "
+        << coeffs_y.a_5 << ", "
+        << std::endl;
 
     log(2) << std::endl;
     log(2) << "Calculate trajectory:" << std::endl;
     log(2) << "---------------------" << std::endl;
-    // interpolate spline
+    // interpolate polynomial
     std::vector<GlobalCartesianCoordinate> trajectory;
     int count = ceil(time_horizon / timestep);
     auto last = local_system.ToLocal(this->car.cartesian.coord);
@@ -236,19 +228,20 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
             last_speed = speed;
             log(2) << "reuse local waypoint " << next << " with speed " << speed << std::endl;
         } else {
-            auto time_to_target = time_horizon - (i * timestep);
-            auto acceleration = (target_state.speed - last_speed) / time_to_target;
-            auto speed = last_speed + acceleration * timestep;
-            auto dist_to_travel_next = speed * timestep;
-            auto angle_to_target = last.AngleTo(local_target);
-            auto dist_in_x = dist_to_travel_next * cos(angle_to_target);
-            auto next_x = last.x + dist_in_x;
-            auto next_y = Distance(s(next_x.value));
-            auto next = LocalCartesianCoordinate(next_x, next_y);
+            auto t = timestep * (i - count_previous + 1);
+            auto x = coeffs_x.eval(t);
+            auto y = coeffs_y.eval(t);
+            auto x_dot = coeffs_x.eval_derivative(t);
+            auto y_dot = coeffs_y.eval_derivative(t);
+            auto x_dot_dot = coeffs_x.eval_derivative2(t);
+            auto y_dot_dot = coeffs_y.eval_derivative2(t);
+            auto acceleration = sqrt(pow<2>(x_dot_dot) + pow<2>(y_dot_dot));
+            auto speed = sqrt(pow<2>(x_dot) + pow<2>(y_dot));
+            auto next = LocalCartesianCoordinate(x, y);
             trajectory.push_back(local_system.ToGlobal(next));
             last = next;
             last_speed = speed;
-            log(2) << "add local waypoint " << next << " with speed " << speed << " angle to target " << ToDegree(angle_to_target) << std::endl;
+            log(2) << "add local waypoint " << next << " with speed " << speed << " and acceleration " << acceleration << std::endl;
         }
     }
 

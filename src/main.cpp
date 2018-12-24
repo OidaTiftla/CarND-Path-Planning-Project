@@ -49,8 +49,8 @@ int main() {
     auto lane_width = 4_m;
     auto max_speed = 0.96 * 50_mph; //50_mph;
     auto min_safety_zone_time = 1.8_s;
-    auto max_acceleration = 0.9 * 10_m / 1_s / 1_s; //10_m / 1_s / 1_s;
-    auto max_jerk = 0.9 * 10_m / 1_s / 1_s / 1_s; //10_m / 1_s / 1_s / 1_s;
+    auto max_acceleration = 0.5 * 10_m / 1_s / 1_s; //10_m / 1_s / 1_s;
+    auto max_jerk = 0.5 * 10_m / 1_s / 1_s / 1_s; //10_m / 1_s / 1_s / 1_s;
     auto timestep = 0.02_s;
     auto time_horizon = 2.0_s;
 
