@@ -131,26 +131,6 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
 std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(const int count_previous, const VehicleState& target_state, const Time timestep, const Time time_horizon) const {
     CoordinateSystemReference local_system(this->car.cartesian);
 
-    // define starting state
-    auto remaining_time_horizon = time_horizon;
-    LocalCartesianCoordinate wp_last, wp_last2;
-    FrenetCoordinate wp_last_frenet;
-    if (count_previous >= 2) {
-        remaining_time_horizon = time_horizon - count_previous * timestep;
-        log(2) << "create starting state from last 2 waypoints" << std::endl;
-        wp_last = local_system.ToLocal(this->previous_path[count_previous - 1]);
-        wp_last_frenet = this->map.ConvertToFrenet(this->previous_path[count_previous - 1]);
-        wp_last2 = local_system.ToLocal(this->previous_path[count_previous - 2]);
-    } else {
-        log(2) << "create starting state from current position" << std::endl;
-        wp_last = local_system.ToLocal(this->car.cartesian.coord);
-        wp_last_frenet = this->car.frenet;
-        wp_last2 = local_system.ToLocal(this->map.PredictIntoFuture(this->car, -timestep).cartesian.coord);
-    }
-
-    auto total_s = target_state.frenet.s - wp_last_frenet.s;
-    auto total_d = target_state.frenet.d - wp_last_frenet.d;
-
     log(2) << std::endl;
     log(2) << "Calculate spline:" << std::endl;
     log(2) << "-----------------" << std::endl;
@@ -194,7 +174,19 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
         log(2) << "add local waypoint " << local_current << std::endl;
     }
 
-    log(2) << "last waypoint " << wp_last << std::endl;
+    // define starting state
+    FrenetCoordinate wp_last_frenet;
+    if (count_previous >= 2) {
+        log(2) << "create starting state from last 2 waypoints" << std::endl;
+        auto wp_last = local_system.ToLocal(this->previous_path[count_previous - 1]);
+        log(2) << "last waypoint " << wp_last << std::endl;
+        wp_last_frenet = this->map.ConvertToFrenet(this->previous_path[count_previous - 1]);
+    } else {
+        log(2) << "create starting state from current position" << std::endl;
+        auto wp_last = local_system.ToLocal(this->car.cartesian.coord);
+        log(2) << "last waypoint " << wp_last << std::endl;
+        wp_last_frenet = this->car.frenet;
+    }
 
     // define end points
     FrenetCoordinate frenet_0_5_target(
@@ -254,22 +246,21 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
             last_speed = speed;
             log(2) << "reuse local waypoint " << next << " with speed " << speed << std::endl;
         } else {
-            auto t = timestep * (i - count_previous + 1);
             auto remaining_steps = count - i;
             auto delta_v = target_state.speed - last_speed;
             auto next_v = last_speed + delta_v / remaining_steps;
+            auto dist_to_travel_next = next_v * timestep;
             auto angle_to_target = last.AngleTo(local_target);
-            auto x = last.x + next_v * timestep * cos(angle_to_target);
-            auto y = Distance(s(x.value));
-            // auto speed = coeffs_s.eval_derivative(t);
-            // auto acceleration = coeffs_s.eval_derivative2(t);
-            auto next = LocalCartesianCoordinate(x, y);
+            auto dist_in_x = dist_to_travel_next * cos(angle_to_target);
+            auto next_x = last.x + dist_in_x;
+            auto next_y = Distance(s(next_x.value));
+            auto next = LocalCartesianCoordinate(next_x, next_y);
             auto dist = last.DistanceTo(next);
             auto speed = dist / timestep;
             trajectory.push_back(local_system.ToGlobal(next));
             last = next;
             last_speed = speed;
-            log(2) << "add local waypoint " << next << " with speed " << speed << /*" and acceleration " << acceleration <<*/ std::endl;
+            log(2) << "add local waypoint " << next << " with speed " << speed << std::endl;
         }
     }
 
