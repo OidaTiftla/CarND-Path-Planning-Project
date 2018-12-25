@@ -5,6 +5,9 @@
 #include "TrajectoryPlanner.h"
 
 
+// ToDo: avoid any collisions,
+// because behavior planner is not responsible for this, he only makes a suggestion
+
 std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(const Behavior& behavior, const Time timestep, const Time time_horizon) const {
     log(1) << std::endl;
     log(1) << "Target state:" << std::endl;
