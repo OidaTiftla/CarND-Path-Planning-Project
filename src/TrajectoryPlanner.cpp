@@ -59,11 +59,12 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
         // calculate s relative to my current car position (combats the fact, that s jumps when I drive over the starting line (s=0 wraparound))
         auto rel_s_preceding_vehicle_prediction = this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, preceding_vehicle_prediction.frenet.s);
         auto rel_s_target = this->map.GetFrenetSDistanceFromTo(this->car.frenet.s, target_frenet.s);
-        if (rel_s_preceding_vehicle_prediction - min_distance_with_target_speed < rel_s_target) {
+        auto actual_distance_to_preceding_vehicle = rel_s_preceding_vehicle_prediction - rel_s_target;
+        if (actual_distance_to_preceding_vehicle < min_distance_with_target_speed) {
             // to fast -> no safety zone -> drive with speed of preceding vehicle and with safety zone
             log(1) << "too fast for vehicle in front of us (s prediction: " << preceding_vehicle_prediction.frenet.s << ")" << std::endl;
             // set target speed to speed of vehicle in front of us
-            target_speed = preceding_vehicle_prediction.speed;
+            target_speed = actual_distance_to_preceding_vehicle / behavior.min_safety_zone_time;
             // and set the target s value to the s value of the preceding vehicle
             // minus the minimum distance to vehicle in front of us, if we drive with its speed
             auto min_distance_with_preceding_vehicle_speed = behavior.min_safety_zone_time * preceding_vehicle_prediction.speed;
