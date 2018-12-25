@@ -131,82 +131,146 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
     CoordinateSystemReference local_system(this->car.cartesian);
 
     log(2) << std::endl;
-    log(2) << "Calculate JMT:" << std::endl;
-    log(2) << "--------------" << std::endl;
-
-    State start_x, start_y, end_x, end_y;
+    log(2) << "Local s JMT:" << std::endl;
+    log(2) << "------------" << std::endl;
 
     // define starting state
     auto remaining_time_horizon = time_horizon;
     LocalCartesianCoordinate wp_last, wp_last2, wp_last3;
+    FrenetCoordinate wp_last_frenet;
     if (count_previous >= 3) {
         remaining_time_horizon = time_horizon - count_previous * timestep;
         log(2) << "create starting state from last 3 waypoints" << std::endl;
         wp_last = local_system.ToLocal(this->previous_path[count_previous - 1]);
+        wp_last_frenet = this->map.ConvertToFrenet(this->previous_path[count_previous - 1]);
         wp_last2 = local_system.ToLocal(this->previous_path[count_previous - 2]);
         wp_last3 = local_system.ToLocal(this->previous_path[count_previous - 3]);
     } else {
         log(2) << "create starting state from current position" << std::endl;
         wp_last = local_system.ToLocal(this->car.cartesian.coord);
+        wp_last_frenet = this->car.frenet;
         wp_last2 = local_system.ToLocal(this->map.PredictIntoFuture(this->car, -timestep).cartesian.coord);
         wp_last3 = local_system.ToLocal(this->map.PredictIntoFuture(this->car, -timestep * 2).cartesian.coord);
     }
-    auto wp_last_v_x = (wp_last.x - wp_last2.x) / timestep;
-    auto wp_last_v_y = (wp_last.y - wp_last2.y) / timestep;
-    auto wp_last_v2_x = (wp_last2.x - wp_last3.x) / timestep;
-    auto wp_last_v2_y = (wp_last2.y - wp_last3.y) / timestep;
-    start_x.x = wp_last.x;
-    start_y.x = wp_last.y;
-    start_x.x_dot = wp_last_v_x;
-    start_y.x_dot = wp_last_v_y;
-    start_x.x_dot_dot = (wp_last_v_x - wp_last_v2_x) / timestep;
-    start_y.x_dot_dot = (wp_last_v_y - wp_last_v2_y) / timestep;
-    log(2) << "starting state:" << std::endl;
-    log(2) << "x: " << start_x.x << std::endl;
-    log(2) << "y: " << start_y.x << std::endl;
-    log(2) << "speed x: " << start_x.x_dot << std::endl;
-    log(2) << "speed y: " << start_y.x_dot << std::endl;
-    log(2) << "acceleration x: " << start_x.x_dot_dot << std::endl;
-    log(2) << "acceleration y: " << start_y.x_dot_dot << std::endl;
 
-    // define end state
-    auto future_time_for_direction = 10 * timestep;
+    std::vector<LocalCartesianCoordinate> waypoints;
+    auto total_s = target_state.frenet.s - wp_last_frenet.s;
+    auto total_d = target_state.frenet.d - wp_last_frenet.d;
+    auto count_segments = (int)ceil(total_s / 50_m);
+    auto count_points = count_segments + 1;
+    log(2) << "--- segments: " << count_segments << std::endl;
+    for (int i = 0; i < count_points; ++i) {
+        auto s = wp_last_frenet.s + total_s * i / count_segments;
+        auto d = wp_last_frenet.d + total_d * i / count_segments;
+        waypoints.push_back(local_system.ToLocal(this->map.ConvertToCartesian(FrenetCoordinate(s, d))));
+    }
+    // replace, because the calculations are not so exact, when converting into frenet coordinates
+    waypoints[0] = wp_last;
+
+    // correct total s in local system
+    total_s = 0_m;
+    for (int i = 0; i < count_segments; ++i) {
+        total_s += waypoints[i].DistanceTo(waypoints[i + 1]);
+    }
+
+    auto wp_last_v = wp_last.DistanceTo(wp_last2) / timestep;
+    auto wp_last_v2 = wp_last2.DistanceTo(wp_last3) / timestep;
+    State start_s, end_s;
+    start_s.x = 0_m;
+    start_s.x_dot = wp_last_v;
+    start_s.x_dot_dot = (wp_last_v - wp_last_v2) / timestep;
+
     auto wp_target = local_system.ToLocal(target_state.cartesian.coord);
-    auto wp_target2 = local_system.ToLocal(this->map.PredictIntoFuture(target_state, future_time_for_direction).cartesian.coord);
-    end_x.x = wp_target.x;
-    end_y.x = wp_target.y;
-    end_x.x_dot = (wp_target2.x - wp_target.x) / future_time_for_direction; // speed in local coordinate system
-    end_y.x_dot = (wp_target2.y - wp_target.y) / future_time_for_direction; // speed in local coordinate system
-    end_x.x_dot_dot = 0_m / 1_s / 1_s;
-    end_y.x_dot_dot = 0_m / 1_s / 1_s;
-    log(2) << "end state:" << std::endl;
-    log(2) << "x: " << end_x.x << std::endl;
-    log(2) << "y: " << end_y.x << std::endl;
-    log(2) << "speed x: " << end_x.x_dot << std::endl;
-    log(2) << "speed y: " << end_y.x_dot << std::endl;
-    log(2) << "acceleration x: " << end_x.x_dot_dot << std::endl;
-    log(2) << "acceleration y: " << end_y.x_dot_dot << std::endl;
+    auto wp_target2 = local_system.ToLocal(this->map.PredictIntoFuture(target_state, timestep).cartesian.coord);
+    end_s.x = total_s;
+    end_s.x_dot = wp_target2.DistanceTo(wp_target) / timestep; // speed in local coordinate system
+    end_s.x_dot_dot = 0_m / 1_s / 1_s;
+
+    log(2) << "=== starting state:" << std::endl;
+    log(2) << "s: " << start_s.x << std::endl;
+    log(2) << "speed s: " << start_s.x_dot << std::endl;
+    log(2) << "acceleration s: " << start_s.x_dot_dot << std::endl;
+    log(2) << "=== end state:" << std::endl;
+    log(2) << "s: " << end_s.x << std::endl;
+    log(2) << "speed s: " << end_s.x_dot << std::endl;
+    log(2) << "acceleration s: " << end_s.x_dot_dot << std::endl;
 
     // calculate JMT
-    auto coeffs_x = JMT(start_x, end_x, remaining_time_horizon);
-    auto coeffs_y = JMT(start_y, end_y, remaining_time_horizon);
-    log(2) << "coeffs:" << std::endl;
-    log(2) << "x: "
-        << coeffs_x.a_0 << ", "
-        << coeffs_x.a_1 << ", "
-        << coeffs_x.a_2 << ", "
-        << coeffs_x.a_3 << ", "
-        << coeffs_x.a_4 << ", "
-        << coeffs_x.a_5 << ", "
+    auto coeffs_s = JMT(start_s, end_s, remaining_time_horizon);
+    log(2) << "coeffs :::::::::::::::::: s: "
+        << coeffs_s.a_0 << ", "
+        << coeffs_s.a_1 << ", "
+        << coeffs_s.a_2 << ", "
+        << coeffs_s.a_3 << ", "
+        << coeffs_s.a_4 << ", "
+        << coeffs_s.a_5 << ", "
         << std::endl;
-    log(2) << "y: "
-        << coeffs_y.a_0 << ", "
-        << coeffs_y.a_1 << ", "
-        << coeffs_y.a_2 << ", "
-        << coeffs_y.a_3 << ", "
-        << coeffs_y.a_4 << ", "
-        << coeffs_y.a_5 << ", "
-        << std::endl;
+
+    std::vector<State> segment_states_x, segment_states_y;
+    auto dT_segment = remaining_time_horizon / count_segments;
+    for (int i = 0; i < count_points; ++i) {
+        auto t = i * dT_segment;
+        // get distance, speed and acceleration from s JMT
+        auto s = coeffs_s.eval(t);
+        auto v = coeffs_s.eval_derivative(t);
+        auto a = coeffs_s.eval_derivative2(t);
+
+        // get x, y from s and also the angle, to calculate v_x and v_y (and a_x, a_y)
+        auto current_s = 0_m;
+        int k = 0;
+        for (; k < count_segments; ++k) {
+            if (current_s >= s) {
+                break;
+            }
+            auto s_segment = waypoints[k].DistanceTo(waypoints[k + 1]);
+            if (current_s + s_segment <= s) {
+                current_s += s_segment;
+            } else {
+                break;
+            }
+        }
+        auto angle = 0_rad;
+        auto x = 0_m;
+        auto y = 0_m;
+        if (k >= count_segments) {
+            // last point
+            if (k >= 1) {
+                angle = waypoints[k - 1].AngleTo(waypoints[k]);
+            } else {
+                angle = 0_rad;
+            }
+            x = waypoints[k].x;
+            y = waypoints[k].y;
+        } else {
+            angle = waypoints[k].AngleTo(waypoints[k + 1]);
+            auto s_segment = waypoints[k].DistanceTo(waypoints[k + 1]);
+            auto part = (double)((s - current_s) / s_segment);
+            if (k <= 0 && part < 0.001) {
+                angle = 0_rad; // starting point
+            }
+            x = waypoints[k].x + (waypoints[k + 1].x - waypoints[k].x) * part;
+            y = waypoints[k].y + (waypoints[k + 1].y - waypoints[k].y) * part;
+        }
+
+        State state_x, state_y;
+        state_x.x = x;
+        state_x.x_dot = v * cos(angle);
+        state_x.x_dot_dot = a * cos(angle);
+        state_y.x = y;
+        state_y.x_dot = v * sin(angle);
+        state_y.x_dot_dot = a * sin(angle);
+
+        log(2) << "=== state:" << std::endl;
+        log(2) << "x: " << state_x.x << std::endl;
+        log(2) << "y: " << state_y.x << std::endl;
+        log(2) << "speed x: " << state_x.x_dot << std::endl;
+        log(2) << "speed y: " << state_y.x_dot << std::endl;
+        log(2) << "acceleration x: " << state_x.x_dot_dot << std::endl;
+        log(2) << "acceleration y: " << state_y.x_dot_dot << std::endl;
+
+        segment_states_x.push_back(state_x);
+        segment_states_y.push_back(state_y);
+    }
 
     log(2) << std::endl;
     log(2) << "Calculate trajectory:" << std::endl;
@@ -216,6 +280,8 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
     int count = ceil(time_horizon / timestep);
     auto last = local_system.ToLocal(this->car.cartesian.coord);
     auto last_speed = this->car.speed;
+    auto i_segment = -1;
+    Coefficients coeffs_x, coeffs_y;
     log(2) << "current car " << last << " with speed " << last_speed << std::endl;
     log(2) << "create " << count << " waypoints" << std::endl;
     for (int i = 0; i < count; ++i) {
@@ -229,12 +295,45 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
             log(2) << "reuse local waypoint " << next << " with speed " << speed << std::endl;
         } else {
             auto t = timestep * (i - count_previous + 1);
-            auto x = coeffs_x.eval(t);
-            auto y = coeffs_y.eval(t);
-            auto x_dot = coeffs_x.eval_derivative(t);
-            auto y_dot = coeffs_y.eval_derivative(t);
-            auto x_dot_dot = coeffs_x.eval_derivative2(t);
-            auto y_dot_dot = coeffs_y.eval_derivative2(t);
+            auto end_t_segment = (i_segment + 1) * dT_segment;
+            if (t > end_t_segment) {
+                // calculate next segment
+                ++i_segment;
+                auto start_x = segment_states_x[i_segment];
+                auto end_x = segment_states_x[i_segment + 1];
+                auto start_y = segment_states_y[i_segment];
+                auto end_y = segment_states_y[i_segment + 1];
+
+                // calculate JMT
+                coeffs_x = JMT(start_x, end_x, dT_segment);
+                coeffs_y = JMT(start_y, end_y, dT_segment);
+
+                log(2) << "coeffs :::::::::::::::::: x: "
+                    << coeffs_x.a_0 << ", "
+                    << coeffs_x.a_1 << ", "
+                    << coeffs_x.a_2 << ", "
+                    << coeffs_x.a_3 << ", "
+                    << coeffs_x.a_4 << ", "
+                    << coeffs_x.a_5 << ", "
+                    << std::endl;
+                log(2) << "coeffs :::::::::::::::::: y: "
+                    << coeffs_y.a_0 << ", "
+                    << coeffs_y.a_1 << ", "
+                    << coeffs_y.a_2 << ", "
+                    << coeffs_y.a_3 << ", "
+                    << coeffs_y.a_4 << ", "
+                    << coeffs_y.a_5 << ", "
+                    << std::endl;
+            }
+            auto start_t_segment = i_segment * dT_segment;
+            auto t_seg = t - start_t_segment;
+
+            auto x = coeffs_x.eval(t_seg);
+            auto y = coeffs_y.eval(t_seg);
+            auto x_dot = coeffs_x.eval_derivative(t_seg);
+            auto y_dot = coeffs_y.eval_derivative(t_seg);
+            auto x_dot_dot = coeffs_x.eval_derivative2(t_seg);
+            auto y_dot_dot = coeffs_y.eval_derivative2(t_seg);
             auto acceleration = sqrt(pow<2>(x_dot_dot) + pow<2>(y_dot_dot));
             auto speed = sqrt(pow<2>(x_dot) + pow<2>(y_dot));
             auto next = LocalCartesianCoordinate(x, y);
