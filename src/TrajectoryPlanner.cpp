@@ -67,8 +67,8 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::PlanNextTrajectory(con
             // to fast -> no safety zone -> drive with speed of preceding vehicle and with safety zone
             log(1) << "too fast for vehicle in front of us (s prediction: " << preceding_vehicle_prediction.frenet.s << ")" << std::endl;
             // calculate acceleration, needed to keep minimum distance to preceding vehicle
-            acceleration = (preceding_vehicle_prediction.frenet.s - car.frenet.s - car.speed * (time_horizon + this->min_safety_zone_time))
-                / (0.5 * pow<2>(time_horizon) + time_horizon * this->min_safety_zone_time);
+            acceleration = (preceding_vehicle_prediction.frenet.s - car.frenet.s - car.speed * (time_horizon + behavior.min_safety_zone_time))
+                / (0.5 * pow<2>(time_horizon) + time_horizon * behavior.min_safety_zone_time);
             // validate acceleration
             if (acceleration > this->max_acceleration) {
                 log(1) << "exceed max acceleration (preceding vehicle)" << std::endl;
