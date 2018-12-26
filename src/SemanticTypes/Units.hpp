@@ -571,6 +571,16 @@ inline constexpr Value<TUnit> abs(const Value<TUnit>& v) {
     return Value<TUnit>(abs(v.value));
 }
 
+template <typename TUnit>
+inline constexpr Value<TUnit> max(const Value<TUnit>& v1, const Value<TUnit>& v2) {
+    return Value<TUnit>(max(v1.value, v2.value));
+}
+
+template <typename TUnit>
+inline constexpr Value<TUnit> min(const Value<TUnit>& v1, const Value<TUnit>& v2) {
+    return Value<TUnit>(min(v1.value, v2.value));
+}
+
 inline constexpr AngleRad ToRadian(const AngleDeg& deg) {
     return AngleRad(deg.value * M_PI / 180);
 }
