@@ -53,6 +53,9 @@ int main() {
     auto max_jerk = 0.5 * 10_m / 1_s / 1_s / 1_s; //10_m / 1_s / 1_s / 1_s;
     auto timestep = 0.02_s;
     auto time_horizon = 2.0_s;
+    auto max_lanes = 3;
+    auto vehicle_length = 4.5_m;
+    auto vehicle_width = 3_m;
 
     // output config
     log(0) << endl;
@@ -66,6 +69,7 @@ int main() {
     log(0) << "max jerk: " << max_jerk << endl;
     log(0) << "timestep: " << timestep << endl;
     log(0) << "time horizon: " << time_horizon << endl;
+    log(0) << "max lanes: " << max_lanes << endl;
 
     ifstream in_map_(map_file_.c_str(), ifstream::in);
 
@@ -90,7 +94,14 @@ int main() {
     }
 
     Map map(map_waypoints, max_s, lane_width);
-    BehaviorPlanner bPlanner(map, max_speed, min_safety_zone_time, max_acceleration, max_jerk);
+    BehaviorPlanner bPlanner(map,
+        max_speed,
+        min_safety_zone_time,
+        max_acceleration,
+        max_jerk,
+        max_lanes,
+        vehicle_length,
+        vehicle_width);
 
     h.onMessage([&map, &bPlanner, &timestep, &time_horizon, &max_acceleration, &max_jerk](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
         uWS::OpCode opCode) {
@@ -156,7 +167,7 @@ int main() {
                     log(1) << "speed x: " << car.speed_x << endl;
                     log(1) << "speed y: " << car.speed_y << endl;
 
-                    auto behavior = bPlanner.PlanNextBehavior(car, sensor_fusion, timestep, time_horizon);
+                    auto behavior = bPlanner.plan_next_behavior(car, sensor_fusion, timestep, time_horizon);
                     // output behavior
                     log(1) << endl;
                     log(1) << "Behavior:" << endl;

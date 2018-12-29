@@ -79,6 +79,10 @@ FrenetCoordinate Map::ConvertToFrenet(const GlobalCartesianCoordinate pos) const
 
 // Transform from Frenet s,d coordinates to Cartesian x,y
 GlobalCartesianCoordinate Map::ConvertToCartesian(FrenetCoordinate pos) const {
+    return this->ConvertToCartesianPosition(pos).coord;
+}
+
+GlobalCartesianPosition Map::ConvertToCartesianPosition(FrenetCoordinate pos) const {
     // normalize input for s: 0 < s < max_s
     pos.s = this->NormalizeS(pos.s);
 
@@ -102,7 +106,7 @@ GlobalCartesianCoordinate Map::ConvertToCartesian(FrenetCoordinate pos) const {
     auto x = seg_x + pos.d * cos(perp_heading);
     auto y = seg_y + pos.d * sin(perp_heading);
 
-    return { x, y };
+    return { x, y, heading };
 }
 
 int Map::GetLaneFrom(const FrenetCoordinate frenet) const {

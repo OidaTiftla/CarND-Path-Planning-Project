@@ -30,6 +30,7 @@ public:
 
     // Transform from Frenet s,d coordinates to Cartesian x,y
     GlobalCartesianCoordinate ConvertToCartesian(FrenetCoordinate pos) const;
+    GlobalCartesianPosition ConvertToCartesianPosition(FrenetCoordinate pos) const;
 
     int GetLaneFrom(const FrenetCoordinate frenet) const;
     Distance GetFrenetDFromLane(const int lane) const;
