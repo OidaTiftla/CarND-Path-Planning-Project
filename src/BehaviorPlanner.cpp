@@ -246,7 +246,7 @@ TrajectoryKinematics BehaviorPlanner::lane_change_trajectory(const BehaviorState
         auto other_vehicle_lane = this->map.GetLaneFrom(it->frenet);
         if (other_vehicle_lane == new_lane) {
             // check if it is save to change lanes (no collision)
-            auto t_step = min(1_s, max(0.02_s, 2_m / this->max_speed));
+            auto t_step = std::min(1_s, std::max(0.02_s, 2_m / this->max_speed));
             // check the time interval [0; time_horizon]
             for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
                 auto vehicle_prediction = this->map.PredictIntoFuture(*it, t);
