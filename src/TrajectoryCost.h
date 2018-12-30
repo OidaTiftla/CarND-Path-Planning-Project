@@ -42,7 +42,7 @@ public:
           vehicle_length(vehicle_length),
           vehicle_width(vehicle_width) {}
 
-    double calculate_cost(
+    float calculate_cost(
         const TrajectoryKinematics &trajectory,
         const VehicleState &car,
         const Time timestep,
@@ -53,14 +53,14 @@ public:
         const TrajectoryKinematics &trajectory,
         const Time t) const;
 
-    double goal_distance_cost(
+    float goal_distance_cost(
         const TrajectoryKinematics &trajectory,
         const VehicleState &car,
         const Time timestep,
         const Time time_horizon,
         const std::vector<VehicleState> &sensor_fusion) const;
 
-    double inefficiency_cost(
+    float inefficiency_cost(
         const TrajectoryKinematics &trajectory,
         const VehicleState &car,
         const Time timestep,
