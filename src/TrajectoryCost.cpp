@@ -13,16 +13,9 @@ float TrajectoryCost::calculate_cost(const TrajectoryKinematics &trajectory, con
     /*
     Sum weighted cost functions to get total cost for trajectory.
     */
-    std::vector<std::tuple<float, std::function<float(const TrajectoryKinematics &, const VehicleState &, const Time, const Time, const std::vector<VehicleState> &)>>> cf_list = {
-        { REACH_GOAL, goal_distance_cost },
-        { EFFICIENCY, inefficiency_cost },
-    };
-
     float cost = 0.0;
-    for (auto cf : cf_list) {
-        auto [ weight, func ] = cf;
-        cost += weight * func(trajectory, car, timestep, time_horizon, sensor_fusion);
-    }
+    cost += REACH_GOAL * goal_distance_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    cost += EFFICIENCY * inefficiency_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
     return cost;
 }
 
