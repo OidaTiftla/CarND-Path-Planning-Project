@@ -167,7 +167,7 @@ int main() {
                     log(1) << "speed x: " << car.speed_x << endl;
                     log(1) << "speed y: " << car.speed_y << endl;
 
-                    auto behavior = bPlanner.plan_next_behavior(car, sensor_fusion, timestep, time_horizon);
+                    auto behavior = bPlanner.plan_next_behavior(car, timestep, time_horizon, sensor_fusion);
                     // output behavior
                     log(1) << endl;
                     log(1) << "Behavior:" << endl;
