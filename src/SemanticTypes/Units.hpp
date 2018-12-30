@@ -101,6 +101,11 @@ struct Value {
     operator typename std::enable_if<std::is_same<TUnit_, NoUnit>::value, double>::type() {
         return value;
     }
+
+    template<typename TUnit_ = TUnit>
+    operator typename std::enable_if<std::is_same<TUnit_, NoUnit>::value, float>::type() {
+        return value;
+    }
 };
 
 // Semantic Value Types for SI basic units
