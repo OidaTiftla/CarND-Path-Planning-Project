@@ -6,19 +6,19 @@
 
 
 // change weights for cost functions
-const float REACH_GOAL = pow(10, 6);
-const float EFFICIENCY = pow(10, 5);
+const double REACH_GOAL = pow(10, 6);
+const double EFFICIENCY = pow(10, 5);
 
-float TrajectoryCost::calculate_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) {
+double TrajectoryCost::calculate_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) {
     /*
     Sum weighted cost functions to get total cost for trajectory.
     */
-    std::vector<std::tuple<float, std::function<float(const TrajectoryKinematics &, const VehicleState &, const Time, const Time, const std::vector<VehicleState> &)>>> cf_list = {
+    std::vector<std::tuple<double, std::function<double(const TrajectoryKinematics &, const VehicleState &, const Time, const Time, const std::vector<VehicleState> &)>>> cf_list = {
         { REACH_GOAL, goal_distance_cost },
         { EFFICIENCY, inefficiency_cost },
     };
 
-    float cost = 0.0;
+    double cost = 0.0;
     for (auto cf : cf_list) {
         auto [ weight, func ] = cf;
         cost += weight * func(trajectory, car, timestep, time_horizon, sensor_fusion);
@@ -35,19 +35,19 @@ VehicleState TrajectoryCost::evaluate_trajectory(const TrajectoryKinematics &tra
     return VehicleState(-1, cartesian, frenet, speed);
 }
 
-float tanh(float x) {
+double tanh(double x) {
     return (exp(x) - exp(-x)) / (exp(x) + exp(-x));
 }
 
-float sigmoid(float x) {
+double sigmoid(double x) {
     return 1 / (1 + exp(-x));
 }
 
-float sigmoid_m1_1(float x) {
+double sigmoid_m1_1(double x) {
     return -1 + 2 * sigmoid(x);
 }
 
-float TrajectoryCost::goal_distance_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
+double TrajectoryCost::goal_distance_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
     /*
     Cost decreases as we move further along the frenet s coordinate.
     */
@@ -56,7 +56,7 @@ float TrajectoryCost::goal_distance_cost(const TrajectoryKinematics &trajectory,
     return sigmoid_m1_1((reference_distance - distance) / reference_distance);
 }
 
-float TrajectoryCost::inefficiency_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
+double TrajectoryCost::inefficiency_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
     /*
     Cost becomes higher for trajectories with intended lane and final lane that have traffic slower than vehicle's target speed.
     You can use the lane_speed(const map<int, vector<Vehicle>> & predictions, int lane) function to determine the speed
