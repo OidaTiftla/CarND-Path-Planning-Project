@@ -143,3 +143,20 @@ VehicleState Map::PredictIntoFuture(const VehicleState& vehicle, const Time time
         this->ConvertToFrenet(future_pos.coord),
         vehicle.speed);
 }
+
+int Map::find_next_vehicle_in_lane(const Distance start_s, const int lane, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
+    // find nearest vehicle in same lane in front of us
+    // set initial value to the maximum search distance
+    auto vehicle_id = -1;
+    auto nearest = 999999_m;
+    for (auto vehicle : sensor_fusion) {
+        if (this->GetLaneFrom(vehicle.frenet) == lane) {
+            auto dist = this->GetFrenetSDistanceFromTo(start_s, vehicle.frenet.s);
+            if (dist < nearest) {
+                nearest = dist;
+                vehicle_id = vehicle.id;
+            }
+        }
+    }
+    return vehicle_id;
+}

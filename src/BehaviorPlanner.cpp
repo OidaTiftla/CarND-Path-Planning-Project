@@ -40,30 +40,7 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
     return behavior;
 }
 
-int BehaviorPlanner::find_next_vehicle_in_lane(const Distance start_s, const int lane, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
-    log(1) << std::endl;
-    log(1) << "Sensor fusion:" << std::endl;
-    log(1) << "--------------" << std::endl;
-
-    // find nearest vehicle in same lane in front of us
-    // set initial value to the maximum search distance
-    auto vehicle_id = -1;
-    auto nearest = 2 * this->max_speed * (time_horizon + this->min_safety_zone_time);
-    for (auto vehicle : sensor_fusion) {
-        if (this->map.GetLaneFrom(vehicle.frenet) == lane) {
-            auto dist = this->map.GetFrenetSDistanceFromTo(start_s, vehicle.frenet.s);
-            // log(1) << "distance to " << vehicle.id << " (" << vehicle.frenet << ", " << vehicle.speed << "): " << dist << std::endl;
-            if (dist < nearest) {
-                nearest = dist;
-                vehicle_id = vehicle.id;
-            }
-        }
-    }
-    log(1) << "nearest: " << nearest << " (id: " << vehicle_id << ")" << std::endl;
-    return vehicle_id;
-}
-
-TrajectoryKinematics BehaviorPlanner::try_follow_vehicle(const VehicleState &car, const int vehicle_id, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
+TrajectoryKinematics BehaviorPlanner::try_follow_vehicle(const VehicleState &car, const int vehicle_id, const int target_lane, const int intended_lane, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
     auto acceleration = (this->max_speed - car.speed) / time_horizon;
     if (acceleration > this->max_acceleration) {
         acceleration = this->max_acceleration;
@@ -109,7 +86,7 @@ TrajectoryKinematics BehaviorPlanner::try_follow_vehicle(const VehicleState &car
     FrenetCoordinate frenet_target(future_s, this->map.GetFrenetDFromLane(this->lane));
     auto cartesian_target = this->map.ConvertToCartesianPosition(frenet_target);
     VehicleState target_state(-1, cartesian_target, frenet_target, target_speed);
-    return TrajectoryKinematics(car, true, target_state, acceleration, time_horizon, preceding_vehicle_id);
+    return TrajectoryKinematics(car, this->lane, true, target_state, target_lane, intended_lane, acceleration, time_horizon, preceding_vehicle_id);
 }
 
 std::vector<BehaviorState> BehaviorPlanner::successor_states() const {
@@ -166,7 +143,7 @@ TrajectoryKinematics BehaviorPlanner::generate_trajectory(const BehaviorState st
             break;
         default:
             // this should never happen
-            return TrajectoryKinematics(car, false, car, 0_m / 1_s / 1_s, 0_s, -1);
+            return TrajectoryKinematics(car, this->lane, false, car, this->lane, this->lane, 0_m / 1_s / 1_s, 0_s, -1);
     }
 }
 
@@ -176,8 +153,11 @@ TrajectoryKinematics BehaviorPlanner::constant_speed_trajectory(const VehicleSta
     */
     return TrajectoryKinematics(
         car,
+        this->lane,
         true,
         this->map.PredictIntoFuture(car, time_horizon),
+        this->lane,
+        this->lane,
         0_m / 1_s / 1_s,
         time_horizon,
         -1);
@@ -187,8 +167,8 @@ TrajectoryKinematics BehaviorPlanner::keep_lane_trajectory(const VehicleState &c
     /*
     Generate a keep lane trajectory.
     */
-    auto vehicle_id = this->find_next_vehicle_in_lane(car.frenet.s, this->lane, time_horizon, sensor_fusion);
-    return this->try_follow_vehicle(car, vehicle_id, time_horizon, sensor_fusion);
+    auto vehicle_id = this->map.find_next_vehicle_in_lane(car.frenet.s, this->lane, time_horizon, sensor_fusion);
+    return this->try_follow_vehicle(car, vehicle_id, this->lane, this->lane, time_horizon, sensor_fusion);
 }
 
 TrajectoryKinematics BehaviorPlanner::prep_lane_change_trajectory(const BehaviorState state, const VehicleState &car, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
@@ -207,11 +187,11 @@ TrajectoryKinematics BehaviorPlanner::prep_lane_change_trajectory(const Behavior
             break;
     }
 
-    auto vehicle_id_current_lane = this->find_next_vehicle_in_lane(car.frenet.s, this->lane, time_horizon, sensor_fusion);
-    auto curr_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_current_lane, time_horizon, sensor_fusion);
+    auto vehicle_id_current_lane = this->map.find_next_vehicle_in_lane(car.frenet.s, this->lane, time_horizon, sensor_fusion);
+    auto curr_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_current_lane, this->lane, new_lane, time_horizon, sensor_fusion);
 
-    auto vehicle_id_new_lane = this->find_next_vehicle_in_lane(car.frenet.s, new_lane, time_horizon, sensor_fusion);
-    auto new_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_new_lane, time_horizon, sensor_fusion);
+    auto vehicle_id_new_lane = this->map.find_next_vehicle_in_lane(car.frenet.s, new_lane, time_horizon, sensor_fusion);
+    auto new_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_new_lane, this->lane, new_lane, time_horizon, sensor_fusion);
 
     // choose kinematics with lowest velocity.
     if (new_lane_new_kinematics.target_state.speed < curr_lane_new_kinematics.target_state.speed) {
@@ -237,14 +217,14 @@ TrajectoryKinematics BehaviorPlanner::lane_change_trajectory(const BehaviorState
             break;
     }
 
-    TrajectoryKinematics error_trajectory(car, false, car, 0_m / 1_s / 1_s, 0_s, -1);
+    TrajectoryKinematics error_trajectory(car, this->lane, false, car, this->lane, this->lane, 0_m / 1_s / 1_s, 0_s, -1);
 
     // check if a lane change is possible (check if another vehicle occupies that spot)
-    auto vehicle_id_current_lane = this->find_next_vehicle_in_lane(car.frenet.s, this->lane, time_horizon, sensor_fusion);
-    auto curr_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_current_lane, time_horizon, sensor_fusion);
+    auto vehicle_id_current_lane = this->map.find_next_vehicle_in_lane(car.frenet.s, this->lane, time_horizon, sensor_fusion);
+    auto curr_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_current_lane, new_lane, new_lane, time_horizon, sensor_fusion);
 
-    auto vehicle_id_new_lane = this->find_next_vehicle_in_lane(car.frenet.s, new_lane, time_horizon, sensor_fusion);
-    auto new_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_new_lane, time_horizon, sensor_fusion);
+    auto vehicle_id_new_lane = this->map.find_next_vehicle_in_lane(car.frenet.s, new_lane, time_horizon, sensor_fusion);
+    auto new_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_new_lane, new_lane, new_lane, time_horizon, sensor_fusion);
 
     // if any trajectory not possible
     if (!curr_lane_new_kinematics.is_trajectory_possible

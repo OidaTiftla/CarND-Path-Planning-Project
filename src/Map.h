@@ -38,6 +38,8 @@ public:
     Distance NormalizeS(Distance s) const;
 
     VehicleState PredictIntoFuture(const VehicleState& vehicle, const Time time_horizon) const;
+
+    int find_next_vehicle_in_lane(const Distance start_s, const int lane, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const;
 };
 
 #endif //MAP_H
