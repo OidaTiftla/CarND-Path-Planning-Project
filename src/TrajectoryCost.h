@@ -8,12 +8,12 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
-#include <math.h>
+#include <cmath>
 #include "log.h"
 #include "SemanticTypes.h"
 #include "Map.h"
-#include "BehaviorPlanner.h"
 #include "VehicleState.hpp"
+#include "TrajectoryKinematics.hpp"
 
 
 class TrajectoryCost {
