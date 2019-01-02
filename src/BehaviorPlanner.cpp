@@ -158,18 +158,14 @@ TrajectoryKinematics BehaviorPlanner::generate_trajectory(const BehaviorState st
     switch (this->state) {
         case BehaviorState::ConstantSpeed:
             return this->constant_speed_trajectory(car, time_horizon);
-            break;
         case BehaviorState::KeepLane:
             return this->keep_lane_trajectory(car, time_horizon, sensor_fusion);
-            break;
         case BehaviorState::PrepareLaneChangeLeft:
         case BehaviorState::PrepareLaneChangeRight:
             return this->prep_lane_change_trajectory(state, car, time_horizon, sensor_fusion);
-            break;
         case BehaviorState::LaneChangeLeft:
         case BehaviorState::LaneChangeRight:
             return this->lane_change_trajectory(state, car, time_horizon, sensor_fusion);
-            break;
         default:
             // this should never happen
             return TrajectoryKinematics(car, this->lane, false, car, this->lane, this->lane, 0_m / 1_s / 1_s, 0_s, -1);
