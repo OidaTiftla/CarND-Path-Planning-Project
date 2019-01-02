@@ -85,7 +85,7 @@ GlobalCartesianPosition Map::ConvertToCartesianPosition(FrenetCoordinate pos) co
     // normalize input for s: 0 < s < max_s
     pos.s = this->NormalizeS(pos.s);
 
-    size_t prev_wp = -1;
+    size_t prev_wp = 0;
 
     while (pos.s > this->wayPoints[prev_wp + 1].frenet.s && (prev_wp < (int)(this->wayPoints.size() - 1))) {
         prev_wp++;
