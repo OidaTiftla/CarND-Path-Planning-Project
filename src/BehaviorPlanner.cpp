@@ -43,10 +43,14 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
     }
 
     Behavior behavior;
-    behavior.lane = this->map.GetLaneFrom(trajectory_for_best_state.target_state.frenet);
+    behavior.lane = trajectory_for_best_state.target_lane;
     behavior.max_speed = trajectory_for_best_state.target_state.speed;
     behavior.min_safety_zone_time = this->min_safety_zone_time;
     behavior.vehicle_id = trajectory_for_best_state.preceding_vehicle_id;
+
+    this->lane = trajectory_for_best_state.target_lane;
+    this->state = best_next_state;
+    log(2) << "next state: " << this->state << std::endl;
     return behavior;
 }
 
