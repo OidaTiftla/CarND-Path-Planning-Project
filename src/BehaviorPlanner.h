@@ -31,6 +31,25 @@ enum class BehaviorState {
     LaneChangeRight,
 };
 
+inline std::ostream& operator<<(std::ostream& out, const BehaviorState& o) {
+    switch (o) {
+        case BehaviorState::ConstantSpeed:
+            return out << "ConstantSpeed";
+        case BehaviorState::KeepLane:
+            return out << "KeepLane";
+        case BehaviorState::PrepareLaneChangeLeft:
+            return out << "PrepareLaneChangeLeft";
+        case BehaviorState::PrepareLaneChangeRight:
+            return out << "PrepareLaneChangeRight";
+        case BehaviorState::LaneChangeLeft:
+            return out << "LaneChangeLeft";
+        case BehaviorState::LaneChangeRight:
+            return out << "LaneChangeRight";
+        default:
+            return out << "Unknown";
+    };
+}
+
 class BehaviorPlanner {
 public:
     Map map;
