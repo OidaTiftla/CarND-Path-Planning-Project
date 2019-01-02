@@ -155,13 +155,13 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
     if (count_previous >= 2) {
         log(2) << "create starting state from last 2 waypoints" << std::endl;
         auto wp_last = local_system.ToLocal(this->previous_path[count_previous - 1]);
-        log(2) << "last waypoint " << wp_last << std::endl;
         wp_last_frenet = this->map.ConvertToFrenet(this->previous_path[count_previous - 1]);
+        log(2) << "last waypoint " << wp_last << ", " << wp_last_frenet << std::endl;
     } else {
         log(2) << "create starting state from current position" << std::endl;
         auto wp_last = local_system.ToLocal(this->car.cartesian.coord);
-        log(2) << "last waypoint " << wp_last << std::endl;
         wp_last_frenet = this->car.frenet;
+        log(2) << "last waypoint " << wp_last << ", " << wp_last_frenet << std::endl;
     }
 
     // define end points
