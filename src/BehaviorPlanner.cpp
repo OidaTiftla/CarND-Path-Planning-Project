@@ -6,6 +6,8 @@
 
 
 Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) {
+    set_log_level(1);
+
     if (this->lane == -1000) {
         this->lane = this->map.GetLaneFrom(car.frenet);
         log(2) << "set initial lane to " << this->lane << std::endl;

@@ -9,17 +9,9 @@
 #include <sstream>
 
 
-#define LOG_LEVEL 1
+void set_log_level(int level);
 
-static std::stringstream nullstream;
+std::ostream& log(int level);
 
-inline std::ostream& log(int level) {
-    if (level > LOG_LEVEL) {
-        nullstream.seekp(0);
-        return nullstream;
-    } else {
-        return std::cout;
-    }
-}
 
 #endif //LOG_H

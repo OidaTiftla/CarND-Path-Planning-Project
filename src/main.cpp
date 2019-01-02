@@ -57,6 +57,8 @@ int main() {
     auto vehicle_length = 4.5_m;
     auto vehicle_width = 3_m;
 
+    set_log_level(1);
+
     // output config
     log(0) << endl;
     log(0) << "Configuration settings:" << endl;

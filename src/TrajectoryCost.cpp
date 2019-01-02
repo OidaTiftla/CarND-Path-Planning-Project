@@ -13,6 +13,8 @@ float TrajectoryCost::calculate_cost(const TrajectoryKinematics &trajectory, con
     /*
     Sum weighted cost functions to get total cost for trajectory.
     */
+    set_log_level(1);
+
     float cost = 0.0;
     cost += REACH_GOAL * goal_distance_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
     cost += EFFICIENCY * inefficiency_cost(trajectory, car, timestep, time_horizon, sensor_fusion);

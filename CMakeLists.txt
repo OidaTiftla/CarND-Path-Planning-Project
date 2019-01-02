@@ -8,7 +8,7 @@ add_definitions(-W -Wno-int-in-bool-context -Wreturn-type -Wsign-compare -Wunuse
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 
-set(sources src/main.cpp src/Map.cpp src/BehaviorPlanner.cpp src/TrajectoryPlanner.cpp src/JMT.cpp src/TrajectoryCost.cpp)
+set(sources src/main.cpp src/log.cpp src/Map.cpp src/BehaviorPlanner.cpp src/TrajectoryPlanner.cpp src/JMT.cpp src/TrajectoryCost.cpp)
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
