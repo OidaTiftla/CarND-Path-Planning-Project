@@ -142,7 +142,7 @@ TrajectoryKinematics BehaviorPlanner::generate_trajectory(const BehaviorState st
     /*
     Given a possible next state, generate the appropriate trajectory to realize the next state.
     */
-    switch (this->state) {
+    switch (state) {
         case BehaviorState::ConstantSpeed:
             return this->constant_speed_trajectory(car, time_horizon);
         case BehaviorState::KeepLane:
