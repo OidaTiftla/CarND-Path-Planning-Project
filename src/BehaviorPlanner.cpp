@@ -8,10 +8,35 @@
 Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) {
     if (this->lane == -1000) {
         this->lane = this->map.GetLaneFrom(car.frenet);
+        log(2) << "set initial lane to " << this->lane << std::endl;
     }
 
     // only consider states which can be reached from current state
     auto possible_successor_states = this->successor_states();
+    log(2) << "possible successor states:";
+    for (auto state : possible_successor_states) {
+        switch (state) {
+            case BehaviorState::ConstantSpeed:
+                log(2) << " ConstantSpeed";
+                break;
+            case BehaviorState::KeepLane:
+                log(2) << " KeepLane";
+                break;
+            case BehaviorState::PrepareLaneChangeLeft:
+                log(2) << " PrepareLaneChangeLeft";
+                break;
+            case BehaviorState::PrepareLaneChangeRight:
+                log(2) << " PrepareLaneChangeRight";
+                break;
+            case BehaviorState::LaneChangeLeft:
+                log(2) << " LaneChangeLeft";
+                break;
+            case BehaviorState::LaneChangeRight:
+                log(2) << " LaneChangeRight";
+                break;
+        }
+    }
+    log(2) << std::endl;
 
     // find the minimum cost state
     auto best_next_state = BehaviorState::KeepLane;
@@ -20,10 +45,12 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
     for (auto state : possible_successor_states) {
         // generate a rough idea of what trajectory we would
         // follow if we chose this state
+        log(2) << "generate trajectory" << std::endl;
         auto trajectory_for_state = this->generate_trajectory(state, car, time_horizon, sensor_fusion);
         if (trajectory_for_state.is_trajectory_possible) {
             // calculate the "cost" associated with that trajectory
             auto cost_for_state = this->cost.calculate_cost(trajectory_for_state, car, timestep, time_horizon, sensor_fusion);
+            log(2) << "cost: " << cost_for_state << std::endl;
             if (cost_for_state < min_cost) {
                 min_cost = cost_for_state;
                 best_next_state = state;

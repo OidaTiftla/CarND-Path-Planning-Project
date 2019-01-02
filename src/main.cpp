@@ -167,11 +167,11 @@ int main() {
                     log(1) << "speed x: " << car.speed_x << endl;
                     log(1) << "speed y: " << car.speed_y << endl;
 
-                    auto behavior = bPlanner.plan_next_behavior(car, timestep, time_horizon, sensor_fusion);
-                    // output behavior
                     log(1) << endl;
                     log(1) << "Behavior:" << endl;
                     log(1) << "---------" << endl;
+                    auto behavior = bPlanner.plan_next_behavior(car, timestep, time_horizon, sensor_fusion);
+                    // output behavior
                     log(1) << "lane: " << behavior.lane << endl;
                     log(1) << "max speed: " << behavior.max_speed << endl;
                     log(1) << "min safety zone time: " << behavior.min_safety_zone_time << endl;
