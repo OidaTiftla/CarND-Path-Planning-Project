@@ -120,6 +120,8 @@ std::vector<BehaviorState> BehaviorPlanner::successor_states() const {
         case BehaviorState::LaneChangeRight:
             break;
     }
+
+    return states;
 }
 
 TrajectoryKinematics BehaviorPlanner::generate_trajectory(const BehaviorState state, const VehicleState &car, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
@@ -185,6 +187,8 @@ TrajectoryKinematics BehaviorPlanner::prep_lane_change_trajectory(const Behavior
         case BehaviorState::LaneChangeRight:
             ++new_lane;
             break;
+        default:
+            break;
     }
 
     auto vehicle_id_current_lane = this->map.find_next_vehicle_in_lane(car.frenet.s, this->lane, time_horizon, sensor_fusion);
@@ -214,6 +218,8 @@ TrajectoryKinematics BehaviorPlanner::lane_change_trajectory(const BehaviorState
         case BehaviorState::PrepareLaneChangeRight:
         case BehaviorState::LaneChangeRight:
             ++new_lane;
+            break;
+        default:
             break;
     }
 

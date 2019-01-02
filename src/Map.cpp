@@ -5,11 +5,11 @@
 #include "Map.h"
 
 
-int Map::ClosestWayPointIndex(const GlobalCartesianCoordinate pos) const {
+size_t Map::ClosestWayPointIndex(const GlobalCartesianCoordinate pos) const {
     Distance closestLen = 1000000_m; // large number
-    int closestWayPointIndex = 0;
+    size_t closestWayPointIndex = 0;
 
-    for (int i = 0; i < this->wayPoints.size(); i++) {
+    for (size_t i = 0; i < this->wayPoints.size(); i++) {
         auto dist = this->wayPoints[i].cartesian.DistanceTo(pos);
         if (dist < closestLen) {
             closestLen = dist;
@@ -19,8 +19,8 @@ int Map::ClosestWayPointIndex(const GlobalCartesianCoordinate pos) const {
     return closestWayPointIndex;
 }
 
-int Map::NextWayPointIndex(const GlobalCartesianPosition pos) const {
-    int closestWayPointIndex = this->ClosestWayPointIndex(pos.coord);
+size_t Map::NextWayPointIndex(const GlobalCartesianPosition pos) const {
+    size_t closestWayPointIndex = this->ClosestWayPointIndex(pos.coord);
 
     AngleRad heading = pos.AngleTo(this->wayPoints[closestWayPointIndex].cartesian);
 
@@ -39,13 +39,12 @@ int Map::NextWayPointIndex(const GlobalCartesianPosition pos) const {
 
 // Transform from Cartesian x,y coordinates to Frenet s,d coordinates
 FrenetCoordinate Map::ConvertToFrenet(const GlobalCartesianCoordinate pos) const {
-    int wp = this->ClosestWayPointIndex(pos);
+    auto wp = this->ClosestWayPointIndex(pos);
     auto angle = LocalCartesianCoordinate(0_m, 0_m).AngleTo(this->wayPoints[wp].normalized_normal_vector) + ToRadian(90_deg);
 
-    int next_wp = this->NextWayPointIndex(GlobalCartesianPosition(pos.x, pos.y, angle));
+    auto next_wp = this->NextWayPointIndex(GlobalCartesianPosition(pos.x, pos.y, angle));
 
-    int prev_wp;
-    prev_wp = (next_wp - 1) % this->wayPoints.size();
+    auto prev_wp = (next_wp - 1) % this->wayPoints.size();
 
     auto n = this->wayPoints[next_wp].cartesian - this->wayPoints[prev_wp].cartesian;
     auto x = pos - this->wayPoints[prev_wp].cartesian;
@@ -68,7 +67,7 @@ FrenetCoordinate Map::ConvertToFrenet(const GlobalCartesianCoordinate pos) const
 
     // calculate s value
     auto frenet_s = 0_m;
-    for (int i = 0; i < prev_wp; i++) {
+    for (size_t i = 0; i < prev_wp; i++) {
         frenet_s += this->wayPoints[i].cartesian.DistanceTo(this->wayPoints[i + 1].cartesian);
     }
 
@@ -86,13 +85,13 @@ GlobalCartesianPosition Map::ConvertToCartesianPosition(FrenetCoordinate pos) co
     // normalize input for s: 0 < s < max_s
     pos.s = this->NormalizeS(pos.s);
 
-    int prev_wp = -1;
+    size_t prev_wp = -1;
 
     while (pos.s > this->wayPoints[prev_wp + 1].frenet.s && (prev_wp < (int)(this->wayPoints.size() - 1))) {
         prev_wp++;
     }
 
-    int wp2 = (prev_wp + 1) % this->wayPoints.size();
+    size_t wp2 = (prev_wp + 1) % this->wayPoints.size();
 
     AngleRad heading = this->wayPoints[prev_wp].cartesian.AngleTo(this->wayPoints[wp2].cartesian);
     // the x,y,s along the segment

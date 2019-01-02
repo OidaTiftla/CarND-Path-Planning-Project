@@ -178,7 +178,6 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::CalculateTrajectory(co
     X.push_back(local_target.x.value);
     Y.push_back(local_target.y.value);
     log(2) << "add local waypoint " << local_target << std::endl;
-    auto total_x = local_target.x;
 
     FrenetCoordinate frenet_target_50m(
         target_state.frenet.s + 50_m,

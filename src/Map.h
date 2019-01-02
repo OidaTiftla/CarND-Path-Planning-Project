@@ -22,8 +22,8 @@ public:
     Map() : wayPoints(), max_s(0), lane_width(0) {}
     Map(std::vector<WayPoint> wayPoints, Distance max_s, Distance lane_width) : wayPoints(wayPoints), max_s(max_s), lane_width(lane_width) {}
 
-    int ClosestWayPointIndex(const GlobalCartesianCoordinate pos) const;
-    int NextWayPointIndex(const GlobalCartesianPosition pos) const;
+    size_t ClosestWayPointIndex(const GlobalCartesianCoordinate pos) const;
+    size_t NextWayPointIndex(const GlobalCartesianPosition pos) const;
 
     // Transform from Cartesian x,y coordinates to Frenet s,d coordinates
     FrenetCoordinate ConvertToFrenet(const GlobalCartesianCoordinate pos) const;
