@@ -83,7 +83,7 @@ GlobalCartesianPosition Map::ConvertToCartesianPosition(FrenetCoordinate pos) co
 
     size_t prev_wp = 0;
 
-    while (pos.s > this->wayPoints[prev_wp + 1].frenet.s && (prev_wp < (int)(this->wayPoints.size() - 1))) {
+    while (pos.s > this->wayPoints[prev_wp + 1].frenet.s && (prev_wp < (this->wayPoints.size() - 1))) {
         prev_wp++;
     }
 
@@ -139,7 +139,7 @@ VehicleState Map::PredictIntoFuture(const VehicleState& vehicle, const Time time
         vehicle.speed);
 }
 
-int Map::find_next_vehicle_in_lane(const Distance start_s, const int lane, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
+int Map::find_next_vehicle_in_lane(const Distance start_s, const int lane, const std::vector<VehicleState> &sensor_fusion) const {
     // find nearest vehicle in same lane in front of us
     // set initial value to the maximum search distance
     auto vehicle_id = -1;

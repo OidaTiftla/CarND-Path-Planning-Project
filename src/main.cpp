@@ -132,7 +132,7 @@ int main() {
 
                     // Previous path data given to the Planner
                     vector<GlobalCartesianCoordinate> previous_path;
-                    for (int i = 0; i < j[1]["previous_path_x"].size(); ++i) {
+                    for (size_t i = 0; i < j[1]["previous_path_x"].size(); ++i) {
                         previous_path.push_back(GlobalCartesianCoordinate(j[1]["previous_path_x"][i] * 1_m, j[1]["previous_path_y"][i] * 1_m));
                     }
                     // Previous path's end s and d values
