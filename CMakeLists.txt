@@ -3,7 +3,7 @@ project(Path_Planning)
 cmake_minimum_required (VERSION 3.5)
 
 add_definitions(-std=c++11)
-add_definitions(-W -Wno-int-in-bool-context -Wreturn-type -Wsign-compare -Wunused-parameter -Wswitch -Wunused-but-set-variable -Wunused-function -Wall -Wextra -pedantic)
+add_definitions(-W -Wno-int-in-bool-context -Wno-unused-parameter -Wreturn-type -Wsign-compare -Wswitch -Wunused-variable -Wunused-but-set-variable -Wunused-function -Wall -Wextra -pedantic)
 
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
