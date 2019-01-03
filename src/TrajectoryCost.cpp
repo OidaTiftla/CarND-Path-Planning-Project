@@ -38,7 +38,7 @@ float sigmoid(float x) {
     return 1 / (1 + exp(-x));
 }
 
-float sigmoid_m1_1(float x) {
+float logistic(float x) {
     /*
     A function that returns a value between 0 and 1 for x in the
     range [0, infinity] and -1 to 1 for x in the range [-infinity, infinity].
@@ -52,7 +52,7 @@ float TrajectoryCost::goal_distance_cost(const TrajectoryKinematics &trajectory,
     */
     auto reference_distance = this->max_speed * time_horizon;
     auto distance = this->map.GetFrenetSDistanceFromTo(car.frenet.s, trajectory.target_state.frenet.s);
-    return sigmoid_m1_1((reference_distance - distance) / reference_distance);
+    return logistic((reference_distance - distance) / reference_distance);
 }
 
 float TrajectoryCost::inefficiency_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
