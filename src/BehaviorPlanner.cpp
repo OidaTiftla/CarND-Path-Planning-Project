@@ -263,36 +263,5 @@ TrajectoryKinematics BehaviorPlanner::lane_change_trajectory(const BehaviorState
     combined_trajectory.target_state.frenet.d = this->map.GetFrenetDFromLane(new_lane);
     combined_trajectory.target_state.cartesian = this->map.ConvertToCartesianPosition(combined_trajectory.target_state.frenet);
 
-    // check position of all other vehicles
-    for (auto it = sensor_fusion.begin(); it != sensor_fusion.end(); ++it) {
-        auto other_vehicle_lane = this->map.GetLaneFrom(it->frenet);
-        if (other_vehicle_lane == new_lane) {
-            // check if it is save to change lanes (no collision)
-            auto t_step = std::min(1_s, std::max(0.02_s, 2_m / this->max_speed));
-            // check the time interval [0; time_horizon]
-            for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
-                auto vehicle_prediction = this->map.PredictIntoFuture(*it, t);
-                auto self_prediction = this->evaluate_trajectory(combined_trajectory, t);
-                auto vehicle_min_safety_zone = vehicle_prediction.frenet.s + this->lane_change_min_safety_zone_time * vehicle_prediction.speed;
-                auto self_min_safety_zone = self_prediction.frenet.s + this->lane_change_min_safety_zone_time * self_prediction.speed;
-
-                // each vehicle has it's own safety zone in front of it
-                //     +-----------+                               |
-                //     |     +  >> | <~ ~ ~ ~ safety zone ~ ~ ~ ~> |
-                //     +-----------+                               |
-                if (self_prediction.frenet.s >= vehicle_prediction.frenet.s
-                    && self_prediction.frenet.s <= vehicle_min_safety_zone) {
-                    // violate other vehicle's safety zone
-                    return error_trajectory;
-                }
-                if (vehicle_prediction.frenet.s >= self_prediction.frenet.s
-                    && vehicle_prediction.frenet.s <= self_min_safety_zone) {
-                    // violate my safety zone
-                    return error_trajectory;
-                }
-            }
-        }
-    }
-
     return combined_trajectory;
 }

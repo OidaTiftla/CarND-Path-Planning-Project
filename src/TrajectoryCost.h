@@ -49,7 +49,70 @@ public:
         const TrajectoryKinematics &trajectory,
         const Time t) const;
 
-    float goal_distance_cost(
+    float buffer_cost(
+        const TrajectoryKinematics &trajectory,
+        const VehicleState &car,
+        const Time timestep,
+        const Time time_horizon,
+        const std::vector<VehicleState> &sensor_fusion) const;
+
+    float collision_cost(
+        const TrajectoryKinematics &trajectory,
+        const VehicleState &car,
+        const Time timestep,
+        const Time time_horizon,
+        const std::vector<VehicleState> &sensor_fusion) const;
+
+    float safety_zone_cost(
+        const TrajectoryKinematics &trajectory,
+        const VehicleState &car,
+        const Time timestep,
+        const Time time_horizon,
+        const std::vector<VehicleState> &sensor_fusion) const;
+
+    float stays_on_road_cost(
+        const TrajectoryKinematics &trajectory,
+        const VehicleState &car,
+        const Time timestep,
+        const Time time_horizon,
+        const std::vector<VehicleState> &sensor_fusion) const;
+
+    float exceeds_speed_limit_cost(
+        const TrajectoryKinematics &trajectory,
+        const VehicleState &car,
+        const Time timestep,
+        const Time time_horizon,
+        const std::vector<VehicleState> &sensor_fusion) const;
+
+    float efficiency_cost(
+        const TrajectoryKinematics &trajectory,
+        const VehicleState &car,
+        const Time timestep,
+        const Time time_horizon,
+        const std::vector<VehicleState> &sensor_fusion) const;
+
+    float total_acceleration_cost(
+        const TrajectoryKinematics &trajectory,
+        const VehicleState &car,
+        const Time timestep,
+        const Time time_horizon,
+        const std::vector<VehicleState> &sensor_fusion) const;
+
+    float max_acceleration_cost(
+        const TrajectoryKinematics &trajectory,
+        const VehicleState &car,
+        const Time timestep,
+        const Time time_horizon,
+        const std::vector<VehicleState> &sensor_fusion) const;
+
+    float total_jerk_cost(
+        const TrajectoryKinematics &trajectory,
+        const VehicleState &car,
+        const Time timestep,
+        const Time time_horizon,
+        const std::vector<VehicleState> &sensor_fusion) const;
+
+    float max_jerk_cost(
         const TrajectoryKinematics &trajectory,
         const VehicleState &car,
         const Time timestep,
