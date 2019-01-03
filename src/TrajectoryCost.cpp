@@ -31,10 +31,18 @@ float tanh(float x) {
 }
 
 float sigmoid(float x) {
+    /*
+    A function that returns a value between 0 and 1 for x in the
+    range [-infinity, infinity].
+    */
     return 1 / (1 + exp(-x));
 }
 
 float sigmoid_m1_1(float x) {
+    /*
+    A function that returns a value between 0 and 1 for x in the
+    range [0, infinity] and -1 to 1 for x in the range [-infinity, infinity].
+    */
     return -1 + 2 * sigmoid(x);
 }
 
