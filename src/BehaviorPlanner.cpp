@@ -6,7 +6,11 @@
 
 
 Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) {
-    set_log_level(1);
+    auto logger = LogLevelStack(1);
+
+    log(1) << std::endl;
+    log(1) << "Behavior:" << std::endl;
+    log(1) << "---------" << std::endl;
 
     if (this->lane == -1000) {
         this->lane = this->map.GetLaneFrom(car.frenet);
@@ -14,7 +18,7 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
     }
 
     // only consider states which can be reached from current state
-    log(2) << "current state: " << this->state << std::endl;
+    log(1) << "current state: " << this->state << std::endl;
     auto possible_successor_states = this->successor_states();
     log(2) << "possible successor states:";
     for (auto state : possible_successor_states) {
@@ -50,7 +54,13 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
 
     this->lane = trajectory_for_best_state.target_lane;
     this->state = best_next_state;
+
+    // output behavior
     log(2) << "next state: " << this->state << std::endl;
+    log(1) << "lane: " << behavior.lane << std::endl;
+    log(1) << "max speed: " << behavior.max_speed << std::endl;
+    log(1) << "min safety zone time: " << behavior.min_safety_zone_time << std::endl;
+    log(1) << "vehicle id: " << behavior.vehicle_id << std::endl;
     return behavior;
 }
 

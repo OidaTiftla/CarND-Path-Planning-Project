@@ -9,9 +9,16 @@
 #include <sstream>
 
 
-void set_log_level(int level);
-
 std::ostream& log(int level);
+
+
+class LogLevelStack {
+    int old_log_level = 0;
+
+public:
+    LogLevelStack(int level);
+    ~LogLevelStack();
+};
 
 
 #endif //LOG_H

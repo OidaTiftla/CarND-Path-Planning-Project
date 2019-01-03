@@ -57,7 +57,7 @@ int main() {
     auto vehicle_length = 4.5_m;
     auto vehicle_width = 3_m;
 
-    set_log_level(1);
+    auto logger = LogLevelStack(1);
 
     // output config
     log(0) << endl;
@@ -169,15 +169,7 @@ int main() {
                     log(1) << "speed x: " << car.speed_x << endl;
                     log(1) << "speed y: " << car.speed_y << endl;
 
-                    log(1) << endl;
-                    log(1) << "Behavior:" << endl;
-                    log(1) << "---------" << endl;
                     auto behavior = bPlanner.plan_next_behavior(car, timestep, time_horizon, sensor_fusion);
-                    // output behavior
-                    log(1) << "lane: " << behavior.lane << endl;
-                    log(1) << "max speed: " << behavior.max_speed << endl;
-                    log(1) << "min safety zone time: " << behavior.min_safety_zone_time << endl;
-                    log(1) << "vehicle id: " << behavior.vehicle_id << endl;
 
                     TrajectoryPlanner tPlanner(map, max_acceleration, max_jerk, car, previous_path, end_path, sensor_fusion);
                     auto trajectory = tPlanner.PlanNextTrajectory(behavior, timestep, time_horizon);
