@@ -1,7 +1,3 @@
-//
-// Created by chmst on 10/11/2016.
-//
-
 #ifndef FRENET_COORDINATE_HPP
 #define FRENET_COORDINATE_HPP
 

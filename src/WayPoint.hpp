@@ -1,7 +1,3 @@
-//
-// Created by chmst on 10/11/2016.
-//
-
 #ifndef WAY_POINT_HPP
 #define WAY_POINT_HPP
 

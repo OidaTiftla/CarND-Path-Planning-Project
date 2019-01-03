@@ -1,7 +1,4 @@
-//
-// Created by chmst on 10/11/2016.
 // The idea came from Compiler-enforced semantic types (https://stackoverflow.com/questions/39412785/compiler-enforced-semantic-types)
-//
 
 #ifndef UNITS_HPP
 #define UNITS_HPP

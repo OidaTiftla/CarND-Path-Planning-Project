@@ -1,7 +1,3 @@
-//
-// Created by chmst on 10/11/2016.
-//
-
 #ifndef MAP_H
 #define MAP_H
 

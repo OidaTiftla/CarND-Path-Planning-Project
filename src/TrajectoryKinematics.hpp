@@ -1,7 +1,3 @@
-//
-// Created by chmst on 10/11/2016.
-//
-
 #ifndef TRAJECTORY_KINEMATICS_HPP
 #define TRAJECTORY_KINEMATICS_HPP
 

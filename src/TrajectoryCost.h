@@ -1,7 +1,3 @@
-//
-// Created by chmst on 10/11/2016.
-//
-
 #ifndef TRAJECTORY_COST_H
 #define TRAJECTORY_COST_H
 

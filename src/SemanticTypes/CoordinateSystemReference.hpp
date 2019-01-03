@@ -1,7 +1,3 @@
-//
-// Created by chmst on 10/11/2016.
-//
-
 #ifndef COORDINATE_SYSTEM_REFERENCE_HPP
 #define COORDINATE_SYSTEM_REFERENCE_HPP
 

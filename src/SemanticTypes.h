@@ -1,7 +1,3 @@
-//
-// Created by chmst on 10/11/2016.
-//
-
 #ifndef SEMANTICTYPES_H
 #define SEMANTICTYPES_H
 

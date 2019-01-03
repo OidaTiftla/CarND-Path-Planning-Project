@@ -1,7 +1,3 @@
-//
-// Created by chmst on 10/11/2016.
-//
-
 #ifndef CARTESIAN_POSITION_HPP
 #define CARTESIAN_POSITION_HPP
 
