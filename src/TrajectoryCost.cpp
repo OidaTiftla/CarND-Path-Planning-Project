@@ -62,7 +62,7 @@ float TrajectoryCost::inefficiency_cost(const TrajectoryKinematics &trajectory, 
     for a lane. This function is very similar to what you have already implemented in the "Implement a Second Cost Function in C++" quiz.
     */
     // if no vehicle is in the proposed lane, we can travel at target speed
-    Speed proposed_speed_intended = trajectory.target_state.speed;
+    auto proposed_speed_intended = trajectory.target_state.speed;
     // check if we need to drive behind a vehicle
     auto preceding_vehicle_id = this->map.find_next_vehicle_in_lane(car.frenet.s, trajectory.intended_lane, time_horizon, sensor_fusion);
     auto preceding_vehicle_iter = std::find_if(sensor_fusion.begin(), sensor_fusion.end(), [&preceding_vehicle_id](const VehicleState &vehicle) { return preceding_vehicle_id == vehicle.id; });
@@ -71,7 +71,7 @@ float TrajectoryCost::inefficiency_cost(const TrajectoryKinematics &trajectory, 
     }
 
     // if no vehicle is in the proposed lane, we can travel at target speed
-    Speed proposed_speed_final = trajectory.target_state.speed;
+    auto proposed_speed_final = trajectory.target_state.speed;
     // check if we need to drive behind a vehicle
     preceding_vehicle_id = this->map.find_next_vehicle_in_lane(car.frenet.s, trajectory.target_lane, time_horizon, sensor_fusion);
     preceding_vehicle_iter = std::find_if(sensor_fusion.begin(), sensor_fusion.end(), [&preceding_vehicle_id](const VehicleState &vehicle) { return preceding_vehicle_id == vehicle.id; });
