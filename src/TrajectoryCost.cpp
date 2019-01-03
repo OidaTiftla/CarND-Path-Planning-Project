@@ -51,7 +51,7 @@ float TrajectoryCost::goal_distance_cost(const TrajectoryKinematics &trajectory,
     Cost decreases as we move further along the frenet s coordinate.
     */
     auto reference_distance = this->max_speed * time_horizon;
-    auto distance = this->map.GetFrenetSDistanceFromTo(trajectory.target_state.frenet.s, car.frenet.s + reference_distance);
+    auto distance = this->map.GetFrenetSDistanceFromTo(car.frenet.s, trajectory.target_state.frenet.s);
     return sigmoid_m1_1((reference_distance - distance) / reference_distance);
 }
 
