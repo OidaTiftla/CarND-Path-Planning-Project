@@ -55,7 +55,6 @@ public:
     Map map;
     Speed max_speed;
     Time min_safety_zone_time;
-    Time lane_change_min_safety_zone_time;
     Acceleration max_acceleration;
     Jerk max_jerk;
     int max_lanes;
@@ -74,7 +73,6 @@ public:
         : map(map),
           max_speed(max_speed),
           min_safety_zone_time(min_safety_zone_time),
-          lane_change_min_safety_zone_time(0.5 * min_safety_zone_time),
           max_acceleration(max_acceleration),
           max_jerk(max_jerk),
           max_lanes(max_lanes),
