@@ -173,8 +173,15 @@ float TrajectoryCost::collision_cost(const TrajectoryKinematics &trajectory, con
     Binary cost function which penalizes collisions.
     */
     CoordinateSystemReference local_system(car.cartesian);
+    auto keep_lane = trajectory.initial_lane == trajectory.target_lane;
+    auto preceding_vehicle_id = this->map.find_next_vehicle_in_lane(car.frenet.s, trajectory.initial_lane, sensor_fusion);
     auto t_step = std::min(1_s, std::max(0.02_s, 2_m / this->max_speed));
     for (auto it = sensor_fusion.begin(); it != sensor_fusion.end(); ++it) {
+        if (keep_lane && it->id != preceding_vehicle_id) {
+            // vehicle not interesting for trajectory
+            // if we keep lane, only look forward
+            continue;
+        }
         // check if there is no collision
         // check the time interval [0; time_horizon]
         for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
@@ -198,9 +205,16 @@ float TrajectoryCost::safety_zone_cost(const TrajectoryKinematics &trajectory, c
     /*
     Penalizes violating the safety zone for me or the vehicle behind me.
     */
+    auto keep_lane = trajectory.initial_lane == trajectory.target_lane;
+    auto preceding_vehicle_id = this->map.find_next_vehicle_in_lane(car.frenet.s, trajectory.initial_lane, sensor_fusion);
     auto t_step = std::min(1_s, std::max(0.02_s, 2_m / this->max_speed));
     auto min_actual_safety_time = 999999_s;
     for (auto it = sensor_fusion.begin(); it != sensor_fusion.end(); ++it) {
+        if (keep_lane && it->id != preceding_vehicle_id) {
+            // vehicle not interesting for trajectory
+            // if we keep lane, only look forward
+            continue;
+        }
         // check if there is no collision
         // check the time interval [0; time_horizon]
         for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
