@@ -165,7 +165,7 @@ float TrajectoryCost::buffer_cost(const TrajectoryKinematics &trajectory, const 
             }
         }
     }
-    return logistic(this->vehicle_width / min_distance + 2.0 * this->vehicle_length / y_min_distance);
+    return logistic(this->vehicle_width / (min_distance - this->vehicle_width) + 2.0 * this->vehicle_length / (y_min_distance - this->vehicle_length));
 }
 
 float TrajectoryCost::collision_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
