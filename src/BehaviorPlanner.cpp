@@ -26,7 +26,7 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
         log(1) << "---------" << std::endl;
 
         // only consider states which can be reached from current state
-        log(1) << "current state: " << this->state << std::endl;
+        log(1) << "current state: " << this->state << " " << car.frenet << std::endl;
         auto possible_successor_states = this->successor_states();
         log(2) << "possible successor states:";
         for (auto state : possible_successor_states) {
