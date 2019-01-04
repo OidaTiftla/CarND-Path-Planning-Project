@@ -252,7 +252,8 @@ float TrajectoryCost::inefficiency_cost(const TrajectoryKinematics &trajectory, 
     // check if we need to drive behind a vehicle
     auto preceding_vehicle_id = this->map.find_next_vehicle_in_lane(car.frenet.s, trajectory.intended_lane, sensor_fusion);
     auto preceding_vehicle_iter = std::find_if(sensor_fusion.begin(), sensor_fusion.end(), [&preceding_vehicle_id](const VehicleState &vehicle) { return preceding_vehicle_id == vehicle.id; });
-    if (preceding_vehicle_iter != sensor_fusion.end()) {
+    if (preceding_vehicle_iter != sensor_fusion.end()
+        && this->map.get_frenet_s_distance_from_to(car.frenet.s, preceding_vehicle_iter->frenet.s) < this->max_speed * time_horizon) {
         proposed_speed_intended = preceding_vehicle_iter->speed;
     }
 
@@ -261,7 +262,8 @@ float TrajectoryCost::inefficiency_cost(const TrajectoryKinematics &trajectory, 
     // check if we need to drive behind a vehicle
     preceding_vehicle_id = this->map.find_next_vehicle_in_lane(car.frenet.s, trajectory.target_lane, sensor_fusion);
     preceding_vehicle_iter = std::find_if(sensor_fusion.begin(), sensor_fusion.end(), [&preceding_vehicle_id](const VehicleState &vehicle) { return preceding_vehicle_id == vehicle.id; });
-    if (preceding_vehicle_iter != sensor_fusion.end()) {
+    if (preceding_vehicle_iter != sensor_fusion.end()
+        && this->map.get_frenet_s_distance_from_to(car.frenet.s, preceding_vehicle_iter->frenet.s) < this->max_speed * time_horizon) {
         proposed_speed_final = preceding_vehicle_iter->speed;
     }
 
