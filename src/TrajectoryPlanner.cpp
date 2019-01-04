@@ -166,15 +166,6 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
     }
 
     // define end points
-    FrenetCoordinate frenet_0_5_target(
-        wp_last_frenet.s + 0.5 * this->map.get_frenet_s_distance_from_to(wp_last_frenet.s, target_state.frenet.s),
-        wp_last_frenet.d + 0.5 * (target_state.frenet.d - wp_last_frenet.d));
-    auto cartesian_0_5_target = this->map.convert_to_cartesian(frenet_0_5_target);
-    auto local_0_5_target = local_system.to_local(cartesian_0_5_target);
-    X.push_back(local_0_5_target.x.value);
-    Y.push_back(local_0_5_target.y.value);
-    log(2) << "add local waypoint " << local_0_5_target << std::endl;
-
     auto local_target = local_system.to_local(target_state.cartesian.coord);
     X.push_back(local_target.x.value);
     Y.push_back(local_target.y.value);
