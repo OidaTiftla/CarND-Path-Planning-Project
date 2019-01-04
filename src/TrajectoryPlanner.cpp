@@ -51,6 +51,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
     FrenetCoordinate target_frenet(
         start_state.frenet.s + start_state.speed * remaining_time_horizon + 0.5 * acceleration * pow<2>(remaining_time_horizon),
         this->map.get_frenet_d_from_lane(behavior.lane));
+    auto target_cartesian = this->map.convert_to_cartesian_position(target_frenet);
 
     auto preceding_vehicle_iter = std::find_if(this->sensor_fusion.begin(), this->sensor_fusion.end(), [&behavior] (const VehicleState& vehicle) { return behavior.vehicle_id == vehicle.id; } );
     if (preceding_vehicle_iter != this->sensor_fusion.end()) {
@@ -61,14 +62,14 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
         auto min_distance_with_target_speed = behavior.min_safety_zone_time * target_speed;
         // calculate s for both (the preceding vehicle in the future and me in the future if I drive with the desired target speed)
         // calculate s relative to my current car position (combats the fact, that s jumps when I drive over the starting line (s=0 wraparound))
-        auto rel_s_preceding_vehicle_prediction = this->map.get_frenet_s_distance_from_to(this->car.frenet.s, preceding_vehicle_prediction.frenet.s);
-        auto rel_s_target = this->map.get_frenet_s_distance_from_to(this->car.frenet.s, target_frenet.s);
-        auto actual_distance_to_preceding_vehicle = rel_s_preceding_vehicle_prediction - rel_s_target;
+        auto rel_dist_preceding_vehicle_prediction = this->car.cartesian.distance_to(preceding_vehicle_prediction.cartesian);
+        auto rel_dist_target = this->car.cartesian.distance_to(target_cartesian);
+        auto actual_distance_to_preceding_vehicle = rel_dist_preceding_vehicle_prediction - rel_dist_target;
         if (actual_distance_to_preceding_vehicle < min_distance_with_target_speed) {
             // to fast -> no safety zone -> drive with speed of preceding vehicle and with safety zone
             log(1) << "too fast for vehicle in front of us (s prediction: " << preceding_vehicle_prediction.frenet.s << ")" << std::endl;
             // calculate acceleration, needed to keep minimum distance to preceding vehicle
-            acceleration = (preceding_vehicle_prediction.frenet.s - car.frenet.s - car.speed * (time_horizon + behavior.min_safety_zone_time))
+            acceleration = (rel_dist_preceding_vehicle_prediction - car.speed * (time_horizon + behavior.min_safety_zone_time))
                 / (0.5 * pow<2>(time_horizon) + time_horizon * behavior.min_safety_zone_time);
             // validate acceleration
             if (acceleration > this->max_acceleration) {
@@ -81,13 +82,11 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
 
             target_speed = start_state.speed + acceleration * remaining_time_horizon;
             target_frenet.s = start_state.frenet.s + start_state.speed * remaining_time_horizon + 0.5 * acceleration * pow<2>(remaining_time_horizon);
+            target_cartesian = this->map.convert_to_cartesian_position(target_frenet);
         }
     }
 
-    auto target_cartesian = this->map.convert_to_cartesian(target_frenet);
-    auto target_cartesian_5m = this->map.convert_to_cartesian(FrenetCoordinate(target_frenet.s + 5_m, target_frenet.d));
-    auto target_theta = target_cartesian.angle_to(target_cartesian_5m);
-    VehicleState target_state(-1, GlobalCartesianPosition(target_cartesian.x, target_cartesian.y, target_theta), target_frenet, target_speed);
+    VehicleState target_state(-1, target_cartesian, target_frenet, target_speed);
 
     // output target state
     log(1) << "s: " << target_state.frenet.s << std::endl;

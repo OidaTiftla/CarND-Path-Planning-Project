@@ -85,7 +85,10 @@ TrajectoryKinematics BehaviorPlanner::try_follow_vehicle(const VehicleState &car
     }
     auto target_speed = car.speed + acceleration * time_horizon;
     // vehicle position, in the future
-    auto future_s = car.frenet.s + car.speed * time_horizon + 0.5 * acceleration * pow<2>(time_horizon);
+    FrenetCoordinate frenet_target(
+        car.frenet.s + car.speed * time_horizon + 0.5 * acceleration * pow<2>(time_horizon),
+        this->map.get_frenet_d_from_lane(this->lane));
+    auto cartesian_target = this->map.convert_to_cartesian_position(frenet_target);
 
     int preceding_vehicle_id = -1;
 
@@ -99,13 +102,13 @@ TrajectoryKinematics BehaviorPlanner::try_follow_vehicle(const VehicleState &car
         auto min_distance_with_max_speed = this->min_safety_zone_time * this->max_speed;
         // calculate s for both (the preceding vehicle in the future and me in the future if I drive with the desired target speed)
         // calculate s relative to my current car position (combats the fact, that s jumps when I drive over the starting line (s=0 wraparound))
-        auto rel_s_preceding_vehicle_prediction = this->map.get_frenet_s_distance_from_to(car.frenet.s, preceding_vehicle_prediction.frenet.s);
-        auto rel_s_target = this->map.get_frenet_s_distance_from_to(car.frenet.s, future_s);
-        auto actual_distance_to_preceding_vehicle = rel_s_preceding_vehicle_prediction - rel_s_target;
+        auto rel_dist_preceding_vehicle_prediction = car.cartesian.distance_to(preceding_vehicle_prediction.cartesian);
+        auto rel_dist_target = car.cartesian.distance_to(cartesian_target);
+        auto actual_distance_to_preceding_vehicle = rel_dist_preceding_vehicle_prediction - rel_dist_target;
         if (actual_distance_to_preceding_vehicle < min_distance_with_max_speed) {
             // to fast -> no safety zone -> drive with speed of preceding vehicle and with safety zone
             // calculate acceleration, needed to keep minimum distance to preceding vehicle
-            acceleration = (preceding_vehicle_prediction.frenet.s - car.frenet.s - car.speed * (time_horizon + this->min_safety_zone_time))
+            acceleration = (rel_dist_preceding_vehicle_prediction - car.speed * (time_horizon + this->min_safety_zone_time))
                 / (0.5 * pow<2>(time_horizon) + time_horizon * this->min_safety_zone_time);
             if (acceleration > this->max_acceleration) {
                 acceleration = this->max_acceleration;
@@ -114,13 +117,12 @@ TrajectoryKinematics BehaviorPlanner::try_follow_vehicle(const VehicleState &car
             }
             target_speed = car.speed + acceleration * time_horizon;
             // vehicle position, in the future
-            future_s = car.frenet.s + car.speed * time_horizon + 0.5 * acceleration * pow<2>(time_horizon);
+            frenet_target.s = car.frenet.s + car.speed * time_horizon + 0.5 * acceleration * pow<2>(time_horizon);
+            cartesian_target = this->map.convert_to_cartesian_position(frenet_target);
             preceding_vehicle_id = preceding_vehicle.id;
         }
     }
 
-    FrenetCoordinate frenet_target(future_s, this->map.get_frenet_d_from_lane(this->lane));
-    auto cartesian_target = this->map.convert_to_cartesian_position(frenet_target);
     VehicleState target_state(-1, cartesian_target, frenet_target, target_speed);
     return TrajectoryKinematics(car, this->lane, true, target_state, target_lane, intended_lane, acceleration, time_horizon, preceding_vehicle_id);
 }
