@@ -3,60 +3,72 @@
 
 Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) {
     auto logger = LogLevelStack(1);
-
-    log(1) << std::endl;
-    log(1) << "Behavior:" << std::endl;
-    log(1) << "---------" << std::endl;
+    auto now = std::chrono::system_clock::now();
 
     if (this->lane == -1000) {
         this->lane = this->map.get_lane_from(car.frenet);
         log(2) << "set initial lane to " << this->lane << std::endl;
     }
 
-    // only consider states which can be reached from current state
-    log(1) << "current state: " << this->state << std::endl;
-    auto possible_successor_states = this->successor_states();
-    log(2) << "possible successor states:";
-    for (auto state : possible_successor_states) {
-        log(2) << " " << state;
-    }
-    log(2) << std::endl;
+    Behavior behavior;
+    if (now - this->last_state_change > this->min_state_time) {
+        this->last_state_change = now;
 
-    // find the minimum cost state
-    auto best_next_state = BehaviorState::KeepLane;
-    auto trajectory_for_best_state = this->generate_trajectory(best_next_state, car, time_horizon, sensor_fusion);
-    float min_cost = 9999999;
-    for (auto state : possible_successor_states) {
-        // generate a rough idea of what trajectory we would
-        // follow if we chose this state
-        auto trajectory_for_state = this->generate_trajectory(state, car, time_horizon, sensor_fusion);
-        if (trajectory_for_state.is_trajectory_possible) {
-            // calculate the "cost" associated with that trajectory
-            auto cost_for_state = this->cost.calculate_cost(trajectory_for_state, car, timestep, time_horizon, sensor_fusion);
-            log(2) << "cost for " << state << ": " << cost_for_state << std::endl;
-            if (cost_for_state < min_cost) {
-                min_cost = cost_for_state;
-                best_next_state = state;
-                trajectory_for_best_state = trajectory_for_state;
+        log(1) << std::endl;
+        log(1) << "Behavior:" << std::endl;
+        log(1) << "---------" << std::endl;
+
+        // only consider states which can be reached from current state
+        log(1) << "current state: " << this->state << std::endl;
+        auto possible_successor_states = this->successor_states();
+        log(2) << "possible successor states:";
+        for (auto state : possible_successor_states) {
+            log(2) << " " << state;
+        }
+        log(2) << std::endl;
+
+        // find the minimum cost state
+        auto best_next_state = BehaviorState::KeepLane;
+        auto trajectory_for_best_state = this->generate_trajectory(best_next_state, car, time_horizon, sensor_fusion);
+        float min_cost = 9999999;
+        for (auto state : possible_successor_states) {
+            // generate a rough idea of what trajectory we would
+            // follow if we chose this state
+            auto trajectory_for_state = this->generate_trajectory(state, car, time_horizon, sensor_fusion);
+            if (trajectory_for_state.is_trajectory_possible) {
+                // calculate the "cost" associated with that trajectory
+                auto cost_for_state = this->cost.calculate_cost(trajectory_for_state, car, timestep, time_horizon, sensor_fusion);
+                log(2) << "cost for " << state << ": " << cost_for_state << std::endl;
+                if (cost_for_state < min_cost) {
+                    min_cost = cost_for_state;
+                    best_next_state = state;
+                    trajectory_for_best_state = trajectory_for_state;
+                }
             }
         }
+
+        behavior.lane = trajectory_for_best_state.target_lane;
+        behavior.max_speed = trajectory_for_best_state.target_state.speed;
+        behavior.min_safety_zone_time = this->min_safety_zone_time;
+        behavior.vehicle_id = trajectory_for_best_state.preceding_vehicle_id;
+
+        this->lane = trajectory_for_best_state.target_lane;
+        this->state = best_next_state;
+
+        // output behavior
+        log(2) << "next state: " << this->state << std::endl;
+        log(1) << "lane: " << behavior.lane << std::endl;
+        log(1) << "max speed: " << behavior.max_speed << std::endl;
+        log(1) << "min safety zone time: " << behavior.min_safety_zone_time << std::endl;
+        log(1) << "vehicle id: " << behavior.vehicle_id << std::endl;
+    } else {
+        auto trajectory = this->generate_trajectory(this->state, car, time_horizon, sensor_fusion);
+
+        behavior.lane = trajectory.target_lane;
+        behavior.max_speed = trajectory.target_state.speed;
+        behavior.min_safety_zone_time = this->min_safety_zone_time;
+        behavior.vehicle_id = trajectory.preceding_vehicle_id;
     }
-
-    Behavior behavior;
-    behavior.lane = trajectory_for_best_state.target_lane;
-    behavior.max_speed = trajectory_for_best_state.target_state.speed;
-    behavior.min_safety_zone_time = this->min_safety_zone_time;
-    behavior.vehicle_id = trajectory_for_best_state.preceding_vehicle_id;
-
-    this->lane = trajectory_for_best_state.target_lane;
-    this->state = best_next_state;
-
-    // output behavior
-    log(2) << "next state: " << this->state << std::endl;
-    log(1) << "lane: " << behavior.lane << std::endl;
-    log(1) << "max speed: " << behavior.max_speed << std::endl;
-    log(1) << "min safety zone time: " << behavior.min_safety_zone_time << std::endl;
-    log(1) << "vehicle id: " << behavior.vehicle_id << std::endl;
     return behavior;
 }
 
