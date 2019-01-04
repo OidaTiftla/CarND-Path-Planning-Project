@@ -267,17 +267,11 @@ float TrajectoryCost::efficiency_cost(const TrajectoryKinematics &trajectory, co
     Rewards high average speeds.
     */
     auto average_speed = this->map.get_frenet_s_distance_from_to(trajectory.initial_state.frenet.s, trajectory.target_state.frenet.s) / trajectory.time_horizon;
-    auto reference_speed = this->max_speed;
-
-    auto preceding_vehicle_iter = std::find_if(sensor_fusion.begin(), sensor_fusion.end(), [&trajectory](const VehicleState &vehicle) { return trajectory.preceding_vehicle_id == vehicle.id; });
-    if (preceding_vehicle_iter != sensor_fusion.end()) {
-        reference_speed = preceding_vehicle_iter->speed;
-    }
 
     if (average_speed < 0.0001_m / 1_s) {
         average_speed = 0.0001_m / 1_s;
     }
-    return logistic((reference_speed - average_speed) / average_speed);
+    return logistic((this->max_speed - average_speed) / average_speed);
 }
 
 float TrajectoryCost::total_acceleration_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
