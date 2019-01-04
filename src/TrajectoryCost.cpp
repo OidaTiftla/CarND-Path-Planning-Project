@@ -67,6 +67,7 @@ float TrajectoryCost::buffer_cost(const TrajectoryKinematics &trajectory, const 
     */
     CoordinateSystemReference local_system(car.cartesian);
     auto t_step = std::min(1_s, std::max(0.02_s, 2_m / this->max_speed));
+    auto y_min_distance = 999999_m;
     auto min_distance = 999999_m;
     for (auto it = sensor_fusion.begin(); it != sensor_fusion.end(); ++it) {
         // check if there is no collision
@@ -74,14 +75,22 @@ float TrajectoryCost::buffer_cost(const TrajectoryKinematics &trajectory, const 
         for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
             auto other_prediction = this->map.predict_into_future(*it, t);
             auto self_prediction = this->evaluate_trajectory(trajectory, t);
+            auto local_other_prediction = local_system.to_local(other_prediction.cartesian);
+            auto local_self_prediction = local_system.to_local(self_prediction.cartesian);
+            auto x_dist = abs(local_other_prediction.coord.x - local_self_prediction.coord.x);
+            auto y_dist = abs(local_other_prediction.coord.y - local_self_prediction.coord.y);
             auto dist = self_prediction.cartesian.distance_to(other_prediction.cartesian);
 
+            if (x_dist < 1.2 * this->vehicle_width
+                && y_dist < y_min_distance) {
+                y_min_distance = y_dist;
+            }
             if (dist < min_distance) {
                 min_distance = dist;
             }
         }
     }
-    return logistic(this->vehicle_width / min_distance);
+    return logistic(this->vehicle_width / min_distance + 2.0 * this->vehicle_length / y_min_distance);
 }
 
 float TrajectoryCost::collision_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
