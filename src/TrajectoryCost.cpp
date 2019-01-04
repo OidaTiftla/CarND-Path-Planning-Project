@@ -158,7 +158,10 @@ float TrajectoryCost::safety_zone_cost(const TrajectoryKinematics &trajectory, c
     if (this->min_safety_zone_time <= min_actual_safety_time) {
         return 0;
     } else {
-        return logistic((this->min_safety_zone_time - min_actual_safety_time) / this->min_safety_zone_time);
+        if (min_actual_safety_time < 0.0001_s) {
+            min_actual_safety_time = 0.0001_s;
+        }
+        return logistic((this->min_safety_zone_time - min_actual_safety_time) / min_actual_safety_time);
     }
 }
 
