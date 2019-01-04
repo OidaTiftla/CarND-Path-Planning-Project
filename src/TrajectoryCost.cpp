@@ -208,7 +208,8 @@ float TrajectoryCost::safety_zone_cost(const TrajectoryKinematics &trajectory, c
     auto keep_lane = trajectory.initial_lane == trajectory.target_lane;
     auto preceding_vehicle_id = this->map.find_next_vehicle_in_lane(car.frenet.s, trajectory.initial_lane, sensor_fusion);
     auto t_step = std::min(1_s, std::max(0.02_s, 2_m / this->max_speed));
-    auto min_actual_safety_time = 999999_s;
+    auto min_actual_safety_time_self = this->min_safety_zone_time;
+    auto min_actual_safety_time_other = this->min_safety_zone_time;
     for (auto it = sensor_fusion.begin(); it != sensor_fusion.end(); ++it) {
         if (keep_lane && it->id != preceding_vehicle_id) {
             // vehicle not interesting for trajectory
@@ -231,24 +232,20 @@ float TrajectoryCost::safety_zone_cost(const TrajectoryKinematics &trajectory, c
                 // check other vehicle's safety zone
                 auto dist_other_to_self = this->map.get_frenet_s_distance_from_to(other_prediction.frenet.s, self_prediction.frenet.s);
                 auto safety_time_other = dist_other_to_self / other_prediction.speed;
-                if (min_actual_safety_time > safety_time_other) {
-                    min_actual_safety_time = safety_time_other;
+                if (min_actual_safety_time_other > safety_time_other) {
+                    min_actual_safety_time_other = safety_time_other;
                 }
 
                 // check my safety zone
                 auto dist_self_to_other = this->map.get_frenet_s_distance_from_to(self_prediction.frenet.s, other_prediction.frenet.s);
                 auto safety_time_self = dist_self_to_other / self_prediction.speed;
-                if (min_actual_safety_time > safety_time_self) {
-                    min_actual_safety_time = safety_time_self;
+                if (min_actual_safety_time_self > safety_time_self) {
+                    min_actual_safety_time_self = safety_time_self;
                 }
             }
         }
     }
-    if (this->min_safety_zone_time <= min_actual_safety_time) {
-        return 0;
-    } else {
-        return logistic((this->min_safety_zone_time - min_actual_safety_time) / this->min_safety_zone_time);
-    }
+    return logistic((2 * this->min_safety_zone_time - min_actual_safety_time_self - min_actual_safety_time_other) / this->min_safety_zone_time);
 }
 
 float TrajectoryCost::stays_on_road_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
