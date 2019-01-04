@@ -1,13 +1,10 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <iostream>
-#include <cmath>
 #include <vector>
 #include "WayPoint.hpp"
 #include "SemanticTypes.h"
 #include "VehicleState.hpp"
-#include "spline.h"
 
 
 class Map {

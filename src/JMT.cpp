@@ -1,4 +1,13 @@
 #include "JMT.h"
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include "Eigen-3.3/Eigen/Dense"
+#include "WayPoint.hpp"
+#include "VehicleState.hpp"
+
+using Eigen::MatrixXd;
+using Eigen::VectorXd;
 
 
 Coefficients JMT(const State start, const State end, const Time delta_time) {

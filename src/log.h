@@ -2,7 +2,6 @@
 #define LOG_H
 
 #include <iostream>
-#include <sstream>
 
 
 std::ostream& log(int level);

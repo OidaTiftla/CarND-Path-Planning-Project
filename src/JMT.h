@@ -1,18 +1,7 @@
 #ifndef JMT_H
 #define JMT_H
 
-#include <iostream>
-#include <cmath>
-#include <vector>
-
-#include "Eigen-3.3/Eigen/Dense"
-
-#include "WayPoint.hpp"
 #include "SemanticTypes.h"
-#include "VehicleState.hpp"
-
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
 
 
 struct State {

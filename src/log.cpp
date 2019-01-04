@@ -1,4 +1,5 @@
 #include "log.h"
+#include <sstream>
 
 
 static int log_level = 0;

@@ -1,4 +1,6 @@
 #include "Map.h"
+#include <cmath>
+#include "spline.h"
 
 
 size_t Map::closest_way_point_index(const GlobalCartesianCoordinate pos) const {

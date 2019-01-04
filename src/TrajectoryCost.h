@@ -2,10 +2,6 @@
 #define TRAJECTORY_COST_H
 
 #include <vector>
-#include <algorithm>
-#include <functional>
-#include <cmath>
-#include "log.h"
 #include "SemanticTypes.h"
 #include "Map.h"
 #include "VehicleState.hpp"

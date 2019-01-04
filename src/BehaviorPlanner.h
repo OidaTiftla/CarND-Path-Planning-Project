@@ -2,9 +2,7 @@
 #define BEHAVIOR_PLANNER_H
 
 #include <vector>
-#include <algorithm>
 #include <chrono>
-#include "log.h"
 #include "SemanticTypes.h"
 #include "Map.h"
 #include "TrajectoryCost.h"

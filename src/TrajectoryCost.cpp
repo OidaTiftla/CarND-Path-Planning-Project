@@ -1,4 +1,7 @@
 #include "TrajectoryCost.h"
+#include <algorithm>
+#include <cmath>
+#include "log.h"
 
 
 // TODO: tweak weights for cost functions

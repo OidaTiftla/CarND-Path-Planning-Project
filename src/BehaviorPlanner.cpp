@@ -1,4 +1,6 @@
 #include "BehaviorPlanner.h"
+#include <algorithm>
+#include "log.h"
 
 
 Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) {

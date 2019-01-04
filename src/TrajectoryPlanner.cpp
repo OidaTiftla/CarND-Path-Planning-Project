@@ -1,4 +1,7 @@
 #include "TrajectoryPlanner.h"
+#include <algorithm>
+#include "log.h"
+#include "spline.h"
 
 
 // ToDo: avoid any collisions,
