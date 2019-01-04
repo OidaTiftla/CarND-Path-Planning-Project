@@ -71,15 +71,15 @@ public:
         const int max_lanes,
         const Distance vehicle_length,
         const Distance vehicle_width)
-        : map(map),
+        : cost(map, max_speed, min_safety_zone_time, max_acceleration, max_jerk, vehicle_length, vehicle_width),
+          map(map),
           max_speed(max_speed),
           min_safety_zone_time(min_safety_zone_time),
           max_acceleration(max_acceleration),
           max_jerk(max_jerk),
           max_lanes(max_lanes),
           vehicle_length(vehicle_length),
-          vehicle_width(vehicle_width),
-          cost(map, max_speed, min_safety_zone_time, max_acceleration, max_jerk, vehicle_length, vehicle_width) {}
+          vehicle_width(vehicle_width) {}
 
     Behavior plan_next_behavior(
         const VehicleState &car,
