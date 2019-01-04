@@ -90,18 +90,27 @@ GlobalCartesianPosition Map::convert_to_cartesian_position(FrenetCoordinate pos)
     size_t wp2 = (prev_wp + 1) % this->wayPoints.size();
 
     AngleRad heading = this->wayPoints[prev_wp].cartesian.angle_to(this->wayPoints[wp2].cartesian);
-    // the x,y,s along the segment
+
+    // create spline
+    CoordinateSystemReference local_system(this->wayPoints[prev_wp].cartesian.x, this->wayPoints[prev_wp].cartesian.y, heading);
+    std::vector<double> X, Y;
+    for (int i = -2; i < 4; ++i) {
+        size_t wp = (this->wayPoints.size() + prev_wp + i) % this->wayPoints.size();
+        auto local = local_system.to_local(this->wayPoints[wp].cartesian);
+        X.push_back(local.x.value);
+        Y.push_back(local.y.value);
+    }
+    tk::spline s;
+    s.set_points(X, Y); // currently it is required that X is already sorted
+
+    // the s along the segment
     auto seg_s = pos.s - this->wayPoints[prev_wp].frenet.s;
 
-    auto seg_x = this->wayPoints[prev_wp].cartesian.x + seg_s * cos(heading);
-    auto seg_y = this->wayPoints[prev_wp].cartesian.y + seg_s * sin(heading);
+    auto y_curvature_correction = Distance(s(seg_s.value));
 
-    auto perp_heading = heading - AngleRad(M_PI / 2);
+    LocalCartesianPosition pos_local(seg_s, -pos.d + y_curvature_correction, 0_rad);
 
-    auto x = seg_x + pos.d * cos(perp_heading);
-    auto y = seg_y + pos.d * sin(perp_heading);
-
-    return { x, y, heading };
+    return local_system.to_global(pos_local);
 }
 
 int Map::get_lane_from(const FrenetCoordinate frenet) const {

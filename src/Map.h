@@ -7,6 +7,7 @@
 #include "WayPoint.hpp"
 #include "SemanticTypes.h"
 #include "VehicleState.hpp"
+#include "spline.h"
 
 
 class Map {
