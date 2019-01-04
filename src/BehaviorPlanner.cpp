@@ -10,9 +10,14 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
         log(2) << "set initial lane to " << this->lane << std::endl;
     }
 
+    auto current_trajectory = this->generate_trajectory(this->state, car, time_horizon, sensor_fusion);
+
     Behavior behavior;
     if (now - this->last_state_change > this->min_state_time) {
         this->last_state_change = now;
+
+        // set lane to target lane, only if the next state will be choosen
+        this->lane = current_trajectory.target_lane;
 
         log(1) << std::endl;
         log(1) << "Behavior:" << std::endl;
@@ -52,7 +57,6 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
         behavior.min_safety_zone_time = this->min_safety_zone_time;
         behavior.vehicle_id = trajectory_for_best_state.preceding_vehicle_id;
 
-        this->lane = trajectory_for_best_state.target_lane;
         this->state = best_next_state;
 
         // output behavior
@@ -62,12 +66,10 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
         log(1) << "min safety zone time: " << behavior.min_safety_zone_time << std::endl;
         log(1) << "vehicle id: " << behavior.vehicle_id << std::endl;
     } else {
-        auto trajectory = this->generate_trajectory(this->state, car, time_horizon, sensor_fusion);
-
-        behavior.lane = trajectory.target_lane;
-        behavior.max_speed = trajectory.target_state.speed;
+        behavior.lane = current_trajectory.target_lane;
+        behavior.max_speed = current_trajectory.target_state.speed;
         behavior.min_safety_zone_time = this->min_safety_zone_time;
-        behavior.vehicle_id = trajectory.preceding_vehicle_id;
+        behavior.vehicle_id = current_trajectory.preceding_vehicle_id;
     }
     return behavior;
 }
