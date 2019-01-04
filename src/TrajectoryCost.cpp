@@ -185,7 +185,10 @@ float TrajectoryCost::efficiency_cost(const TrajectoryKinematics &trajectory, co
         reference_speed = preceding_vehicle_iter->speed;
     }
 
-    return logistic((reference_speed - average_speed) / reference_speed);
+    if (average_speed < 0.0001_m / 1_s) {
+        average_speed = 0.0001_m / 1_s;
+    }
+    return logistic((reference_speed - average_speed) / average_speed);
 }
 
 float TrajectoryCost::total_acceleration_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
