@@ -114,7 +114,7 @@ float TrajectoryCost::buffer_cost(const TrajectoryKinematics &trajectory, const 
             auto y_dist = abs(local_other_prediction.coord.y - local_self_prediction.coord.y);
             auto dist = self_prediction.cartesian.distance_to(other_prediction.cartesian);
 
-            if (x_dist < 1.2 * this->vehicle_width
+            if (x_dist < 1.1 * this->vehicle_width
                 && y_dist < y_min_distance) {
                 y_min_distance = y_dist;
             }
@@ -143,8 +143,8 @@ float TrajectoryCost::collision_cost(const TrajectoryKinematics &trajectory, con
             auto x_dist = abs(local_other_prediction.coord.x - local_self_prediction.coord.x);
             auto y_dist = abs(local_other_prediction.coord.y - local_self_prediction.coord.y);
 
-            if (x_dist < 1.2 * this->vehicle_width
-                && y_dist < 1.5 * this->vehicle_length) {
+            if (x_dist < 1.1 * this->vehicle_width
+                && y_dist < 1.2 * this->vehicle_length) {
                 return 1;
             }
         }
@@ -166,7 +166,7 @@ float TrajectoryCost::safety_zone_cost(const TrajectoryKinematics &trajectory, c
             auto self_prediction = this->evaluate_trajectory(trajectory, t);
             auto d_dist = abs(other_prediction.frenet.d - self_prediction.frenet.d);
 
-            if (d_dist < 1.2 * this->vehicle_width) {
+            if (d_dist < 1.1 * this->vehicle_width) {
                 // each vehicle has it's own safety zone in front of it
                 //     +-----------+                               |
                 //     |     +  >> | <~ ~ ~ ~ safety zone ~ ~ ~ ~> |
