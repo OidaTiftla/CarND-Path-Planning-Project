@@ -7,7 +7,7 @@
 // TODO: tweak weights for cost functions
 const float EFFICIENCY = 1;
 const float COMFORT = 1.25 * EFFICIENCY;
-const float LEGALITY = 10.0 * (COMFORT + EFFICIENCY);
+const float LEGALITY = 5.0 * (COMFORT + EFFICIENCY);
 const float SAFETY = 1.0 * (LEGALITY + COMFORT + EFFICIENCY);
 const float FEASIBILITY = 1.0 * (SAFETY + LEGALITY + COMFORT + EFFICIENCY);
 
