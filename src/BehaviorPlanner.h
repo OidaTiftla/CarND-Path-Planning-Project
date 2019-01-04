@@ -47,6 +47,10 @@ inline std::ostream& operator<<(std::ostream& out, const BehaviorState& o) {
 }
 
 class BehaviorPlanner {
+    BehaviorState state = BehaviorState::ConstantSpeed;
+    int lane = -1000; // initialize when first car variable is passed into the planner
+    TrajectoryCost cost;
+
 public:
     Map map;
     Speed max_speed;
@@ -54,12 +58,9 @@ public:
     Time lane_change_min_safety_zone_time;
     Acceleration max_acceleration;
     Jerk max_jerk;
-    BehaviorState state = BehaviorState::ConstantSpeed;
-    int lane = -1000; // initialize when first car variable is passed into the planner
     int max_lanes;
     Distance vehicle_length;
     Distance vehicle_width;
-    TrajectoryCost cost;
 
     BehaviorPlanner(
         const Map &map,
