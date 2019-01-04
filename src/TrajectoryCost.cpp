@@ -111,7 +111,7 @@ float TrajectoryCost::collision_cost(const TrajectoryKinematics &trajectory, con
             auto y_dist = abs(local_other_prediction.coord.y - local_self_prediction.coord.y);
 
             if (x_dist < 1.2 * this->vehicle_width
-                && y_dist < 1.2 * this->vehicle_length) {
+                && y_dist < 1.5 * this->vehicle_length) {
                 return 1;
             }
         }
