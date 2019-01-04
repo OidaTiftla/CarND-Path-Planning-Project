@@ -229,18 +229,19 @@ float TrajectoryCost::safety_zone_cost(const TrajectoryKinematics &trajectory, c
                 //     |     +  >> | <~ ~ ~ ~ safety zone ~ ~ ~ ~> |
                 //     +-----------+                               |
 
-                // check other vehicle's safety zone
-                auto dist_other_to_self = this->map.get_frenet_s_distance_from_to(other_prediction.frenet.s, self_prediction.frenet.s);
-                auto safety_time_other = dist_other_to_self / other_prediction.speed;
-                if (min_actual_safety_time_other > safety_time_other) {
-                    min_actual_safety_time_other = safety_time_other;
-                }
-
-                // check my safety zone
-                auto dist_self_to_other = this->map.get_frenet_s_distance_from_to(self_prediction.frenet.s, other_prediction.frenet.s);
-                auto safety_time_self = dist_self_to_other / self_prediction.speed;
-                if (min_actual_safety_time_self > safety_time_self) {
-                    min_actual_safety_time_self = safety_time_self;
+                auto dist = self_prediction.cartesian.distance_to(other_prediction.cartesian);
+                if (this->map.max_s / 2 < this->map.get_frenet_s_distance_from_to(self_prediction.frenet.s, other_prediction.frenet.s)) {
+                    // check other vehicle's safety zone
+                    auto safety_time_other = dist / other_prediction.speed;
+                    if (min_actual_safety_time_other > safety_time_other) {
+                        min_actual_safety_time_other = safety_time_other;
+                    }
+                } else {
+                    // check my safety zone
+                    auto safety_time_self = dist / self_prediction.speed;
+                    if (min_actual_safety_time_self > safety_time_self) {
+                        min_actual_safety_time_self = safety_time_self;
+                    }
                 }
             }
         }
