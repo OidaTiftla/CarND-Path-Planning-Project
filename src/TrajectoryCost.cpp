@@ -14,21 +14,51 @@ float TrajectoryCost::calculate_cost(const TrajectoryKinematics &trajectory, con
     */
     auto logger = LogLevelStack(1);
 
-    float cost = 0.0;
-    cost += SAFETY * this->buffer_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    cost += FEASIBILITY * this->collision_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    cost += SAFETY * this->safety_zone_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    cost += SAFETY * this->stays_on_road_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    cost += LEGALITY * this->exceeds_speed_limit_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    cost += EFFICIENCY * this->efficiency_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    cost += COMFORT * this->total_acceleration_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    cost += FEASIBILITY * this->max_acceleration_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    cost += COMFORT * this->total_jerk_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    cost += COMFORT * this->max_jerk_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    cost += EFFICIENCY * this->inefficiency_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    // cost += EFFICIENCY * this->time_diff_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    // cost += LEGALITY * this->s_diff_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
-    // cost += LEGALITY * this->d_diff_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    log(2) << "  + + + + + + + + + +" << std::endl;
+    float cost = 0.0, c = 0.0;
+    c = SAFETY * this->buffer_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    log(2) << "  + buffer_cost: " << c << std::endl;
+    cost += c;
+    c = FEASIBILITY * this->collision_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    log(2) << "  + collision_cost: " << c << std::endl;
+    cost += c;
+    c = SAFETY * this->safety_zone_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    log(2) << "  + safety_zone_cost: " << c << std::endl;
+    cost += c;
+    c = SAFETY * this->stays_on_road_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    log(2) << "  + stays_on_road_cost: " << c << std::endl;
+    cost += c;
+    c = LEGALITY * this->exceeds_speed_limit_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    log(2) << "  + exceeds_speed_limit_cost: " << c << std::endl;
+    cost += c;
+    c = EFFICIENCY * this->efficiency_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    log(2) << "  + efficiency_cost: " << c << std::endl;
+    cost += c;
+    c = COMFORT * this->total_acceleration_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    log(2) << "  + total_acceleration_cost: " << c << std::endl;
+    cost += c;
+    c = FEASIBILITY * this->max_acceleration_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    log(2) << "  + max_acceleration_cost: " << c << std::endl;
+    cost += c;
+    c = COMFORT * this->total_jerk_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    log(2) << "  + total_jerk_cost: " << c << std::endl;
+    cost += c;
+    c = COMFORT * this->max_jerk_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    log(2) << "  + max_jerk_cost: " << c << std::endl;
+    cost += c;
+    c = EFFICIENCY * this->inefficiency_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    log(2) << "  + inefficiency_cost: " << c << std::endl;
+    cost += c;
+    // c = EFFICIENCY * this->time_diff_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    // log(2) << "  + time_diff_cost: " << c << std::endl;
+    // cost += c;
+    // c = LEGALITY * this->s_diff_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    // log(2) << "  + s_diff_cost: " << c << std::endl;
+    // cost += c;
+    // c = LEGALITY * this->d_diff_cost(trajectory, car, timestep, time_horizon, sensor_fusion);
+    // log(2) << "  + d_diff_cost: " << c << std::endl;
+    // cost += c;
+
     return cost;
 }
 
