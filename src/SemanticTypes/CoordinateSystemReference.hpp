@@ -16,7 +16,7 @@ public:
 
     // Convert map coordinates into local coordinates of the car,
     // where the car is at (x, y) in the map and also has an orientation.
-    LocalCartesianCoordinate ToLocal(const GlobalCartesianCoordinate& g) const {
+    LocalCartesianCoordinate to_local(const GlobalCartesianCoordinate& g) const {
         return LocalCartesianCoordinate(
             cos(this->reference.theta) * (g.x - this->reference.coord.x) + sin(this->reference.theta) * (g.y - this->reference.coord.y),
             -sin(this->reference.theta) * (g.x - this->reference.coord.x) + cos(this->reference.theta) * (g.y - this->reference.coord.y)
@@ -25,7 +25,7 @@ public:
 
     // Convert local coordinates of the car into map coordinates,
     // where the car is at (x, y) in the map and also has an orientation.
-    GlobalCartesianCoordinate ToGlobal(const LocalCartesianCoordinate& l) const {
+    GlobalCartesianCoordinate to_global(const LocalCartesianCoordinate& l) const {
         return GlobalCartesianCoordinate(
             cos(this->reference.theta) * l.x - sin(this->reference.theta) * l.y + this->reference.coord.x,
             sin(this->reference.theta) * l.x + cos(this->reference.theta) * l.y + this->reference.coord.y
@@ -34,16 +34,16 @@ public:
 
     // Convert map coordinates into local coordinates of the car,
     // where the car is at (x, y) in the map and also has an orientation.
-    LocalCartesianPosition ToLocal(const GlobalCartesianPosition& g) const {
-        auto coordl = this->ToLocal(g.coord);
+    LocalCartesianPosition to_local(const GlobalCartesianPosition& g) const {
+        auto coordl = this->to_local(g.coord);
         return LocalCartesianPosition(coordl.x, coordl.y,
             g.theta - this->reference.theta);
     }
 
     // Convert local coordinates of the car into map coordinates,
     // where the car is at (x, y) in the map and also has an orientation.
-    GlobalCartesianPosition ToGlobal(const LocalCartesianPosition& l) const {
-        auto coordg = this->ToGlobal(l.coord);
+    GlobalCartesianPosition to_global(const LocalCartesianPosition& l) const {
+        auto coordg = this->to_global(l.coord);
         return GlobalCartesianPosition(coordg.x, coordg.y,
             l.theta + this->reference.theta);
     }

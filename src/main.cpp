@@ -125,7 +125,7 @@ int main() {
                     // j[1] is the data JSON object
 
                     // Main car's localization Data
-                    GlobalCartesianPosition car_cartesian(j[1]["x"] * 1_m, j[1]["y"] * 1_m, ToRadian(j[1]["yaw"] * 1_deg));
+                    GlobalCartesianPosition car_cartesian(j[1]["x"] * 1_m, j[1]["y"] * 1_m, to_radian(j[1]["yaw"] * 1_deg));
                     FrenetCoordinate car_frenet(j[1]["s"] * 1_m, j[1]["d"] * 1_m);
                     auto car_speed = j[1]["speed"] * 1_mph;
                     VehicleState car(-1, car_cartesian, car_frenet, car_speed);
@@ -165,14 +165,14 @@ int main() {
                     log(1) << "speed: " << car.speed << endl;
                     log(1) << "x: " << car.cartesian.coord.x << endl;
                     log(1) << "y: " << car.cartesian.coord.y << endl;
-                    log(1) << "theta: " << ToDegree(car.cartesian.theta) << endl;
+                    log(1) << "theta: " << to_degree(car.cartesian.theta) << endl;
                     log(1) << "speed x: " << car.speed_x << endl;
                     log(1) << "speed y: " << car.speed_y << endl;
 
                     auto behavior = bPlanner.plan_next_behavior(car, timestep, time_horizon, sensor_fusion);
 
                     TrajectoryPlanner tPlanner(map, max_acceleration, max_jerk, car, previous_path, end_path, sensor_fusion);
-                    auto trajectory = tPlanner.PlanNextTrajectory(behavior, timestep, time_horizon);
+                    auto trajectory = tPlanner.plan_next_trajectory(behavior, timestep, time_horizon);
 
 
                     json msgJson;

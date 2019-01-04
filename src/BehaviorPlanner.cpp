@@ -9,7 +9,7 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
     log(1) << "---------" << std::endl;
 
     if (this->lane == -1000) {
-        this->lane = this->map.GetLaneFrom(car.frenet);
+        this->lane = this->map.get_lane_from(car.frenet);
         log(2) << "set initial lane to " << this->lane << std::endl;
     }
 
@@ -78,13 +78,13 @@ TrajectoryKinematics BehaviorPlanner::try_follow_vehicle(const VehicleState &car
     if (preceding_vehicle_iter != sensor_fusion.end()) {
         auto preceding_vehicle = *preceding_vehicle_iter;
         // preceding vehicle position, in the future
-        auto preceding_vehicle_prediction = this->map.PredictIntoFuture(preceding_vehicle, time_horizon);
+        auto preceding_vehicle_prediction = this->map.predict_into_future(preceding_vehicle, time_horizon);
         // minimum distance to vehicle in front of us, if we drive with desired target speed
         auto min_distance_with_max_speed = this->min_safety_zone_time * this->max_speed;
         // calculate s for both (the preceding vehicle in the future and me in the future if I drive with the desired target speed)
         // calculate s relative to my current car position (combats the fact, that s jumps when I drive over the starting line (s=0 wraparound))
-        auto rel_s_preceding_vehicle_prediction = this->map.GetFrenetSDistanceFromTo(car.frenet.s, preceding_vehicle_prediction.frenet.s);
-        auto rel_s_target = this->map.GetFrenetSDistanceFromTo(car.frenet.s, future_s);
+        auto rel_s_preceding_vehicle_prediction = this->map.get_frenet_s_distance_from_to(car.frenet.s, preceding_vehicle_prediction.frenet.s);
+        auto rel_s_target = this->map.get_frenet_s_distance_from_to(car.frenet.s, future_s);
         auto actual_distance_to_preceding_vehicle = rel_s_preceding_vehicle_prediction - rel_s_target;
         if (actual_distance_to_preceding_vehicle < min_distance_with_max_speed) {
             // to fast -> no safety zone -> drive with speed of preceding vehicle and with safety zone
@@ -103,8 +103,8 @@ TrajectoryKinematics BehaviorPlanner::try_follow_vehicle(const VehicleState &car
         }
     }
 
-    FrenetCoordinate frenet_target(future_s, this->map.GetFrenetDFromLane(this->lane));
-    auto cartesian_target = this->map.ConvertToCartesianPosition(frenet_target);
+    FrenetCoordinate frenet_target(future_s, this->map.get_frenet_d_from_lane(this->lane));
+    auto cartesian_target = this->map.convert_to_cartesian_position(frenet_target);
     VehicleState target_state(-1, cartesian_target, frenet_target, target_speed);
     return TrajectoryKinematics(car, this->lane, true, target_state, target_lane, intended_lane, acceleration, time_horizon, preceding_vehicle_id);
 }
@@ -173,7 +173,7 @@ TrajectoryKinematics BehaviorPlanner::constant_speed_trajectory(const VehicleSta
         car,
         this->lane,
         true,
-        this->map.PredictIntoFuture(car, time_horizon),
+        this->map.predict_into_future(car, time_horizon),
         this->lane,
         this->lane,
         0_m / 1_s / 1_s,
@@ -260,8 +260,8 @@ TrajectoryKinematics BehaviorPlanner::lane_change_trajectory(const BehaviorState
         combined_trajectory = curr_lane_new_kinematics;
     }
     // set target state to new lane
-    combined_trajectory.target_state.frenet.d = this->map.GetFrenetDFromLane(new_lane);
-    combined_trajectory.target_state.cartesian = this->map.ConvertToCartesianPosition(combined_trajectory.target_state.frenet);
+    combined_trajectory.target_state.frenet.d = this->map.get_frenet_d_from_lane(new_lane);
+    combined_trajectory.target_state.cartesian = this->map.convert_to_cartesian_position(combined_trajectory.target_state.frenet);
 
     return combined_trajectory;
 }

@@ -16,20 +16,20 @@ public:
     CartesianPosition() : coord(), theta(0) {}
     CartesianPosition(const Distance x, const Distance y, const AngleRad theta) : coord(x, y), theta(theta) {}
 
-    Distance DistanceTo(const CartesianPosition<TReference> p) const {
-        return coord.DistanceTo(p.coord);
+    Distance distance_to(const CartesianPosition<TReference> p) const {
+        return coord.distance_to(p.coord);
     }
 
-    Distance DistanceTo(const CartesianCoordinate<TReference> c) const {
-        return coord.DistanceTo(c);
+    Distance distance_to(const CartesianCoordinate<TReference> c) const {
+        return coord.distance_to(c);
     }
 
-    AngleRad AngleTo(const CartesianPosition<TReference> p) const {
-        return NormalizeAroundZero(coord.AngleTo(p.coord) - theta);
+    AngleRad angle_to(const CartesianPosition<TReference> p) const {
+        return normalize_around_zero(coord.angle_to(p.coord) - theta);
     }
 
-    AngleRad AngleTo(const CartesianCoordinate<TReference> c) const {
-        return NormalizeAroundZero(coord.AngleTo(c) - theta);
+    AngleRad angle_to(const CartesianCoordinate<TReference> c) const {
+        return normalize_around_zero(coord.angle_to(c) - theta);
     }
 };
 

@@ -37,7 +37,7 @@ VehicleState TrajectoryCost::evaluate_trajectory(const TrajectoryKinematics &tra
     auto s = trajectory.initial_state.frenet.s + trajectory.initial_state.speed * t + 0.5 * trajectory.constant_acceleration * pow<2>(t);
 
     FrenetCoordinate frenet(s, trajectory.initial_state.frenet.d + (trajectory.target_state.frenet.d - trajectory.initial_state.frenet.d) * t / trajectory.time_horizon);
-    auto cartesian = this->map.ConvertToCartesianPosition(frenet);
+    auto cartesian = this->map.convert_to_cartesian_position(frenet);
     return VehicleState(-1, cartesian, frenet, speed);
 }
 
@@ -72,9 +72,9 @@ float TrajectoryCost::buffer_cost(const TrajectoryKinematics &trajectory, const 
         // check if there is no collision
         // check the time interval [0; time_horizon]
         for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
-            auto other_prediction = this->map.PredictIntoFuture(*it, t);
+            auto other_prediction = this->map.predict_into_future(*it, t);
             auto self_prediction = this->evaluate_trajectory(trajectory, t);
-            auto dist = self_prediction.cartesian.DistanceTo(other_prediction.cartesian);
+            auto dist = self_prediction.cartesian.distance_to(other_prediction.cartesian);
 
             if (dist < min_distance) {
                 min_distance = dist;
@@ -94,10 +94,10 @@ float TrajectoryCost::collision_cost(const TrajectoryKinematics &trajectory, con
         // check if there is no collision
         // check the time interval [0; time_horizon]
         for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
-            auto other_prediction = this->map.PredictIntoFuture(*it, t);
+            auto other_prediction = this->map.predict_into_future(*it, t);
             auto self_prediction = this->evaluate_trajectory(trajectory, t);
-            auto local_other_prediction = local_system.ToLocal(other_prediction.cartesian);
-            auto local_self_prediction = local_system.ToLocal(self_prediction.cartesian);
+            auto local_other_prediction = local_system.to_local(other_prediction.cartesian);
+            auto local_self_prediction = local_system.to_local(self_prediction.cartesian);
             auto x_dist = abs(local_other_prediction.coord.x - local_self_prediction.coord.x);
             auto y_dist = abs(local_other_prediction.coord.y - local_self_prediction.coord.y);
 
@@ -120,7 +120,7 @@ float TrajectoryCost::safety_zone_cost(const TrajectoryKinematics &trajectory, c
         // check if there is no collision
         // check the time interval [0; time_horizon]
         for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
-            auto other_prediction = this->map.PredictIntoFuture(*it, t);
+            auto other_prediction = this->map.predict_into_future(*it, t);
             auto self_prediction = this->evaluate_trajectory(trajectory, t);
             auto d_dist = abs(other_prediction.frenet.d - self_prediction.frenet.d);
 
@@ -131,14 +131,14 @@ float TrajectoryCost::safety_zone_cost(const TrajectoryKinematics &trajectory, c
                 //     +-----------+                               |
 
                 // check other vehicle's safety zone
-                auto dist_other_to_self = this->map.GetFrenetSDistanceFromTo(other_prediction.frenet.s, self_prediction.frenet.s);
+                auto dist_other_to_self = this->map.get_frenet_s_distance_from_to(other_prediction.frenet.s, self_prediction.frenet.s);
                 auto safety_time_other = dist_other_to_self / other_prediction.speed;
                 if (min_actual_safety_time > safety_time_other) {
                     min_actual_safety_time = safety_time_other;
                 }
 
                 // check my safety zone
-                auto dist_self_to_other = this->map.GetFrenetSDistanceFromTo(self_prediction.frenet.s, other_prediction.frenet.s);
+                auto dist_self_to_other = this->map.get_frenet_s_distance_from_to(self_prediction.frenet.s, other_prediction.frenet.s);
                 auto safety_time_self = dist_self_to_other / self_prediction.speed;
                 if (min_actual_safety_time > safety_time_self) {
                     min_actual_safety_time = safety_time_self;
@@ -165,7 +165,7 @@ float TrajectoryCost::efficiency_cost(const TrajectoryKinematics &trajectory, co
     /*
     Rewards high average speeds.
     */
-    auto average_speed = this->map.GetFrenetSDistanceFromTo(trajectory.initial_state.frenet.s, trajectory.target_state.frenet.s) / trajectory.time_horizon;
+    auto average_speed = this->map.get_frenet_s_distance_from_to(trajectory.initial_state.frenet.s, trajectory.target_state.frenet.s) / trajectory.time_horizon;
     auto reference_speed = this->max_speed;
 
     auto preceding_vehicle_iter = std::find_if(sensor_fusion.begin(), sensor_fusion.end(), [&trajectory](const VehicleState &vehicle) { return trajectory.preceding_vehicle_id == vehicle.id; });

@@ -19,12 +19,12 @@ public:
     CartesianCoordinate() : x(0), y(0) {}
     CartesianCoordinate(const Distance x, const Distance y) : x(x), y(y) {}
 
-    Distance DistanceTo(const CartesianCoordinate<TReference> c) const {
+    Distance distance_to(const CartesianCoordinate<TReference> c) const {
         return Distance(sqrt(pow<2>(x - c.x) + pow<2>(y - c.y)));
     }
 
-    AngleRad AngleTo(const CartesianCoordinate<TReference> p) const {
-        return NormalizeAroundZero(atan2(p.y - y, p.x - x));
+    AngleRad angle_to(const CartesianCoordinate<TReference> p) const {
+        return normalize_around_zero(atan2(p.y - y, p.x - x));
     }
 };
 

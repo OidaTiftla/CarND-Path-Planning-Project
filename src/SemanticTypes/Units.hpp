@@ -573,15 +573,15 @@ inline constexpr Value<TUnit> abs(const Value<TUnit>& v) {
     return Value<TUnit>(abs(v.value));
 }
 
-inline constexpr AngleRad ToRadian(const AngleDeg& deg) {
+inline constexpr AngleRad to_radian(const AngleDeg& deg) {
     return AngleRad(deg.value * M_PI / 180);
 }
 
-inline constexpr AngleDeg ToDegree(const AngleRad& rad) {
+inline constexpr AngleDeg to_degree(const AngleRad& rad) {
     return AngleDeg(rad.value * 180 / M_PI);
 }
 
-inline AngleDeg NormalizeAroundZero(AngleDeg v) {
+inline AngleDeg normalize_around_zero(AngleDeg v) {
     while (v > 180_deg) {
         v -= 360_deg;
     }
@@ -591,7 +591,7 @@ inline AngleDeg NormalizeAroundZero(AngleDeg v) {
     return v;
 }
 
-inline AngleRad NormalizeAroundZero(AngleRad v) {
+inline AngleRad normalize_around_zero(AngleRad v) {
     while (v > AngleRad(M_PI)) {
         v -= AngleRad(M_2_PI);
     }
@@ -614,15 +614,15 @@ inline constexpr double tan(const AngleRad& rad) {
 }
 
 inline constexpr double sin(const AngleDeg& deg) {
-    return sin(ToRadian(deg));
+    return sin(to_radian(deg));
 }
 
 inline constexpr double cos(const AngleDeg& deg) {
-    return cos(ToRadian(deg));
+    return cos(to_radian(deg));
 }
 
 inline constexpr double tan(const AngleDeg& deg) {
-    return tan(ToRadian(deg));
+    return tan(to_radian(deg));
 }
 
 template <typename TUnit>
