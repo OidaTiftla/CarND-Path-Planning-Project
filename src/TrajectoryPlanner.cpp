@@ -83,6 +83,11 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
             }
 
             target_speed = start_state.speed + acceleration * remaining_time_horizon;
+            if (target_speed < 0.1_m / 1_s) {
+                target_speed = 0.1_m / 1_s;
+                acceleration = (target_speed - start_state.speed) / remaining_time_horizon;
+                log(1) << "exceed min speed (preceding vehicle) [new acceleration: " << acceleration << "]" << std::endl;
+            }
             target_distance = start_state.speed * remaining_time_horizon + 0.5 * acceleration * pow<2>(remaining_time_horizon);
             target_frenet = this->map.add_lane_distance(
                 start_state.frenet,

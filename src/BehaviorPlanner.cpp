@@ -118,6 +118,10 @@ TrajectoryKinematics BehaviorPlanner::try_follow_vehicle(const VehicleState &car
                 acceleration = -this->max_acceleration;
             }
             target_speed = car.speed + acceleration * time_horizon;
+            if (target_speed < 0.1_m / 1_s) {
+                target_speed = 0.1_m / 1_s;
+                acceleration = (target_speed - car.speed) / time_horizon;
+            }
             target_distance = car.speed * time_horizon + 0.5 * acceleration * pow<2>(time_horizon);
             // vehicle position, in the future
             frenet_target = this->map.add_lane_distance(
