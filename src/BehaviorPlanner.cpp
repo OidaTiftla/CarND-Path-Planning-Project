@@ -231,11 +231,19 @@ TrajectoryKinematics BehaviorPlanner::prep_lane_change_trajectory(const Behavior
             break;
     }
 
+    TrajectoryKinematics error_trajectory(car, this->lane, false, car, this->lane, this->lane, 0_m / 1_s / 1_s, 0_s, -1);
+
     auto vehicle_id_current_lane = this->map.find_next_vehicle_in_lane(car.frenet.s, this->lane, sensor_fusion);
     auto curr_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_current_lane, this->lane, new_lane, time_horizon, sensor_fusion);
 
     auto vehicle_id_new_lane = this->map.find_next_vehicle_in_lane(car.frenet.s, new_lane, sensor_fusion);
     auto new_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_new_lane, this->lane, new_lane, time_horizon, sensor_fusion);
+
+    // if any trajectory not possible
+    if (!curr_lane_new_kinematics.is_trajectory_possible
+        || !new_lane_new_kinematics.is_trajectory_possible) {
+        return error_trajectory;
+    }
 
     // choose kinematics with lowest velocity.
     if (new_lane_new_kinematics.target_state.speed < curr_lane_new_kinematics.target_state.speed) {
@@ -265,7 +273,6 @@ TrajectoryKinematics BehaviorPlanner::lane_change_trajectory(const BehaviorState
 
     TrajectoryKinematics error_trajectory(car, this->lane, false, car, this->lane, this->lane, 0_m / 1_s / 1_s, 0_s, -1);
 
-    // check if a lane change is possible (check if another vehicle occupies that spot)
     auto vehicle_id_current_lane = this->map.find_next_vehicle_in_lane(car.frenet.s, this->lane, sensor_fusion);
     auto curr_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_current_lane, new_lane, new_lane, time_horizon, sensor_fusion);
 
@@ -283,6 +290,7 @@ TrajectoryKinematics BehaviorPlanner::lane_change_trajectory(const BehaviorState
     if (curr_lane_new_kinematics.target_state.speed < new_lane_new_kinematics.target_state.speed) {
         combined_trajectory = curr_lane_new_kinematics;
     }
+
     // set target state to new lane
     combined_trajectory.target_state.frenet.d = this->map.get_frenet_d_from_lane(new_lane);
     combined_trajectory.target_state.cartesian = this->map.convert_to_cartesian_position(combined_trajectory.target_state.frenet);
