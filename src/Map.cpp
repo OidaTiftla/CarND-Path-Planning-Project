@@ -89,9 +89,9 @@ GlobalCartesianPosition Map::convert_to_cartesian_position(FrenetCoordinate pos)
         prev_wp++;
     }
 
-    size_t wp2 = (prev_wp + 1) % this->wayPoints.size();
+    size_t next_wp = (prev_wp + 1) % this->wayPoints.size();
 
-    AngleRad heading = this->wayPoints[prev_wp].cartesian.angle_to(this->wayPoints[wp2].cartesian);
+    AngleRad heading = this->wayPoints[prev_wp].cartesian.angle_to(this->wayPoints[next_wp].cartesian);
 
     // create spline
     CoordinateSystemReference local_system(this->wayPoints[prev_wp].cartesian.x, this->wayPoints[prev_wp].cartesian.y, heading);
@@ -108,9 +108,9 @@ GlobalCartesianPosition Map::convert_to_cartesian_position(FrenetCoordinate pos)
     // the s along the segment
     auto seg_s = pos.s - this->wayPoints[prev_wp].frenet.s;
 
-    auto y_curvature_correction = Distance(s(seg_s.value));
+    auto d_curvature_correction = Distance(s(seg_s.value));
 
-    LocalCartesianPosition pos_local(seg_s, -pos.d + y_curvature_correction, 0_rad);
+    LocalCartesianPosition pos_local(seg_s, -pos.d + d_curvature_correction, 0_rad);
 
     return local_system.to_global(pos_local);
 }
