@@ -246,6 +246,7 @@ TrajectoryKinematics BehaviorPlanner::prep_lane_change_trajectory(const Behavior
     }
 
     // choose kinematics with lowest velocity.
+    // ToDo: may also check distance to vehicle
     if (new_lane_new_kinematics.target_state.speed < curr_lane_new_kinematics.target_state.speed) {
         return new_lane_new_kinematics;
     } else {
@@ -286,6 +287,7 @@ TrajectoryKinematics BehaviorPlanner::lane_change_trajectory(const BehaviorState
     }
 
     // choose kinematics with lowest velocity
+    // ToDo: may also check distance to vehicle
     auto combined_trajectory = new_lane_new_kinematics;
     if (curr_lane_new_kinematics.target_state.speed < new_lane_new_kinematics.target_state.speed) {
         combined_trajectory = curr_lane_new_kinematics;
