@@ -71,7 +71,25 @@ FrenetCoordinate Map::convert_to_frenet(const GlobalCartesianCoordinate pos) con
 
     frenet_s += LocalCartesianCoordinate(0_m, 0_m).distance_to(proj);
 
-    return { frenet_s, frenet_d };
+    // create spline
+    AngleRad heading = this->wayPoints[prev_wp].cartesian.angle_to(this->wayPoints[next_wp].cartesian);
+    CoordinateSystemReference local_system(this->wayPoints[prev_wp].cartesian.x, this->wayPoints[prev_wp].cartesian.y, heading);
+    std::vector<double> X, Y;
+    for (int i = -2; i < 4; ++i) {
+        size_t wp = (this->wayPoints.size() + prev_wp + i) % this->wayPoints.size();
+        auto local = local_system.to_local(this->wayPoints[wp].cartesian);
+        X.push_back(local.x.value);
+        Y.push_back(local.y.value);
+    }
+    tk::spline s;
+    s.set_points(X, Y); // currently it is required that X is already sorted
+
+    // the s along the segment
+    auto seg_s = frenet_s - this->wayPoints[prev_wp].frenet.s;
+
+    auto d_curvature_correction = Distance(s(seg_s.value));
+
+    return { frenet_s, frenet_d + d_curvature_correction };
 }
 
 // Transform from Frenet s,d coordinates to Cartesian x,y
