@@ -42,7 +42,7 @@ FrenetCoordinate Map::convert_to_frenet(const GlobalCartesianCoordinate pos) con
 
     auto next_wp = this->next_way_point_index(GlobalCartesianPosition(pos.x, pos.y, angle));
 
-    auto prev_wp = (next_wp - 1) % this->wayPoints.size();
+    auto prev_wp = (this->wayPoints.size() + next_wp - 1) % this->wayPoints.size();
 
     auto n = this->wayPoints[next_wp].cartesian - this->wayPoints[prev_wp].cartesian;
     auto x = pos - this->wayPoints[prev_wp].cartesian;
