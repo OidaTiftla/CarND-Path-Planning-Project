@@ -120,15 +120,13 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
 
     // define starting points
     if (count_previous >= 2) {
-        log(2) << "reuse waypoints" << std::endl;
-        auto local1 = local_system.to_local(this->previous_path[0]);
-        X.push_back(local1.x.value);
-        Y.push_back(local1.y.value);
-        log(2) << "reuse local waypoint " << local1 << std::endl;
-        auto local2 = local_system.to_local(this->previous_path[count_previous - 1]);
-        X.push_back(local2.x.value);
-        Y.push_back(local2.y.value);
-        log(2) << "reuse local waypoint " << local2 << std::endl;
+        log(2) << "reuse " << count_previous << " waypoints" << std::endl;
+        for (int i = 0; i < count_previous; ++i) {
+            auto local = local_system.to_local(this->previous_path[i]);
+            X.push_back(local.x.value);
+            Y.push_back(local.y.value);
+            log(2) << "reuse local waypoint " << local << std::endl;
+        }
     } else {
         log(2) << "create initial waypoints" << std::endl;
 
