@@ -48,8 +48,10 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
         acceleration = -this->max_acceleration;
     }
     auto target_speed = start_state.speed + acceleration * remaining_time_horizon;
-    FrenetCoordinate target_frenet(
-        start_state.frenet.s + start_state.speed * remaining_time_horizon + 0.5 * acceleration * pow<2>(remaining_time_horizon),
+    auto target_distance = start_state.speed * remaining_time_horizon + 0.5 * acceleration * pow<2>(remaining_time_horizon);
+    auto target_frenet = this->map.add_lane_distance(
+        start_state.frenet,
+        target_distance,
         this->map.get_frenet_d_from_lane(behavior.lane));
     auto target_cartesian = this->map.convert_to_cartesian_position(target_frenet);
 
@@ -62,8 +64,8 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
         auto min_distance_with_target_speed = behavior.min_safety_zone_time * target_speed;
         // calculate s for both (the preceding vehicle in the future and me in the future if I drive with the desired target speed)
         // calculate s relative to my current car position (combats the fact, that s jumps when I drive over the starting line (s=0 wraparound))
-        auto rel_dist_preceding_vehicle_prediction = this->car.cartesian.distance_to(preceding_vehicle_prediction.cartesian);
-        auto rel_dist_target = this->car.cartesian.distance_to(target_cartesian);
+        auto rel_dist_preceding_vehicle_prediction = this->map.get_lane_distance_from_to(this->car.frenet, preceding_vehicle_prediction.frenet);
+        auto rel_dist_target = this->map.get_lane_distance_from_to(this->car.frenet, target_frenet);
         auto actual_distance_to_preceding_vehicle = rel_dist_preceding_vehicle_prediction - rel_dist_target;
         if (actual_distance_to_preceding_vehicle < min_distance_with_target_speed) {
             // to fast -> no safety zone -> drive with speed of preceding vehicle and with safety zone
@@ -81,7 +83,11 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
             }
 
             target_speed = start_state.speed + acceleration * remaining_time_horizon;
-            target_frenet.s = start_state.frenet.s + start_state.speed * remaining_time_horizon + 0.5 * acceleration * pow<2>(remaining_time_horizon);
+            target_distance = start_state.speed * remaining_time_horizon + 0.5 * acceleration * pow<2>(remaining_time_horizon);
+            target_frenet = this->map.add_lane_distance(
+                start_state.frenet,
+                target_distance,
+                this->map.get_frenet_d_from_lane(behavior.lane));
             target_cartesian = this->map.convert_to_cartesian_position(target_frenet);
         }
     }

@@ -128,6 +128,37 @@ Distance Map::get_frenet_s_distance_from_to(const Distance from, const Distance 
     return this->normalize_s(dist);
 }
 
+Distance Map::get_lane_distance_from_to(const FrenetCoordinate from, const FrenetCoordinate to) const {
+    auto s_diff = this->get_frenet_s_distance_from_to(from.s, to.s);
+    auto steps = ceil(s_diff / 2_m);
+    auto s_step = s_diff / steps;
+    auto d_step = (to.d - from.d) / steps;
+
+    auto distance = 0_m;
+    auto last = this->convert_to_cartesian(from);
+    for (int i = 1; i <= steps; ++i) {
+        FrenetCoordinate next_frenet(s_step * i + from.s, d_step * i + from.d);
+        auto next = this->convert_to_cartesian(next_frenet);
+        distance += last.distance_to(next);
+        last = next;
+    }
+    return distance;
+}
+
+FrenetCoordinate Map::add_lane_distance(const FrenetCoordinate from, const Distance distance, const Distance target_d) const {
+    auto s_step = distance;
+    auto s = from.s;
+    while (s_step > 0.1_m) {
+        FrenetCoordinate to(s + s_step, target_d);
+        if (this->get_lane_distance_from_to(from, to) <= distance) {
+            s += s_step;
+        } else {
+            s_step /= 2;
+        }
+    }
+    return FrenetCoordinate(s, target_d);
+}
+
 Distance Map::normalize_s(Distance s) const {
     while (s >= this->max_s) {
         s -= this->max_s;

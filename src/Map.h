@@ -29,6 +29,8 @@ public:
     int get_lane_from(const FrenetCoordinate frenet) const;
     Distance get_frenet_d_from_lane(const int lane) const;
     Distance get_frenet_s_distance_from_to(const Distance from, const Distance to) const;
+    Distance get_lane_distance_from_to(const FrenetCoordinate from, const FrenetCoordinate to) const;
+    FrenetCoordinate add_lane_distance(const FrenetCoordinate from, const Distance distance, const Distance target_d) const;
     Distance normalize_s(Distance s) const;
 
     VehicleState predict_into_future(const VehicleState& vehicle, const Time time_horizon) const;
