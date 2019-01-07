@@ -148,7 +148,7 @@ float TrajectoryCost::buffer_cost(const TrajectoryKinematics &trajectory, const 
         // check if there is no collision
         // check the time interval [0; time_horizon]
         for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
-            auto other_prediction = this->map.predict_into_future(*it, t);
+            auto other_prediction = this->map.predict_into_future_in_frenet(*it, t);
             auto self_prediction = this->evaluate_trajectory(trajectory, t);
             auto local_other_prediction = local_system.to_local(other_prediction.cartesian);
             auto local_self_prediction = local_system.to_local(self_prediction.cartesian);
@@ -185,7 +185,7 @@ float TrajectoryCost::collision_cost(const TrajectoryKinematics &trajectory, con
         // check if there is no collision
         // check the time interval [0; time_horizon]
         for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
-            auto other_prediction = this->map.predict_into_future(*it, t);
+            auto other_prediction = this->map.predict_into_future_in_frenet(*it, t);
             auto self_prediction = this->evaluate_trajectory(trajectory, t);
             auto local_other_prediction = local_system.to_local(other_prediction.cartesian);
             auto local_self_prediction = local_system.to_local(self_prediction.cartesian);
@@ -219,7 +219,7 @@ float TrajectoryCost::safety_zone_cost(const TrajectoryKinematics &trajectory, c
         // check if there is no collision
         // check the time interval [0; time_horizon]
         for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
-            auto other_prediction = this->map.predict_into_future(*it, t);
+            auto other_prediction = this->map.predict_into_future_in_frenet(*it, t);
             auto self_prediction = this->evaluate_trajectory(trajectory, t);
             auto d_dist = abs(other_prediction.frenet.d - self_prediction.frenet.d);
 

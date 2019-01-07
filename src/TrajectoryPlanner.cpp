@@ -59,7 +59,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
     if (preceding_vehicle_iter != this->sensor_fusion.end()) {
         auto preceding_vehicle = *preceding_vehicle_iter;
         // preceding vehicle position, in the future
-        auto preceding_vehicle_prediction = this->map.predict_into_future(preceding_vehicle, time_horizon);
+        auto preceding_vehicle_prediction = this->map.predict_into_future_in_frenet(preceding_vehicle, time_horizon);
         // minimum distance to vehicle in front of us, if we drive with desired target speed
         auto min_distance_with_target_speed = behavior.min_safety_zone_time * target_speed;
         // calculate s for both (the preceding vehicle in the future and me in the future if I drive with the desired target speed)
