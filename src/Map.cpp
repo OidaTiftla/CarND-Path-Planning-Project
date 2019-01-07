@@ -127,8 +127,9 @@ GlobalCartesianPosition Map::convert_to_cartesian_position(FrenetCoordinate pos)
     auto seg_s = pos.s - this->wayPoints[prev_wp].frenet.s;
 
     auto d_curvature_correction = Distance(s(seg_s.value));
+    auto angle_correction = atan2(Distance(s((seg_s + 0.05_m).value)) - Distance(s((seg_s - 0.05_m).value)), 0.1_m);
 
-    LocalCartesianPosition pos_local(seg_s, -pos.d + d_curvature_correction, 0_rad);
+    LocalCartesianPosition pos_local(seg_s, -pos.d + d_curvature_correction, angle_correction);
 
     return local_system.to_global(pos_local);
 }
