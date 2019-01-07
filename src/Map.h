@@ -34,6 +34,7 @@ public:
     Distance normalize_s(Distance s) const;
 
     VehicleState predict_into_future(const VehicleState& vehicle, const Time time_horizon) const;
+    VehicleState predict_into_future_in_frenet(const VehicleState& vehicle, const Time time_horizon) const;
 
     int find_next_vehicle_in_lane(const Distance start_s, const int lane, const std::vector<VehicleState> &sensor_fusion) const;
 };

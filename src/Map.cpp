@@ -189,6 +189,7 @@ Distance Map::normalize_s(Distance s) const {
 }
 
 VehicleState Map::predict_into_future(const VehicleState& vehicle, const Time time_horizon) const {
+    // constant speed and angle (x and y speed)
     GlobalCartesianPosition future_pos(
         vehicle.cartesian.coord.x + vehicle.speed_x * time_horizon,
         vehicle.cartesian.coord.y + vehicle.speed_y * time_horizon,
@@ -197,6 +198,26 @@ VehicleState Map::predict_into_future(const VehicleState& vehicle, const Time ti
         vehicle.id,
         future_pos,
         this->convert_to_frenet(future_pos.coord),
+        vehicle.speed);
+}
+
+VehicleState Map::predict_into_future_in_frenet(const VehicleState& vehicle, const Time time_horizon) const {
+    // constant speed in s and d
+    CoordinateSystemReference local_system(this->convert_to_cartesian_position(vehicle.frenet));
+    auto s_d_dist_per_second = local_system.to_local(vehicle.cartesian.coord + LocalCartesianCoordinate(vehicle.speed_x * 1_s, vehicle.speed_y * 1_s));
+    auto s_speed = s_d_dist_per_second.x / 1_s;
+    auto d_speed = s_d_dist_per_second.y / 1_s;
+    auto current_frenet = this->convert_to_frenet(vehicle.cartesian.coord);
+    auto theta_frenet = vehicle.cartesian.theta - this->convert_to_cartesian_position(current_frenet).theta;
+    FrenetCoordinate future_pos_frenet(
+        current_frenet.s + s_speed * time_horizon,
+        current_frenet.d + d_speed * time_horizon);
+    auto future_pos = this->convert_to_cartesian_position(future_pos_frenet);
+    future_pos.theta += theta_frenet;
+    return VehicleState(
+        vehicle.id,
+        future_pos,
+        future_pos_frenet,
         vehicle.speed);
 }
 
