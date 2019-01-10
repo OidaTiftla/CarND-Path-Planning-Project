@@ -169,6 +169,10 @@ int main() {
                     log(1) << "speed x: " << car.speed_x << endl;
                     log(1) << "speed y: " << car.speed_y << endl;
 
+                    log_signal("car_s", car.frenet.s.value);
+                    plot_signals();
+                    log_increase_time(timestep.value);
+
                     auto behavior = bPlanner.plan_next_behavior(car, timestep, time_horizon, sensor_fusion);
 
                     TrajectoryPlanner tPlanner(map, max_acceleration, max_jerk, car, previous_path, end_path, sensor_fusion);

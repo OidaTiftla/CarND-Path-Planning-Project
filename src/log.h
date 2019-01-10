@@ -2,6 +2,7 @@
 #define LOG_H
 
 #include <iostream>
+#include <string>
 
 
 std::ostream& log(int level);
@@ -14,6 +15,10 @@ public:
     LogLevelStack(int level);
     ~LogLevelStack();
 };
+
+void log_signal(std::string name, double value);
+void log_increase_time(double time_step);
+void plot_signals();
 
 
 #endif //LOG_H
