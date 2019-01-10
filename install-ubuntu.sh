@@ -12,3 +12,4 @@ cd ..
 cd ..
 sudo ln -s /usr/lib64/libuWS.so /usr/lib/libuWS.so
 sudo rm -r uWebSockets
+sudo apt-get install libboost-iostreams-dev libboost-system-dev libboost-filesystem-dev

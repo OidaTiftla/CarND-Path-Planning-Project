@@ -8,6 +8,8 @@ add_definitions(-W -Wno-int-in-bool-context -Wno-unused-parameter -Wreturn-type 
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 
+include_directories(gnuplot-iostream)
+
 set(sources src/main.cpp src/log.cpp src/Map.cpp src/BehaviorPlanner.cpp src/TrajectoryPlanner.cpp src/JMT.cpp src/TrajectoryCost.cpp)
 
 
@@ -24,4 +26,4 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 add_executable(path_planning ${sources})
 
-target_link_libraries(path_planning z ssl uv uWS)
+target_link_libraries(path_planning z ssl uv uWS boost_iostreams boost_system boost_filesystem)
