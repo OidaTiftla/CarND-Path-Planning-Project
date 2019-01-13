@@ -41,7 +41,7 @@ void log_set_time(double time_s) {
 
 static Gnuplot log_signal_gp;
 void plot_signals() {
-    auto max_time_to_show = 2.0 * 60;
+    auto max_time_to_show = 45;
     for (auto it = log_signal_values.begin(); it != log_signal_values.end(); ++it) {
     	while (it->second.size() > 0
             && log_signal_time - it->second.front().first > max_time_to_show) {
