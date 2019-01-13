@@ -47,7 +47,7 @@ void plot_signals() {
         if (!first) {
     	    log_signal_gp << ",";
         } else {
-            first = true;
+            first = false;
         }
 	    log_signal_gp << " '-' with lines title '" << it->first << "'";
     }
