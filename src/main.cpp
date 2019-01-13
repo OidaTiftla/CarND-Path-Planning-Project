@@ -262,6 +262,7 @@ int main() {
 
 #if PLOTSIGNALS
                     log_signal("car speed", car.speed.value);
+                    log_signal("d", ((car.frenet.d - (map.lane_width / 2)) / map.lane_width).value);
 #endif
 
                     auto behavior = bPlanner.plan_next_behavior(car, timestep, time_horizon, sensor_fusion);
