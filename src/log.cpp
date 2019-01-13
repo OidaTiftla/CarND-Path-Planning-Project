@@ -1,8 +1,10 @@
 #include "log.h"
 #include <sstream>
+#if PLOTSIGNALS
 #include <list>
 #include <map>
 #include "gnuplot-iostream.h"
+#endif
 
 
 static int log_level = 0;
@@ -26,6 +28,7 @@ LogLevelStack::~LogLevelStack() {
     log_level = this->old_log_level;
 }
 
+#if PLOTSIGNALS
 static double log_signal_time = 0;
 static std::map<std::string, std::list<std::pair<double, double>>> log_signal_values;
 void log_signal(std::string name, double value) {
@@ -65,3 +68,4 @@ void plot_signals() {
     }
     log_signal_gp.flush();
 }
+#endif

@@ -74,6 +74,7 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
         behavior.vehicle_id = current_trajectory.preceding_vehicle_id;
     }
 
+#if PLOTSIGNALS
     log_signal("state", (int)this->state);
     log_signal("planner lane", this->lane);
     log_signal("behavior lane", behavior.lane);
@@ -81,6 +82,7 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
     log_signal("max speed", behavior.max_speed.value);
     auto acceleration = (behavior.max_speed - car.speed) / time_horizon;
     log_signal("acceleration", acceleration.value);
+#endif
 
     return behavior;
 }

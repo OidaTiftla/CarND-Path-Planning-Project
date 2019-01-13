@@ -16,9 +16,11 @@ public:
     ~LogLevelStack();
 };
 
+#if PLOTSIGNALS
 void log_signal(std::string name, double value);
 void log_set_time(double time_s);
 void plot_signals();
+#endif
 
 
 #endif //LOG_H
