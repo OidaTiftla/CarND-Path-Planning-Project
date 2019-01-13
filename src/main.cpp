@@ -147,7 +147,7 @@ int main() {
                     GlobalCartesianPosition car_cartesian(j[1]["x"] * 1_m, j[1]["y"] * 1_m, to_radian(j[1]["yaw"] * 1_deg));
                     FrenetCoordinate car_frenet(j[1]["s"] * 1_m, j[1]["d"] * 1_m);
                     auto car_speed = j[1]["speed"] * 1_mph;
-                    VehicleState car(-1, car_cartesian, car_frenet, car_speed);
+                    VehicleState car(-1, car_cartesian, map.convert_to_frenet(car_cartesian.coord), car_speed);
 
                     // Previous path data given to the Planner
                     vector<GlobalCartesianCoordinate> previous_path;
@@ -169,7 +169,7 @@ int main() {
                         auto d = vehicle_fusion[6] * 1_m;
                         GlobalCartesianCoordinate cartesian(x, y);
                         FrenetCoordinate frenet(s, d);
-                        sensor_fusion.push_back(VehicleState(id, cartesian, frenet, vx, vy));
+                        sensor_fusion.push_back(VehicleState(id, cartesian, map.convert_to_frenet(cartesian), vx, vy));
                     }
 
 
