@@ -15,6 +15,10 @@
 #include "VehicleState.hpp"
 #include "BehaviorPlanner.h"
 #include "TrajectoryPlanner.h"
+#if PLOTMAP
+#include <algorithm>
+#include "gnuplot-iostream.h"
+#endif
 
 using namespace std;
 
@@ -109,9 +113,16 @@ int main() {
     auto start_time = std::chrono::system_clock::now();
 #endif
 
+#if PLOTMAP
+    Gnuplot gp;
+#endif
+
     h.onMessage([
 #if PLOTSIGNALS
         &start_time,
+#endif
+#if PLOTMAP
+        &gp,
 #endif
         &map, &bPlanner, &timestep, &time_horizon, &max_acceleration, &max_jerk](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
         uWS::OpCode opCode) {
@@ -167,6 +178,73 @@ int main() {
                     auto now = std::chrono::system_clock::now();
                     std::chrono::duration<double> timespan_since_start = now - start_time;
                     log_set_time(timespan_since_start.count());
+#endif
+
+#if PLOTMAP
+                    CoordinateSystemReference local_system(car.cartesian);
+                    auto steps = 20;
+                    auto distance = 100_m;
+                    auto t_step = time_horizon / steps;
+                	// gp << "set xrange [" << -2 << ":" << (bPlanner.max_lanes * map.lane_width + 2_m).value << "]\n";
+                    gp << "set xrange [-" << distance.value << ":" << distance.value << "]\n";
+                    gp << "set yrange [-" << distance.value << ":" << distance.value << "]\n";
+                    gp << "set size ratio -1\n";
+                    gp << "plot";
+                    bool first = true;
+                    for (int lane = 0; lane <= bPlanner.max_lanes; ++lane) {
+                        if (first) {
+                            first = false;
+                        } else {
+                            gp << ",";
+                        }
+                        gp << " '-' with lines title 'lane " << lane << "'";
+                    }
+                    for (auto it = sensor_fusion.begin(); it != sensor_fusion.end(); ++it) {
+                        if (first) {
+                            first = false;
+                        } else {
+                            gp << ",";
+                        }
+                        gp << " '-' with lines title 'vehicle " << it->id << "'";
+                    }
+                    if (first) {
+                        first = false;
+                    } else {
+                        gp << ",";
+                    }
+                    gp << " '-' with points title 'vehicle ego'";
+                    gp << "\n";
+
+                    // draw lanes
+                    for (int lane = 0; lane <= bPlanner.max_lanes; ++lane) {
+                        std::vector<std::pair<double, double>> points;
+                        auto d = map.get_frenet_d_from_lane(lane) - (map.lane_width / 2);
+                        for (auto s_diff = -distance; s_diff <= distance; s_diff += distance / steps) {
+                            auto s = car.frenet.s + s_diff;
+                            auto coord = map.convert_to_cartesian(FrenetCoordinate(s, d));
+                            auto local = local_system.to_local(coord);
+                            points.push_back(std::make_pair(-local.y.value, local.x.value));
+                        }
+                        gp.send1d(points);
+                    }
+                    // draw predictions
+                    for (auto it = sensor_fusion.begin(); it != sensor_fusion.end(); ++it) {
+                        std::vector<std::pair<double, double>> points;
+                        for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
+                            auto prediction = map.predict_into_future_in_frenet(*it, t);
+                            auto local = local_system.to_local(prediction.cartesian.coord);
+                            points.push_back(std::make_pair(-local.y.value, local.x.value));
+                        }
+                        gp.send1d(points);
+                    }
+                    std::vector<std::pair<double, double>> points;
+                    for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
+                        auto prediction = map.predict_into_future_in_frenet(car, t);
+                        auto local = local_system.to_local(prediction.cartesian.coord);
+                        points.push_back(std::make_pair(-local.y.value, local.x.value));
+                    }
+                    gp.send1d(points);
+                    gp.flush();
 #endif
 
                     // output car
