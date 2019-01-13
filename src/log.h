@@ -17,7 +17,7 @@ public:
 };
 
 void log_signal(std::string name, double value);
-void log_increase_time(double time_step);
+void log_set_time(double time_s);
 void plot_signals();
 
 

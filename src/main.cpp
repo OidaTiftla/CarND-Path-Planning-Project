@@ -105,7 +105,9 @@ int main() {
         vehicle_length,
         vehicle_width);
 
-    h.onMessage([&map, &bPlanner, &timestep, &time_horizon, &max_acceleration, &max_jerk](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+    auto start_time = std::chrono::system_clock::now();
+
+    h.onMessage([&start_time, &map, &bPlanner, &timestep, &time_horizon, &max_acceleration, &max_jerk](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
         uWS::OpCode opCode) {
         // "42" at the start of the message means there's a websocket message event.
         // The 4 signifies a websocket message
@@ -155,6 +157,9 @@ int main() {
 
 
                     // TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
+                    auto now = std::chrono::system_clock::now();
+                    std::chrono::duration<double> timespan_since_start = now - start_time;
+                    log_set_time(timespan_since_start.count());
 
                     // output car
                     log(1) << endl;
@@ -171,7 +176,6 @@ int main() {
 
                     log_signal("car_s", car.frenet.s.value);
                     plot_signals();
-                    log_increase_time(timestep.value);
 
                     auto behavior = bPlanner.plan_next_behavior(car, timestep, time_horizon, sensor_fusion);
 

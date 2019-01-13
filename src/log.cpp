@@ -35,8 +35,8 @@ void log_signal(std::string name, double value) {
     log_signal_values[name].push_back(std::make_pair(log_signal_time, value));
 }
 
-void log_increase_time(double time_step) {
-    log_signal_time += time_step;
+void log_set_time(double time_s) {
+    log_signal_time = time_s;
 }
 
 static Gnuplot log_signal_gp;
