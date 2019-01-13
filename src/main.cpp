@@ -174,13 +174,15 @@ int main() {
                     log(1) << "speed x: " << car.speed_x << endl;
                     log(1) << "speed y: " << car.speed_y << endl;
 
-                    log_signal("car_s", car.frenet.s.value);
-                    plot_signals();
+                    log_signal("car speed", car.speed.value);
 
                     auto behavior = bPlanner.plan_next_behavior(car, timestep, time_horizon, sensor_fusion);
 
                     TrajectoryPlanner tPlanner(map, max_acceleration, max_jerk, car, previous_path, end_path, sensor_fusion);
                     auto trajectory = tPlanner.plan_next_trajectory(behavior, timestep, time_horizon);
+
+                    log_signal("speed limit", (50_mph).value);
+                    plot_signals();
 
 
                     json msgJson;
