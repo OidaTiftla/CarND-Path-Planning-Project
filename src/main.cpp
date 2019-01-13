@@ -59,7 +59,7 @@ int main() {
     auto time_horizon = 2.0_s;
     auto max_lanes = 3;
     auto vehicle_length = 4.5_m;
-    auto vehicle_width = 2.8_m;
+    auto vehicle_width = 3_m;
 
     auto logger = LogLevelStack(1);
 
