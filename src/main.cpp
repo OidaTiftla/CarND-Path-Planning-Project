@@ -225,7 +225,8 @@ int main() {
         }
     });
 
-    h.onConnection([&h](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
+    h.onConnection([&start_time, &h](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
+        start_time = std::chrono::system_clock::now();
         std::cout << "Connected!!!" << std::endl;
     });
 
