@@ -49,7 +49,7 @@ class BehaviorPlanner {
     BehaviorState state = BehaviorState::ConstantSpeed;
     int lane = -1000; // initialize when first car variable is passed into the planner
     TrajectoryCost cost;
-    std::chrono::system_clock::duration min_state_time = std::chrono::milliseconds(800);
+    std::chrono::system_clock::duration min_state_time = std::chrono::milliseconds(3000);
     std::chrono::system_clock::time_point last_state_change = std::chrono::system_clock::now() - std::chrono::hours(24); // some time in the past
 
 public:
