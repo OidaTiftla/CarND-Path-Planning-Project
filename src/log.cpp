@@ -1,6 +1,6 @@
 #include "log.h"
 #include <sstream>
-#include <vector>
+#include <list>
 #include <map>
 #include "gnuplot-iostream.h"
 
@@ -27,10 +27,10 @@ LogLevelStack::~LogLevelStack() {
 }
 
 static double log_signal_time = 0;
-static std::map<std::string, std::vector<std::pair<double, double>>> log_signal_values;
+static std::map<std::string, std::list<std::pair<double, double>>> log_signal_values;
 void log_signal(std::string name, double value) {
     if (log_signal_values.find(name) == log_signal_values.end()) {
-        log_signal_values[name] = std::vector<std::pair<double, double>>();
+        log_signal_values[name] = std::list<std::pair<double, double>>();
     }
     log_signal_values[name].push_back(std::make_pair(log_signal_time, value));
 }
@@ -41,6 +41,14 @@ void log_set_time(double time_s) {
 
 static Gnuplot log_signal_gp;
 void plot_signals() {
+    auto max_time_to_show = 2.0 * 60;
+    for (auto it = log_signal_values.begin(); it != log_signal_values.end(); ++it) {
+    	while (it->second.size() > 0
+            && log_signal_time - it->second.front().first > max_time_to_show) {
+            it->second.pop_front();
+        }
+    }
+
 	log_signal_gp << "plot";
     bool first = true;
     for (auto it = log_signal_values.begin(); it != log_signal_values.end(); ++it) {
