@@ -204,9 +204,10 @@ VehicleState Map::predict_into_future(const VehicleState& vehicle, const Time ti
 VehicleState Map::predict_into_future_in_frenet(const VehicleState& vehicle, const Time time_horizon) const {
     // constant speed in s and d
     CoordinateSystemReference local_system(this->convert_to_cartesian_position(vehicle.frenet));
-    auto s_d_dist_per_second = local_system.to_local(vehicle.cartesian.coord + LocalCartesianCoordinate(vehicle.speed_x * 1_s, -vehicle.speed_y * 1_s)) - local_system.to_local(vehicle.cartesian.coord); // y with minus because d is in the opposite direction of y
-    auto s_speed = s_d_dist_per_second.x / 1_s;
-    auto d_speed = s_d_dist_per_second.y / 1_s;
+    auto coord_1_second_future = vehicle.cartesian.coord + LocalCartesianCoordinate(vehicle.speed_x * 1_s, vehicle.speed_y * 1_s);
+    auto local_x_y_dist_per_second = local_system.to_local(coord_1_second_future) - local_system.to_local(vehicle.cartesian.coord);
+    auto s_speed = local_x_y_dist_per_second.x / 1_s;
+    auto d_speed = -local_x_y_dist_per_second.y / 1_s; // y with minus because d is in the opposite direction of y
     auto current_frenet = this->convert_to_frenet(vehicle.cartesian.coord);
     auto theta_frenet = vehicle.cartesian.theta - this->convert_to_cartesian_position(current_frenet).theta;
     FrenetCoordinate future_pos_frenet(
