@@ -142,3 +142,20 @@ still be compilable with cmake and make./
 ## How to write a README
 
 A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+
+## Describe how path are generated
+
+For generating path's, a `BehaviorPlanner` and a `TrajectoryPlanner` are used.
+The `BehaviorPlanner` checks every 3 seconds if there is a lange change necessary or not.
+
+The `BehaviorPlanner` always outputs the maximum velocity to drive, which lane and which vehicle to follow, if any.
+He also includes the minimum safety time to other vehicles in his returning behavior object.
+
+The `TrajectoryPlanner` uses the behavior object he gets as input and tries to fulfill the requested behavior.
+He calculates the exact behavior.
+He uses frenet coordinates to calculate the safety zone, when following another vehicle.
+After the needed acceleration is calculated, the planner uses the cartesian coordinate system to create the exact trajectory.
+
+All calculations use semantic units, such as Meter, Second, Radian, Degree.
+This ensures, that the expected unit of the calculated values is the same as the formula creates.
+To keep the performance untouched, this is done at compile-time.
