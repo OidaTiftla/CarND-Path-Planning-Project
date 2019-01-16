@@ -15,7 +15,7 @@
 #include "VehicleState.hpp"
 #include "BehaviorPlanner.h"
 #include "TrajectoryPlanner.h"
-#if PLOTMAP
+#if PLOTMAP | ANALYZEMAPONLY
 #include <algorithm>
 #include "gnuplot-iostream.h"
 #endif
@@ -100,6 +100,39 @@ int main() {
     }
 
     Map map(map_waypoints, max_s, lane_width);
+
+#if ANALYZEMAPONLY
+    Gnuplot gp_map;
+
+    gp_map << "set size ratio -1\n";
+    gp_map << "plot";
+    bool first = true;
+    for (int lane = 0; lane <= max_lanes; ++lane) {
+        if (first) {
+            first = false;
+        } else {
+            gp_map << ",";
+        }
+        gp_map << " '-' with linespoints title 'lane " << lane << "'";
+    }
+    gp_map << "\n";
+
+    // draw lanes
+    for (int lane = 0; lane <= max_lanes; ++lane) {
+        std::vector<std::pair<double, double>> points;
+        auto d = map.get_frenet_d_from_lane(lane) - (map.lane_width / 2);
+        for (auto s = 0_m; s <= max_s; s += 1_m) {
+            auto coord = map.convert_to_cartesian(FrenetCoordinate(s, d));
+            points.push_back(std::make_pair(-coord.y.value, coord.x.value));
+        }
+        gp_map.send1d(points);
+    }
+    gp_map.flush();
+
+    while (true);
+    return 0;
+#endif
+
     BehaviorPlanner bPlanner(map,
         max_speed,
         min_safety_zone_time,

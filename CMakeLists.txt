@@ -23,6 +23,7 @@ link_directories(/usr/local/Cellar/libuv/1.11.0/lib)
 
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
+set(ANALYZEMAPONLY OFF)
 set(PLOTSIGNALS OFF)
 set(PLOTMAP OFF)
 
@@ -32,11 +33,14 @@ endif(${PLOTSIGNALS})
 if(${PLOTMAP})
 add_definitions(-DPLOTMAP)
 endif(${PLOTMAP})
+if(${ANALYZEMAPONLY})
+add_definitions(-DANALYZEMAPONLY)
+endif(${ANALYZEMAPONLY})
 
 add_executable(path_planning ${sources})
 
-if(${PLOTSIGNALS} OR ${PLOTMAP})
+if(${PLOTSIGNALS} OR ${PLOTMAP} OR ${ANALYZEMAPONLY})
 target_link_libraries(path_planning z ssl uv uWS boost_iostreams boost_system boost_filesystem)
-else(${PLOTSIGNALS} OR ${PLOTMAP})
+else(${PLOTSIGNALS} OR ${PLOTMAP} OR ${ANALYZEMAPONLY})
 target_link_libraries(path_planning z ssl uv uWS)
-endif(${PLOTSIGNALS} OR ${PLOTMAP})
+endif(${PLOTSIGNALS} OR ${PLOTMAP} OR ${ANALYZEMAPONLY})
