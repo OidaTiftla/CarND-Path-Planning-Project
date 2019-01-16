@@ -231,7 +231,7 @@ int main() {
                     for (auto it = sensor_fusion.begin(); it != sensor_fusion.end(); ++it) {
                         std::vector<std::pair<double, double>> points;
                         for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
-                            auto prediction = map.predict_into_future_in_frenet(*it, t);
+                            auto prediction = map.predict_into_future_onto_lane(*it, t);
                             auto local = local_system.to_local(prediction.cartesian.coord);
                             points.push_back(std::make_pair(-local.y.value, local.x.value));
                         }
@@ -239,7 +239,7 @@ int main() {
                     }
                     std::vector<std::pair<double, double>> points;
                     for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
-                        auto prediction = map.predict_into_future_in_frenet(car, t);
+                        auto prediction = map.predict_into_future_onto_lane(car, t);
                         auto local = local_system.to_local(prediction.cartesian.coord);
                         points.push_back(std::make_pair(-local.y.value, local.x.value));
                     }

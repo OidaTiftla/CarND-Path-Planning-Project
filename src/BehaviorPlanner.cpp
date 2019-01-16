@@ -110,7 +110,7 @@ TrajectoryKinematics BehaviorPlanner::try_follow_vehicle(const VehicleState &car
     if (preceding_vehicle_iter != sensor_fusion.end()) {
         auto preceding_vehicle = *preceding_vehicle_iter;
         // preceding vehicle position, in the future
-        auto preceding_vehicle_prediction = this->map.predict_into_future_in_frenet(preceding_vehicle, time_horizon);
+        auto preceding_vehicle_prediction = this->map.predict_into_future_onto_lane(preceding_vehicle, time_horizon);
         // minimum distance to vehicle in front of us, if we drive with desired target speed
         auto min_distance_with_max_speed = this->min_safety_zone_time * this->max_speed;
         // calculate s for both (the preceding vehicle in the future and me in the future if I drive with the desired target speed)
