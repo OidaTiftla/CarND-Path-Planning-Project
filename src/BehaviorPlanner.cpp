@@ -251,7 +251,8 @@ TrajectoryKinematics BehaviorPlanner::prep_lane_change_trajectory(const Behavior
     auto vehicle_id_current_lane = this->map.find_next_vehicle_in_lane(car.frenet.s, this->lane, sensor_fusion);
     auto curr_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_current_lane, this->lane, new_lane, time_horizon, sensor_fusion);
 
-    auto vehicle_id_new_lane = this->map.find_next_vehicle_in_lane(car.frenet.s, new_lane, sensor_fusion);
+    auto look_behind = (this->min_safety_zone_time * this->max_speed) / 3;
+    auto vehicle_id_new_lane = this->map.find_next_vehicle_in_lane(car.frenet.s - look_behind, new_lane, sensor_fusion);
     auto new_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_new_lane, this->lane, new_lane, time_horizon, sensor_fusion);
 
     // if any trajectory not possible
@@ -292,7 +293,8 @@ TrajectoryKinematics BehaviorPlanner::lane_change_trajectory(const BehaviorState
     auto vehicle_id_current_lane = this->map.find_next_vehicle_in_lane(car.frenet.s, this->lane, sensor_fusion);
     auto curr_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_current_lane, new_lane, new_lane, time_horizon, sensor_fusion);
 
-    auto vehicle_id_new_lane = this->map.find_next_vehicle_in_lane(car.frenet.s, new_lane, sensor_fusion);
+    auto look_behind = (this->min_safety_zone_time * this->max_speed) / 3;
+    auto vehicle_id_new_lane = this->map.find_next_vehicle_in_lane(car.frenet.s - look_behind, new_lane, sensor_fusion);
     auto new_lane_new_kinematics = this->try_follow_vehicle(car, vehicle_id_new_lane, new_lane, new_lane, time_horizon, sensor_fusion);
 
     // if any trajectory not possible
