@@ -309,7 +309,7 @@ TrajectoryKinematics BehaviorPlanner::lane_change_trajectory(const BehaviorState
     }
 
     // set target state to new lane
-    combined_trajectory.target_state.frenet.d = this->map.get_frenet_d_from_lane(new_lane);
+    combined_trajectory.target_state.frenet.d = this->map.get_frenet_d_from_lane(new_lane); // maybe adjust it, because the trajectory planner uses a fixed distance of 30m in front of the current position, to get to the new lane
     combined_trajectory.target_state.cartesian = this->map.convert_to_cartesian_position(combined_trajectory.target_state.frenet);
 
     return combined_trajectory;
