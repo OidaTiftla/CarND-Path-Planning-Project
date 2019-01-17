@@ -271,14 +271,6 @@ int main() {
                         }
                         gp.send1d(points);
                     }
-                    std::vector<std::pair<double, double>> points;
-                    for (auto t = 0_s; t <= time_horizon + 0.001_s; t += t_step) {
-                        auto prediction = map.predict_into_future_onto_lane(car, t);
-                        auto local = local_system.to_local(prediction.cartesian.coord);
-                        points.push_back(std::make_pair(-local.y.value, local.x.value));
-                    }
-                    gp.send1d(points);
-                    gp.flush();
 #endif
 
                     // output car
@@ -304,6 +296,15 @@ int main() {
                     TrajectoryPlanner tPlanner(map, max_acceleration, max_jerk, car, previous_path, end_path, sensor_fusion);
                     auto trajectory = tPlanner.plan_next_trajectory(behavior, timestep, time_horizon);
 
+#if PLOTMAP
+                    std::vector<std::pair<double, double>> points;
+                    for (auto i = 0; i < steps; ++i) {
+                        auto local = local_system.to_local(trajectory[i * trajectory.size() / steps]);
+                        points.push_back(std::make_pair(-local.y.value, local.x.value));
+                    }
+                    gp.send1d(points);
+                    gp.flush();
+#endif
 #if PLOTSIGNALS
                     log_signal("speed limit", (50_mph).value);
                     plot_signals();
