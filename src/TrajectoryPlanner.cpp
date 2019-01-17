@@ -182,32 +182,32 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
     // Y.push_back(local_target.y.value);
     // log(2) << "add local waypoint " << local_target << std::endl;
 
-    FrenetCoordinate frenet_30m(
-        this->car.frenet.s + 30_m,
+    FrenetCoordinate frenet_50m(
+        this->car.frenet.s + 50_m,
         target_state.frenet.d);
-    auto cartesian_30m = this->map.convert_to_cartesian(frenet_30m);
-    auto local_30m = local_system.to_local(cartesian_30m);
-    X.push_back(local_30m.x.value);
-    Y.push_back(local_30m.y.value);
-    log(2) << "add local waypoint " << local_30m << std::endl;
+    auto cartesian_50m = this->map.convert_to_cartesian(frenet_50m);
+    auto local_50m = local_system.to_local(cartesian_50m);
+    X.push_back(local_50m.x.value);
+    Y.push_back(local_50m.y.value);
+    log(2) << "add local waypoint " << local_50m << std::endl;
 
-    FrenetCoordinate frenet_60m(
-        this->car.frenet.s + 60_m,
+    FrenetCoordinate frenet_80m(
+        this->car.frenet.s + 80_m,
         target_state.frenet.d);
-    auto cartesian_60m = this->map.convert_to_cartesian(frenet_60m);
-    auto local_60m = local_system.to_local(cartesian_60m);
-    X.push_back(local_60m.x.value);
-    Y.push_back(local_60m.y.value);
-    log(2) << "add local waypoint " << local_60m << std::endl;
+    auto cartesian_80m = this->map.convert_to_cartesian(frenet_80m);
+    auto local_80m = local_system.to_local(cartesian_80m);
+    X.push_back(local_80m.x.value);
+    Y.push_back(local_80m.y.value);
+    log(2) << "add local waypoint " << local_80m << std::endl;
 
-    FrenetCoordinate frenet_90m(
-        this->car.frenet.s + 90_m,
+    FrenetCoordinate frenet_110m(
+        this->car.frenet.s + 110_m,
         target_state.frenet.d);
-    auto cartesian_90m = this->map.convert_to_cartesian(frenet_90m);
-    auto local_90m = local_system.to_local(cartesian_90m);
-    X.push_back(local_90m.x.value);
-    Y.push_back(local_90m.y.value);
-    log(2) << "add local waypoint " << local_90m << std::endl;
+    auto cartesian_110m = this->map.convert_to_cartesian(frenet_110m);
+    auto local_110m = local_system.to_local(cartesian_110m);
+    X.push_back(local_110m.x.value);
+    Y.push_back(local_110m.y.value);
+    log(2) << "add local waypoint " << local_110m << std::endl;
 
     // create spline
     tk::spline s;
