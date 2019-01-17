@@ -128,10 +128,10 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
         log(1) << "speed reduction reason: " << speed_reduction_reason << " and target speed " << target_speed << std::endl;
     }
 
-    return this->calculate_trajectory(count_previous, target_state, timestep, time_horizon);
+    return this->calculate_trajectory(count_previous, target_state, behavior.max_speed, timestep, time_horizon);
 }
 
-std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(const int count_previous, const VehicleState& target_state, const Time timestep, const Time time_horizon) const {
+std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(const int count_previous, const VehicleState& target_state, const Speed max_speed, const Time timestep, const Time time_horizon) const {
     CoordinateSystemReference local_system(this->car.cartesian);
 
     log(3) << std::endl;
@@ -252,6 +252,9 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
             auto remaining_steps = count - i;
             auto delta_v = target_state.speed - last_speed;
             auto next_v = last_speed + delta_v / remaining_steps;
+            if (next_v > max_speed) {
+                next_v = max_speed;
+            }
             auto dist_to_travel_next = next_v * timestep;
             auto dist_in_x = dist_to_travel_next * cos(angle_to_target);
             auto next_x = last.x + dist_in_x;
@@ -262,6 +265,9 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
             trajectory.push_back(local_system.to_global(next));
             last = next;
             last_speed = speed;
+            if (speed > max_speed + 0.5_mph) {
+                log(1) << "exceed max speed " << speed << std::endl;
+            }
             log(3) << "add local waypoint " << next << " with speed " << speed << std::endl;
         }
     }
