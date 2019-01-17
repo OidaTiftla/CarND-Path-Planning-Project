@@ -12,7 +12,7 @@
 // because behavior planner is not responsible for this, he only makes a suggestion
 
 std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(const Behavior& behavior, const Time timestep, const Time time_horizon) const {
-    auto logger = LogLevelStack(1);
+    auto logger = LogLevelStack(1, "TrajectoryPlanner: ");
 
     log(2) << std::endl;
     log(2) << "Target state:" << std::endl;

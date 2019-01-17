@@ -10,9 +10,10 @@ std::ostream& log(int level);
 
 class LogLevelStack {
     int old_log_level = 0;
+    std::string old_log_prefix = "";
 
 public:
-    LogLevelStack(int level);
+    LogLevelStack(int level, std::string prefix = "");
     ~LogLevelStack();
 };
 

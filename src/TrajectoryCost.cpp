@@ -15,7 +15,7 @@ float TrajectoryCost::calculate_cost(const TrajectoryKinematics &trajectory, con
     /*
     Sum weighted cost functions to get total cost for trajectory.
     */
-    auto logger = LogLevelStack(1);
+    auto logger = LogLevelStack(1, "TrajectoryCost: ");
 
     log(3) << "  + + + + + + + + + +" << std::endl;
     float cost = 0.0, c = 0.0, f = 0.0;

@@ -61,7 +61,7 @@ int main() {
     auto vehicle_length = 4.5_m;
     auto vehicle_width = 3_m;
 
-    auto logger = LogLevelStack(1);
+    auto logger = LogLevelStack(1, "main: ");
 
     // output config
     log(0) << endl;

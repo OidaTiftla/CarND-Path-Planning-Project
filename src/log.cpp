@@ -8,6 +8,7 @@
 
 
 static int log_level = 0;
+static std::string log_prefix = "";
 static std::stringstream nullstream;
 
 std::ostream& log(int level) {
@@ -15,17 +16,21 @@ std::ostream& log(int level) {
         nullstream.seekp(0);
         return nullstream;
     } else {
+        std::cout << log_prefix;
         return std::cout;
     }
 }
 
-LogLevelStack::LogLevelStack(int level) {
+LogLevelStack::LogLevelStack(int level, std::string prefix /*= ""*/) {
     this->old_log_level = log_level;
     log_level = level;
+    this->old_log_prefix = log_prefix;
+    log_prefix = prefix;
 }
 
 LogLevelStack::~LogLevelStack() {
     log_level = this->old_log_level;
+    log_prefix = this->old_log_prefix;
 }
 
 #if PLOTSIGNALS

@@ -4,7 +4,7 @@
 
 
 Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) {
-    auto logger = LogLevelStack(1);
+    auto logger = LogLevelStack(1, "BehaviorPlanner: ");
     auto now = std::chrono::system_clock::now();
 
     if (this->lane == -1000) {
