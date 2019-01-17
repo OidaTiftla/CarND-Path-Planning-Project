@@ -99,7 +99,7 @@ int main() {
                 LocalCartesianCoordinate(Distance(d_x), Distance(d_y))));
     }
 
-    Map map(map_waypoints, max_s, lane_width);
+    Map map(map_waypoints, max_s, lane_width, max_lanes);
 
 #if ANALYZEMAPONLY
 

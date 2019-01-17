@@ -12,9 +12,10 @@ public:
     std::vector<WayPoint> wayPoints;
     Distance max_s;
     Distance lane_width;
+    int max_lanes;
 
     Map() : wayPoints(), max_s(0), lane_width(0) {}
-    Map(std::vector<WayPoint> wayPoints, Distance max_s, Distance lane_width) : wayPoints(wayPoints), max_s(max_s), lane_width(lane_width) {}
+    Map(const std::vector<WayPoint> wayPoints, const Distance max_s, const Distance lane_width, const int max_lanes) : wayPoints(wayPoints), max_s(max_s), lane_width(lane_width), max_lanes(max_lanes) {}
 
     size_t closest_way_point_index(const GlobalCartesianCoordinate pos) const;
     size_t next_way_point_index(const GlobalCartesianCoordinate pos) const;

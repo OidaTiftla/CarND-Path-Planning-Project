@@ -2,6 +2,9 @@
 #include <algorithm>
 #include "log.h"
 #include "spline.h"
+#if PLOTTRAJECTORY
+#include "gnuplot-iostream.h"
+#endif
 
 
 // ToDo: avoid any collisions,
@@ -247,6 +250,60 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
             log(2) << "add local waypoint " << next << " with speed " << speed << std::endl;
         }
     }
+
+#if PLOTTRAJECTORY
+    static Gnuplot gp;
+
+    auto steps = 20;
+    auto distance = 100_m;
+    auto t_step = time_horizon / steps;
+    // gp << "set xrange [" << -2 << ":" << (bPlanner.max_lanes * map.lane_width + 2_m).value << "]\n";
+    gp << "set xrange [-" << distance.value << ":" << distance.value << "]\n";
+    gp << "set yrange [-" << distance.value << ":" << distance.value << "]\n";
+    gp << "set size ratio -1\n";
+    gp << "plot";
+    bool first = true;
+    for (int lane = 0; lane <= this->map.max_lanes; ++lane) {
+        if (first) {
+            first = false;
+        } else {
+            gp << ",";
+        }
+        gp << " '-' with lines title 'lane " << lane << "'";
+    }
+    gp << ", '-' with points title 'vehicle ego'";
+    gp << ", '-' with lines title 'spline'";
+    gp << "\n";
+
+    std::vector<std::pair<double, double>> points;
+    // draw lanes
+    for (int lane = 0; lane <= this->map.max_lanes; ++lane) {
+        points.clear();
+        auto d = this->map.get_frenet_d_from_lane(lane) - (this->map.lane_width / 2);
+        for (auto s_diff = -distance; s_diff <= distance; s_diff += distance / steps) {
+            auto s = car.frenet.s + s_diff;
+            auto coord = this->map.convert_to_cartesian(FrenetCoordinate(s, d));
+            auto local = local_system.to_local(coord);
+            points.push_back(std::make_pair(-local.y.value, local.x.value));
+        }
+        gp.send1d(points);
+    }
+    // draw ego trajectory
+    points.clear();
+    for (auto i = 0; i < steps; ++i) {
+        auto local = local_system.to_local(trajectory[i * trajectory.size() / steps]);
+        points.push_back(std::make_pair(-local.y.value, local.x.value));
+    }
+    gp.send1d(points);
+    // draw spline
+    points.clear();
+    for (auto x = -distance; x <= distance; x += distance / steps) {
+        LocalCartesianCoordinate local(x, Distance(s(x.value)));
+        points.push_back(std::make_pair(-local.y.value, local.x.value));
+    }
+    gp.send1d(points);
+    gp.flush();
+#endif
 
     return trajectory;
 }
