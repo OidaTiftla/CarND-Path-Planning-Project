@@ -224,9 +224,6 @@ VehicleState Map::predict_into_future_in_frenet(const VehicleState& vehicle, con
 
 VehicleState Map::predict_into_future_onto_lane(const VehicleState& vehicle, const Time time_horizon) const {
     // constant speed in s and d
-    CoordinateSystemReference local_system(this->convert_to_cartesian_position(vehicle.frenet));
-    auto coord_1_second_future = vehicle.cartesian.coord + LocalCartesianCoordinate(vehicle.speed_x * 1_s, vehicle.speed_y * 1_s);
-    auto local_x_y_dist_per_second = local_system.to_local(coord_1_second_future) - local_system.to_local(vehicle.cartesian.coord);
     auto s_speed = vehicle.speed;
     auto d_speed = 0_m / 1_s;
     auto current_frenet = this->convert_to_frenet(vehicle.cartesian.coord);
