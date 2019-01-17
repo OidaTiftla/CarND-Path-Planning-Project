@@ -120,8 +120,10 @@ int main() {
     for (int lane = 0; lane <= max_lanes; ++lane) {
         points.clear();
         auto d = map.get_frenet_d_from_lane(lane) - (map.lane_width / 2);
-        for (auto s = 0_m; s <= max_s; s += 1_m) {
+        for (auto s = 0_m; s <= max_s; s += 2_m) {
             auto coord = map.convert_to_cartesian(FrenetCoordinate(s, d));
+            points.push_back(std::make_pair(coord.x.value, coord.y.value));
+            coord = map.convert_to_cartesian(map.convert_to_frenet(coord));
             points.push_back(std::make_pair(coord.x.value, coord.y.value));
         }
         gp_map.send1d(points);
