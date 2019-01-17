@@ -223,6 +223,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
     auto last_speed = this->car.speed;
     log(2) << "current car " << last << " with speed " << last_speed << std::endl;
     log(2) << "create " << count << " waypoints" << std::endl;
+    auto angle_to_target = LocalCartesianCoordinate(0_m, 0_m).angle_to(local_50m);//local_target);
     for (int i = 0; i < count; ++i) {
         if (i < count_previous) {
             auto next = local_system.to_local(this->previous_path[i]);
@@ -237,7 +238,6 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
             auto delta_v = target_state.speed - last_speed;
             auto next_v = last_speed + delta_v / remaining_steps;
             auto dist_to_travel_next = next_v * timestep;
-            auto angle_to_target = last.angle_to(local_target);
             auto dist_in_x = dist_to_travel_next * cos(angle_to_target);
             auto next_x = last.x + dist_in_x;
             auto next_y = Distance(s(next_x.value));
