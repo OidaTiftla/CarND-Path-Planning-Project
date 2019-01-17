@@ -20,7 +20,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
     log(1) << "time horizon: " << time_horizon << std::endl;
 
     // reuse some previous points
-    int count_previous = ceil(time_horizon * 0.2 / timestep);
+    int count_previous = ceil(time_horizon * 0.4 / timestep);
     count_previous = std::min(count_previous, (int)this->previous_path.size());
     // are there enough previous points?
     if (count_previous < 2) {
