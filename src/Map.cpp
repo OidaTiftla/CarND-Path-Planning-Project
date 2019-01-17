@@ -182,7 +182,7 @@ Distance Map::normalize_s(Distance s) const {
     return s;
 }
 
-VehicleState Map::predict_into_future(const VehicleState& vehicle, const Time time_horizon) const {
+VehicleState Map::predict_into_future_in_cartesian(const VehicleState& vehicle, const Time time_horizon) const {
     // constant speed and angle (x and y speed)
     GlobalCartesianPosition future_pos(
         vehicle.cartesian.coord.x + vehicle.speed_x * time_horizon,

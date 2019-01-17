@@ -33,7 +33,7 @@ public:
     FrenetCoordinate add_lane_distance(const FrenetCoordinate from, const Distance distance, const Distance target_d) const;
     Distance normalize_s(Distance s) const;
 
-    VehicleState predict_into_future(const VehicleState& vehicle, const Time time_horizon) const;
+    VehicleState predict_into_future_in_cartesian(const VehicleState& vehicle, const Time time_horizon) const;
     VehicleState predict_into_future_in_frenet(const VehicleState& vehicle, const Time time_horizon) const;
     VehicleState predict_into_future_onto_lane(const VehicleState& vehicle, const Time time_horizon) const;
 

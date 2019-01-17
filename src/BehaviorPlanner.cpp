@@ -212,7 +212,7 @@ TrajectoryKinematics BehaviorPlanner::constant_speed_trajectory(const VehicleSta
         car,
         this->lane,
         true,
-        this->map.predict_into_future(car, time_horizon),
+        this->map.predict_into_future_in_cartesian(car, time_horizon),
         this->lane,
         this->lane,
         0_m / 1_s / 1_s,
