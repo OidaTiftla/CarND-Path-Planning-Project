@@ -234,6 +234,30 @@ VehicleState Map::predict_into_future_onto_lane(const VehicleState& vehicle, con
         vehicle.speed);
 }
 
+VehicleState Map::predict_into_future_combined(const VehicleState& vehicle, const Time time_horizon) const {
+    // constant speed in s and d
+    CoordinateSystemReference local_system(this->convert_to_cartesian_position(vehicle.frenet));
+    auto coord_1_second_future = vehicle.cartesian.coord + LocalCartesianCoordinate(vehicle.speed_x * 1_s, vehicle.speed_y * 1_s);
+    auto local_x_y_dist_per_second = local_system.to_local(coord_1_second_future) - local_system.to_local(vehicle.cartesian.coord);
+    auto s_speed = local_x_y_dist_per_second.x / 1_s;
+    auto d_speed = -local_x_y_dist_per_second.y / 1_s; // y with minus because d is in the opposite direction of y
+    if (d_speed < 0.5_m / 1_s) {
+        d_speed = 0_m / 1_s;
+    }
+    auto current_frenet = this->convert_to_frenet(vehicle.cartesian.coord);
+    auto theta_frenet = vehicle.cartesian.theta - this->convert_to_cartesian_position(current_frenet).theta;
+    FrenetCoordinate future_pos_frenet(
+        current_frenet.s + s_speed * time_horizon,
+        current_frenet.d + d_speed * time_horizon);
+    auto future_pos = this->convert_to_cartesian_position(future_pos_frenet);
+    future_pos.theta += theta_frenet;
+    return VehicleState(
+        vehicle.id,
+        future_pos,
+        future_pos_frenet,
+        vehicle.speed);
+}
+
 int Map::find_next_vehicle_in_lane(const Distance start_s, const int lane, const std::vector<VehicleState> &sensor_fusion) const {
     // find nearest vehicle in same lane in front of us
     // set initial value to the maximum search distance
