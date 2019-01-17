@@ -102,8 +102,8 @@ int main() {
     Map map(map_waypoints, max_s, lane_width);
 
 #if ANALYZEMAPONLY
-    Gnuplot gp_map;
 
+    Gnuplot gp_map;
     gp_map << "set size ratio -1\n";
     gp_map << "plot";
     bool first = true;
@@ -116,7 +116,6 @@ int main() {
         gp_map << " '-' with linespoints title 'lane " << lane << "'";
     }
     gp_map << "\n";
-
     // draw lanes
     for (int lane = 0; lane <= max_lanes; ++lane) {
         std::vector<std::pair<double, double>> points;
@@ -130,8 +129,8 @@ int main() {
     gp_map.flush();
 
     while (true);
-    return 0;
-#endif
+
+#else
 
     BehaviorPlanner bPlanner(map,
         max_speed,
@@ -374,4 +373,6 @@ int main() {
         return -1;
     }
     h.run();
+
+#endif
 }
