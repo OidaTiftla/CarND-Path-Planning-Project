@@ -13,11 +13,11 @@
 std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(const Behavior& behavior, const Time timestep, const Time time_horizon) const {
     auto logger = LogLevelStack(1);
 
-    log(1) << std::endl;
-    log(1) << "Target state:" << std::endl;
-    log(1) << "-------------" << std::endl;
-    log(1) << "timestep: " << timestep << std::endl;
-    log(1) << "time horizon: " << time_horizon << std::endl;
+    log(2) << std::endl;
+    log(2) << "Target state:" << std::endl;
+    log(2) << "-------------" << std::endl;
+    log(2) << "timestep: " << timestep << std::endl;
+    log(2) << "time horizon: " << time_horizon << std::endl;
 
     // reuse some previous points
     int count_previous = ceil(time_horizon * 0.4 / timestep);
@@ -39,15 +39,15 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
         start_state = VehicleState(-1, pos, frenet, speed);
         remaining_time_horizon = time_horizon - count_previous * timestep;
     }
-    log(1) << "start: " << start_state.frenet << ", " << start_state.speed << ", " << start_state.cartesian << std::endl;
-    log(1) << "remaining time horizon: " << remaining_time_horizon << std::endl;
+    log(2) << "start: " << start_state.frenet << ", " << start_state.speed << ", " << start_state.cartesian << std::endl;
+    log(2) << "remaining time horizon: " << remaining_time_horizon << std::endl;
 
     auto acceleration = (behavior.max_speed - start_state.speed) / remaining_time_horizon;
     if (acceleration > this->max_acceleration) {
-        log(1) << "exceed max acceleration" << std::endl;
+        log(2) << "exceed max acceleration" << std::endl;
         acceleration = this->max_acceleration;
     } else if (acceleration < -this->max_acceleration) {
-        log(1) << "exceed max deceleration" << std::endl;
+        log(2) << "exceed max deceleration" << std::endl;
         acceleration = -this->max_acceleration;
     }
     auto target_speed = start_state.speed + acceleration * remaining_time_horizon;
@@ -72,16 +72,16 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
         auto actual_distance_to_preceding_vehicle = rel_dist_preceding_vehicle_prediction - rel_dist_target;
         if (actual_distance_to_preceding_vehicle < min_distance_with_target_speed) {
             // to fast -> no safety zone -> drive with speed of preceding vehicle and with safety zone
-            log(1) << "too fast for vehicle in front of us (s prediction: " << preceding_vehicle_prediction.frenet.s << ")" << std::endl;
+            log(2) << "too fast for vehicle in front of us (s prediction: " << preceding_vehicle_prediction.frenet.s << ")" << std::endl;
             // calculate acceleration, needed to keep minimum distance to preceding vehicle
             acceleration = (rel_dist_preceding_vehicle_prediction - car.speed * (time_horizon + behavior.min_safety_zone_time))
                 / (0.5 * pow<2>(time_horizon) + time_horizon * behavior.min_safety_zone_time);
             // validate acceleration
             if (acceleration > this->max_acceleration) {
-                log(1) << "exceed max acceleration (preceding vehicle)" << std::endl;
+                log(2) << "exceed max acceleration (preceding vehicle)" << std::endl;
                 acceleration = this->max_acceleration;
             } else if (acceleration < -this->max_acceleration) {
-                log(1) << "exceed max deceleration (preceding vehicle)" << std::endl;
+                log(2) << "exceed max deceleration (preceding vehicle)" << std::endl;
                 acceleration = -this->max_acceleration;
             }
 
@@ -89,7 +89,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
             if (target_speed < 0.1_m / 1_s) {
                 target_speed = 0.1_m / 1_s;
                 acceleration = (target_speed - start_state.speed) / remaining_time_horizon;
-                log(1) << "exceed min speed (preceding vehicle) [new acceleration: " << acceleration << "]" << std::endl;
+                log(2) << "exceed min speed (preceding vehicle) [new acceleration: " << acceleration << "]" << std::endl;
             }
             target_distance = start_state.speed * remaining_time_horizon + 0.5 * acceleration * pow<2>(remaining_time_horizon);
             target_frenet = this->map.add_lane_distance(
@@ -103,15 +103,15 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
     VehicleState target_state(-1, target_cartesian, target_frenet, target_speed);
 
     // output target state
-    log(1) << "s: " << target_state.frenet.s << std::endl;
-    log(1) << "d: " << target_state.frenet.d << std::endl;
-    log(1) << "speed: " << target_state.speed << std::endl;
-    log(1) << "acceleration: " << (target_state.speed - start_state.speed) / remaining_time_horizon << std::endl;
-    log(1) << "x: " << target_state.cartesian.coord.x << std::endl;
-    log(1) << "y: " << target_state.cartesian.coord.y << std::endl;
-    log(1) << "theta: " << to_degree(target_state.cartesian.theta) << std::endl;
-    log(1) << "speed x: " << target_state.speed_x << std::endl;
-    log(1) << "speed y: " << target_state.speed_y << std::endl;
+    log(2) << "s: " << target_state.frenet.s << std::endl;
+    log(2) << "d: " << target_state.frenet.d << std::endl;
+    log(2) << "speed: " << target_state.speed << std::endl;
+    log(2) << "acceleration: " << (target_state.speed - start_state.speed) / remaining_time_horizon << std::endl;
+    log(2) << "x: " << target_state.cartesian.coord.x << std::endl;
+    log(2) << "y: " << target_state.cartesian.coord.y << std::endl;
+    log(2) << "theta: " << to_degree(target_state.cartesian.theta) << std::endl;
+    log(2) << "speed x: " << target_state.speed_x << std::endl;
+    log(2) << "speed y: " << target_state.speed_y << std::endl;
 
     return this->calculate_trajectory(count_previous, target_state, timestep, time_horizon);
 }
@@ -119,24 +119,24 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
 std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(const int count_previous, const VehicleState& target_state, const Time timestep, const Time time_horizon) const {
     CoordinateSystemReference local_system(this->car.cartesian);
 
-    log(2) << std::endl;
-    log(2) << "Calculate spline:" << std::endl;
-    log(2) << "-----------------" << std::endl;
+    log(3) << std::endl;
+    log(3) << "Calculate spline:" << std::endl;
+    log(3) << "-----------------" << std::endl;
 
     // spline control points
     std::vector<double> X, Y;
 
     // define starting points
     if (count_previous >= 2) {
-        log(2) << "reuse " << count_previous << " waypoints" << std::endl;
+        log(3) << "reuse " << count_previous << " waypoints" << std::endl;
         for (int i = count_previous - 2; i < count_previous; ++i) {
             auto local = local_system.to_local(this->previous_path[i]);
             X.push_back(local.x.value);
             Y.push_back(local.y.value);
-            log(2) << "reuse local waypoint " << local << std::endl;
+            log(3) << "reuse local waypoint " << local << std::endl;
         }
     } else {
-        log(2) << "create initial waypoints" << std::endl;
+        log(3) << "create initial waypoints" << std::endl;
 
         auto speed_x = this->car.speed_x;
         auto speed_y = this->car.speed_y;
@@ -146,7 +146,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
             auto speed = this->max_acceleration * timestep;
             speed_x = speed * cos(this->car.cartesian.theta);
             speed_y = speed * sin(this->car.cartesian.theta);
-            log(2) << "set speed to " << speed << " (" << speed_x << ", " << speed_y << ")" << std::endl;
+            log(3) << "set speed to " << speed << " (" << speed_x << ", " << speed_y << ")" << std::endl;
         }
         GlobalCartesianCoordinate cartesian_minus_0_1_target(
             this->car.cartesian.coord.x + (time_horizon * -0.1) * speed_x,
@@ -154,33 +154,33 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
         auto local_minus_0_1_target = local_system.to_local(cartesian_minus_0_1_target);
         X.push_back(local_minus_0_1_target.x.value);
         Y.push_back(local_minus_0_1_target.y.value);
-        log(2) << "add local waypoint " << local_minus_0_1_target << std::endl;
+        log(3) << "add local waypoint " << local_minus_0_1_target << std::endl;
 
         auto local_current = local_system.to_local(this->car.cartesian.coord);
         X.push_back(local_current.x.value);
         Y.push_back(local_current.y.value);
-        log(2) << "add local waypoint " << local_current << std::endl;
+        log(3) << "add local waypoint " << local_current << std::endl;
     }
 
     // define starting state
     FrenetCoordinate wp_last_frenet;
     if (count_previous >= 2) {
-        log(2) << "create starting state from last 2 waypoints" << std::endl;
+        log(3) << "create starting state from last 2 waypoints" << std::endl;
         auto wp_last = local_system.to_local(this->previous_path[count_previous - 1]);
         wp_last_frenet = this->map.convert_to_frenet(this->previous_path[count_previous - 1]);
-        log(2) << "last waypoint " << wp_last << ", " << wp_last_frenet << std::endl;
+        log(3) << "last waypoint " << wp_last << ", " << wp_last_frenet << std::endl;
     } else {
-        log(2) << "create starting state from current position" << std::endl;
+        log(3) << "create starting state from current position" << std::endl;
         auto wp_last = local_system.to_local(this->car.cartesian.coord);
         wp_last_frenet = this->car.frenet;
-        log(2) << "last waypoint " << wp_last << ", " << wp_last_frenet << std::endl;
+        log(3) << "last waypoint " << wp_last << ", " << wp_last_frenet << std::endl;
     }
 
     // define end points
     auto local_target = local_system.to_local(target_state.cartesian.coord);
     // X.push_back(local_target.x.value);
     // Y.push_back(local_target.y.value);
-    // log(2) << "add local waypoint " << local_target << std::endl;
+    // log(3) << "add local waypoint " << local_target << std::endl;
 
     FrenetCoordinate frenet_50m(
         this->car.frenet.s + 50_m,
@@ -189,7 +189,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
     auto local_50m = local_system.to_local(cartesian_50m);
     X.push_back(local_50m.x.value);
     Y.push_back(local_50m.y.value);
-    log(2) << "add local waypoint " << local_50m << std::endl;
+    log(3) << "add local waypoint " << local_50m << std::endl;
 
     FrenetCoordinate frenet_80m(
         this->car.frenet.s + 80_m,
@@ -198,7 +198,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
     auto local_80m = local_system.to_local(cartesian_80m);
     X.push_back(local_80m.x.value);
     Y.push_back(local_80m.y.value);
-    log(2) << "add local waypoint " << local_80m << std::endl;
+    log(3) << "add local waypoint " << local_80m << std::endl;
 
     FrenetCoordinate frenet_110m(
         this->car.frenet.s + 110_m,
@@ -207,22 +207,22 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
     auto local_110m = local_system.to_local(cartesian_110m);
     X.push_back(local_110m.x.value);
     Y.push_back(local_110m.y.value);
-    log(2) << "add local waypoint " << local_110m << std::endl;
+    log(3) << "add local waypoint " << local_110m << std::endl;
 
     // create spline
     tk::spline s;
     s.set_points(X, Y); // currently it is required that X is already sorted
 
-    log(2) << std::endl;
-    log(2) << "Calculate trajectory:" << std::endl;
-    log(2) << "---------------------" << std::endl;
+    log(3) << std::endl;
+    log(3) << "Calculate trajectory:" << std::endl;
+    log(3) << "---------------------" << std::endl;
     // interpolate spline
     std::vector<GlobalCartesianCoordinate> trajectory;
     int count = ceil(time_horizon / timestep);
     auto last = local_system.to_local(this->car.cartesian.coord);
     auto last_speed = this->car.speed;
-    log(2) << "current car " << last << " with speed " << last_speed << std::endl;
-    log(2) << "create " << count << " waypoints" << std::endl;
+    log(3) << "current car " << last << " with speed " << last_speed << std::endl;
+    log(3) << "create " << count << " waypoints" << std::endl;
     auto angle_to_target = LocalCartesianCoordinate(0_m, 0_m).angle_to(local_50m);//local_target);
     for (int i = 0; i < count; ++i) {
         if (i < count_previous) {
@@ -232,7 +232,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
             trajectory.push_back(this->previous_path[i]);
             last = next;
             last_speed = speed;
-            log(2) << "reuse local waypoint " << next << " with speed " << speed << std::endl;
+            log(3) << "reuse local waypoint " << next << " with speed " << speed << std::endl;
         } else {
             auto remaining_steps = count - i;
             auto delta_v = target_state.speed - last_speed;
@@ -247,7 +247,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
             trajectory.push_back(local_system.to_global(next));
             last = next;
             last_speed = speed;
-            log(2) << "add local waypoint " << next << " with speed " << speed << std::endl;
+            log(3) << "add local waypoint " << next << " with speed " << speed << std::endl;
         }
     }
 

@@ -274,17 +274,17 @@ int main() {
 #endif
 
                     // output car
-                    log(1) << endl;
-                    log(1) << "Car:" << endl;
-                    log(1) << "----" << endl;
-                    log(1) << "s: " << car.frenet.s << endl;
-                    log(1) << "d: " << car.frenet.d << endl;
-                    log(1) << "speed: " << car.speed << endl;
-                    log(1) << "x: " << car.cartesian.coord.x << endl;
-                    log(1) << "y: " << car.cartesian.coord.y << endl;
-                    log(1) << "theta: " << to_degree(car.cartesian.theta) << endl;
-                    log(1) << "speed x: " << car.speed_x << endl;
-                    log(1) << "speed y: " << car.speed_y << endl;
+                    log(3) << endl;
+                    log(3) << "Car:" << endl;
+                    log(3) << "----" << endl;
+                    log(3) << "s: " << car.frenet.s << endl;
+                    log(3) << "d: " << car.frenet.d << endl;
+                    log(3) << "speed: " << car.speed << endl;
+                    log(3) << "x: " << car.cartesian.coord.x << endl;
+                    log(3) << "y: " << car.cartesian.coord.y << endl;
+                    log(3) << "theta: " << to_degree(car.cartesian.theta) << endl;
+                    log(3) << "speed x: " << car.speed_x << endl;
+                    log(3) << "speed y: " << car.speed_y << endl;
 
 #if PLOTSIGNALS
                     log_signal("car speed", car.speed.value);

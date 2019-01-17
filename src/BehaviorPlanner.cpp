@@ -9,7 +9,7 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
 
     if (this->lane == -1000) {
         this->lane = this->map.get_lane_from(car.frenet);
-        log(2) << "set initial lane to " << this->lane << std::endl;
+        log(3) << "set initial lane to " << this->lane << std::endl;
     }
 
     auto current_trajectory = this->generate_trajectory(this->state, car, time_horizon, sensor_fusion);
@@ -21,18 +21,18 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
         // set lane to target lane, only if the next state will be choosen
         this->lane = current_trajectory.target_lane;
 
-        log(1) << std::endl;
-        log(1) << "Behavior:" << std::endl;
-        log(1) << "---------" << std::endl;
+        log(2) << std::endl;
+        log(2) << "Behavior:" << std::endl;
+        log(2) << "---------" << std::endl;
 
         // only consider states which can be reached from current state
-        log(1) << "current state: " << this->state << " " << car.frenet << std::endl;
+        log(2) << "current state: " << this->state << " " << car.frenet << std::endl;
         auto possible_successor_states = this->successor_states();
-        log(2) << "possible successor states:";
+        log(3) << "possible successor states:";
         for (auto state : possible_successor_states) {
-            log(2) << " " << state;
+            log(3) << " " << state;
         }
-        log(2) << std::endl;
+        log(3) << std::endl;
 
         // find the minimum cost state
         auto best_next_state = BehaviorState::KeepLane;
@@ -45,7 +45,7 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
             if (trajectory_for_state.is_trajectory_possible) {
                 // calculate the "cost" associated with that trajectory
                 auto cost_for_state = this->cost.calculate_cost(trajectory_for_state, car, timestep, time_horizon, sensor_fusion);
-                log(2) << "cost for " << state << ": " << cost_for_state << std::endl;
+                log(3) << "cost for " << state << ": " << cost_for_state << std::endl;
                 if (cost_for_state < min_cost) {
                     min_cost = cost_for_state;
                     best_next_state = state;
@@ -62,11 +62,11 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
         this->state = best_next_state;
 
         // output behavior
-        log(2) << "next state: " << this->state << std::endl;
-        log(1) << "lane: " << behavior.lane << std::endl;
-        log(1) << "max speed: " << behavior.max_speed << std::endl;
-        log(1) << "min safety zone time: " << behavior.min_safety_zone_time << std::endl;
-        log(1) << "vehicle id: " << behavior.vehicle_id << std::endl;
+        log(3) << "next state: " << this->state << std::endl;
+        log(2) << "lane: " << behavior.lane << std::endl;
+        log(2) << "max speed: " << behavior.max_speed << std::endl;
+        log(2) << "min safety zone time: " << behavior.min_safety_zone_time << std::endl;
+        log(2) << "vehicle id: " << behavior.vehicle_id << std::endl;
     } else {
         behavior.lane = current_trajectory.target_lane;
         behavior.max_speed = current_trajectory.target_state.speed;
