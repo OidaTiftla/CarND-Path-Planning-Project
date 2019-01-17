@@ -105,20 +105,20 @@ int main() {
 
     Gnuplot gp_map;
     gp_map << "set size ratio -1\n";
-    gp_map << "plot";
-    bool first = true;
+    gp_map << "plot '-' with linespoints title 'waypoints'";
     for (int lane = 0; lane <= max_lanes; ++lane) {
-        if (first) {
-            first = false;
-        } else {
-            gp_map << ",";
-        }
-        gp_map << " '-' with linespoints title 'lane " << lane << "'";
+        gp_map << ", '-' with linespoints title 'lane " << lane << "'";
     }
     gp_map << "\n";
+    std::vector<std::pair<double, double>> points;
+    // draw waypoints
+    for (auto wp : map.wayPoints) {
+        points.push_back(std::make_pair(wp.cartesian.x.value, wp.cartesian.y.value));
+    }
+    gp_map.send1d(points);
     // draw lanes
     for (int lane = 0; lane <= max_lanes; ++lane) {
-        std::vector<std::pair<double, double>> points;
+        points.clear();
         auto d = map.get_frenet_d_from_lane(lane) - (map.lane_width / 2);
         for (auto s = 0_m; s <= max_s; s += 1_m) {
             auto coord = map.convert_to_cartesian(FrenetCoordinate(s, d));
