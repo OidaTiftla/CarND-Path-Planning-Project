@@ -238,13 +238,14 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
     auto last_speed = this->car.speed;
     log(3) << "current car " << last << " with speed " << last_speed << std::endl;
     log(3) << "create " << count << " waypoints" << std::endl;
-    auto angle_to_target = LocalCartesianCoordinate(0_m, 0_m).angle_to(local_50m);//local_target);
+    auto angle_from_last = AngleRad(0);
     for (int i = 0; i < count; ++i) {
         if (i < count_previous) {
             auto next = local_system.to_local(this->previous_path[i]);
             auto dist = last.distance_to(next);
             auto speed = dist / timestep;
             trajectory.push_back(this->previous_path[i]);
+            angle_from_last = last.angle_to(next);
             last = next;
             last_speed = speed;
             log(3) << "reuse local waypoint " << next << " with speed " << speed << std::endl;
@@ -256,13 +257,14 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
                 next_v = max_speed;
             }
             auto dist_to_travel_next = next_v * timestep;
-            auto dist_in_x = dist_to_travel_next * cos(angle_to_target);
+            auto dist_in_x = dist_to_travel_next * cos(angle_from_last);
             auto next_x = last.x + dist_in_x;
             auto next_y = Distance(s(next_x.value));
             auto next = LocalCartesianCoordinate(next_x, next_y);
             auto dist = last.distance_to(next);
             auto speed = dist / timestep;
             trajectory.push_back(local_system.to_global(next));
+            angle_from_last = last.angle_to(next);
             last = next;
             last_speed = speed;
             if (speed > max_speed + 0.5_mph) {
