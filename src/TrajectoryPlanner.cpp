@@ -1,5 +1,6 @@
 #include "TrajectoryPlanner.h"
 #include <algorithm>
+#include <string>
 #include "log.h"
 #include "spline.h"
 #if PLOTTRAJECTORY
@@ -42,9 +43,12 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
     log(2) << "start: " << start_state.frenet << ", " << start_state.speed << ", " << start_state.cartesian << std::endl;
     log(2) << "remaining time horizon: " << remaining_time_horizon << std::endl;
 
+    std::string speed_reduction_reason = "behavior";
+
     auto acceleration = (behavior.max_speed - start_state.speed) / remaining_time_horizon;
     if (acceleration > this->max_acceleration) {
         log(2) << "exceed max acceleration" << std::endl;
+        speed_reduction_reason = "exceed max acceleration";
         acceleration = this->max_acceleration;
     } else if (acceleration < -this->max_acceleration) {
         log(2) << "exceed max deceleration" << std::endl;
@@ -73,12 +77,14 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
         if (actual_distance_to_preceding_vehicle < min_distance_with_target_speed) {
             // to fast -> no safety zone -> drive with speed of preceding vehicle and with safety zone
             log(2) << "too fast for vehicle in front of us (s prediction: " << preceding_vehicle_prediction.frenet.s << ")" << std::endl;
+            speed_reduction_reason = std::string("too fast for vehicle in front of us (id: ") + std::to_string(preceding_vehicle_prediction.id) + std::string(")");
             // calculate acceleration, needed to keep minimum distance to preceding vehicle
             acceleration = (rel_dist_preceding_vehicle_prediction - car.speed * (time_horizon + behavior.min_safety_zone_time))
                 / (0.5 * pow<2>(time_horizon) + time_horizon * behavior.min_safety_zone_time);
             // validate acceleration
             if (acceleration > this->max_acceleration) {
                 log(2) << "exceed max acceleration (preceding vehicle)" << std::endl;
+                speed_reduction_reason += " and exceed max acceleration";
                 acceleration = this->max_acceleration;
             } else if (acceleration < -this->max_acceleration) {
                 log(2) << "exceed max deceleration (preceding vehicle)" << std::endl;
@@ -112,6 +118,15 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
     log(2) << "theta: " << to_degree(target_state.cartesian.theta) << std::endl;
     log(2) << "speed x: " << target_state.speed_x << std::endl;
     log(2) << "speed y: " << target_state.speed_y << std::endl;
+
+    static Speed last_behavior_max_speed = 0_m / 1_s;
+    static std::string last_speed_reduction_reason = "";
+    if (abs(last_behavior_max_speed - behavior.max_speed) > 0.01_m / 1_s
+        || last_speed_reduction_reason != speed_reduction_reason) {
+        last_behavior_max_speed = behavior.max_speed;
+        last_speed_reduction_reason = speed_reduction_reason;
+        log(1) << "speed reduction reason: " << speed_reduction_reason << " and behavior max speed " << behavior.max_speed << std::endl;
+    }
 
     return this->calculate_trajectory(count_previous, target_state, timestep, time_horizon);
 }

@@ -59,7 +59,10 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
         behavior.min_safety_zone_time = this->min_safety_zone_time;
         behavior.vehicle_id = trajectory_for_best_state.preceding_vehicle_id;
 
-        this->state = best_next_state;
+        if (this->state != best_next_state) {
+            this->state = best_next_state;
+            log(1) << "new state: " << this->state << std::endl;
+        }
 
         // output behavior
         log(3) << "next state: " << this->state << std::endl;
