@@ -48,13 +48,13 @@ FrenetCoordinate Map::convert_to_frenet(const GlobalCartesianCoordinate pos) con
 
     auto frenet_d = x.distance_to(proj);
 
-    // see if d value is positive or negative by comparing it to a center point
+    // see if d value is positive or negative by looking at the angles
 
-    auto center = GlobalCartesianCoordinate(1000_m, 2000_m) - this->wayPoints[prev_wp].cartesian;
-    auto centerToPos = center.distance_to(x);
-    auto centerToRef = center.distance_to(proj);
+    auto angleToNext = this->wayPoints[prev_wp].cartesian.angle_to(this->wayPoints[next_wp].cartesian);
+    auto angleToPos = this->wayPoints[prev_wp].cartesian.angle_to(pos);
+    auto angleFromNextToPos = normalize_around_zero(angleToPos - angleToNext);
 
-    if (centerToPos <= centerToRef) {
+    if (angleFromNextToPos >= AngleRad(0)) {
         frenet_d *= -1;
     }
 
@@ -67,8 +67,7 @@ FrenetCoordinate Map::convert_to_frenet(const GlobalCartesianCoordinate pos) con
     frenet_s += LocalCartesianCoordinate(0_m, 0_m).distance_to(proj);
 
     // create spline
-    AngleRad heading = this->wayPoints[prev_wp].cartesian.angle_to(this->wayPoints[next_wp].cartesian);
-    CoordinateSystemReference local_system(this->wayPoints[prev_wp].cartesian.x, this->wayPoints[prev_wp].cartesian.y, heading);
+    CoordinateSystemReference local_system(this->wayPoints[prev_wp].cartesian.x, this->wayPoints[prev_wp].cartesian.y, angleToNext);
     std::vector<double> X, Y;
     for (int i = -2; i < 4; ++i) {
         size_t wp = (this->wayPoints.size() + prev_wp + i) % this->wayPoints.size();
