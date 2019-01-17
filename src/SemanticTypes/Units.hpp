@@ -593,10 +593,10 @@ inline AngleDeg normalize_around_zero(AngleDeg v) {
 
 inline AngleRad normalize_around_zero(AngleRad v) {
     while (v > AngleRad(M_PI)) {
-        v -= AngleRad(M_2_PI);
+        v -= AngleRad(2 * M_PI);
     }
     while (v < AngleRad(-M_PI)) {
-        v += AngleRad(M_2_PI);
+        v += AngleRad(2 * M_PI);
     }
     return v;
 }
