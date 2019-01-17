@@ -55,7 +55,7 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
         }
 
         behavior.lane = trajectory_for_best_state.target_lane;
-        behavior.max_speed = trajectory_for_best_state.target_state.speed;
+        behavior.max_speed = this->max_speed;
         behavior.min_safety_zone_time = this->min_safety_zone_time;
         behavior.vehicle_id = trajectory_for_best_state.preceding_vehicle_id;
 
@@ -72,7 +72,7 @@ Behavior BehaviorPlanner::plan_next_behavior(const VehicleState &car, const Time
         log(2) << "vehicle id: " << behavior.vehicle_id << std::endl;
     } else {
         behavior.lane = current_trajectory.target_lane;
-        behavior.max_speed = current_trajectory.target_state.speed;
+        behavior.max_speed = this->max_speed;
         behavior.min_safety_zone_time = this->min_safety_zone_time;
         behavior.vehicle_id = current_trajectory.preceding_vehicle_id;
     }
