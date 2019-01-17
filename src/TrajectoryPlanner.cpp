@@ -119,13 +119,13 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
     log(2) << "speed x: " << target_state.speed_x << std::endl;
     log(2) << "speed y: " << target_state.speed_y << std::endl;
 
-    static Speed last_behavior_max_speed = 0_m / 1_s;
+    static Speed last_target_speed = 0_m / 1_s;
     static std::string last_speed_reduction_reason = "";
-    if (abs(last_behavior_max_speed - behavior.max_speed) > 0.01_m / 1_s
+    if (abs(last_target_speed - target_speed) > 0.01_m / 1_s
         || last_speed_reduction_reason != speed_reduction_reason) {
-        last_behavior_max_speed = behavior.max_speed;
+        last_target_speed = target_speed;
         last_speed_reduction_reason = speed_reduction_reason;
-        log(1) << "speed reduction reason: " << speed_reduction_reason << " and behavior max speed " << behavior.max_speed << std::endl;
+        log(1) << "speed reduction reason: " << speed_reduction_reason << " and target speed " << target_speed << std::endl;
     }
 
     return this->calculate_trajectory(count_previous, target_state, timestep, time_horizon);
