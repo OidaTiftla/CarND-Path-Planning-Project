@@ -129,7 +129,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
     // define starting points
     if (count_previous >= 2) {
         log(2) << "reuse " << count_previous << " waypoints" << std::endl;
-        for (int i = 0; i < count_previous; ++i) {
+        for (int i = count_previous - 2; i < count_previous; ++i) {
             auto local = local_system.to_local(this->previous_path[i]);
             X.push_back(local.x.value);
             Y.push_back(local.y.value);
