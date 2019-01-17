@@ -20,10 +20,10 @@ size_t Map::closest_way_point_index(const GlobalCartesianCoordinate pos) const {
 size_t Map::next_way_point_index(const GlobalCartesianPosition pos) const {
     size_t closest_way_point_index = this->closest_way_point_index(pos.coord);
 
-    AngleRad heading = pos.angle_to(this->wayPoints[closest_way_point_index].cartesian);
+    auto heading = pos.angle_to(this->wayPoints[closest_way_point_index].cartesian);
 
-    AngleRad angle(abs(heading));
-    angle = AngleRad(std::min(AngleRad(2 * M_PI) - angle, angle));
+    auto angle = abs(heading);
+    angle = std::min(AngleRad(2 * M_PI) - angle, angle);
 
     if (angle > AngleRad(M_PI / 4)) {
         closest_way_point_index++;
