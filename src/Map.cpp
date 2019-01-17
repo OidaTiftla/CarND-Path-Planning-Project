@@ -17,15 +17,14 @@ size_t Map::closest_way_point_index(const GlobalCartesianCoordinate pos) const {
     return closest_way_point_index;
 }
 
-size_t Map::next_way_point_index(const GlobalCartesianPosition pos) const {
-    size_t closest_way_point_index = this->closest_way_point_index(pos.coord);
+size_t Map::next_way_point_index(const GlobalCartesianCoordinate pos) const {
+    auto closest_way_point_index = this->closest_way_point_index(pos);
 
-    auto heading = pos.angle_to(this->wayPoints[closest_way_point_index].cartesian);
+    auto angleToRightStart = LocalCartesianCoordinate(0_m, 0_m).angle_to(this->wayPoints[closest_way_point_index].normalized_normal_vector);
+    auto angleToPos = this->wayPoints[closest_way_point_index].cartesian.angle_to(pos);
+    auto angleFromRightStartToPos = normalize_around_zero(angleToPos - angleToRightStart);
 
-    auto angle = abs(heading);
-    angle = std::min(AngleRad(2 * M_PI) - angle, angle);
-
-    if (angle > AngleRad(M_PI / 4)) {
+    if (angleFromRightStartToPos >= AngleRad(0)) {
         closest_way_point_index++;
         if (closest_way_point_index >= this->wayPoints.size()) {
             closest_way_point_index = 0;
@@ -37,11 +36,7 @@ size_t Map::next_way_point_index(const GlobalCartesianPosition pos) const {
 
 // Transform from Cartesian x,y coordinates to Frenet s,d coordinates
 FrenetCoordinate Map::convert_to_frenet(const GlobalCartesianCoordinate pos) const {
-    auto wp = this->closest_way_point_index(pos);
-    auto angle = LocalCartesianCoordinate(0_m, 0_m).angle_to(this->wayPoints[wp].normalized_normal_vector) + to_radian(90_deg);
-
-    auto next_wp = this->next_way_point_index(GlobalCartesianPosition(pos.x, pos.y, angle));
-
+    auto next_wp = this->next_way_point_index(pos);
     auto prev_wp = (this->wayPoints.size() + next_wp - 1) % this->wayPoints.size();
 
     auto n = this->wayPoints[next_wp].cartesian - this->wayPoints[prev_wp].cartesian;
