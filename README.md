@@ -187,3 +187,7 @@ To keep the performance untouched, this is done at compile-time.
 **Increase maximum speed:** Due to some other fixes the maximum speed could be increased from 48 MPH to 49.5 MPH.
 
 **Reduced maximum speed:** While doing a lane change, the simulator sometimes outputs a `max velocity` or `max acceleration` violation. Due to this the maximum speed was reduced from 49.5 MPH to 49 MPH. This is still an inprovement to the fist submission, where even 48 MPH produced many `max velocity` or `max acceleration` violations.
+
+**Performance improvements:** Make some step sizes greater or simplify some calculations with a approximation, to increase performance and have less violations in the simulation.
+
+**Better waypoints for spline:** During lane change there were some problems with the spline. Tried many different sets of waypoints. Now it seems quite good most of the time.
