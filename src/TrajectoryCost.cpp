@@ -141,7 +141,7 @@ float TrajectoryCost::buffer_cost(const TrajectoryKinematics &trajectory, const 
     Penalizes getting close to other vehicles.
     */
     CoordinateSystemReference local_system(car.cartesian);
-    auto t_step = std::min(1_s, std::max(0.02_s, 2_m / this->max_speed));
+    auto t_step = std::min(1_s, std::max(0.02_s, 3_m / this->max_speed));
     auto y_min_distance = 999999_m;
     auto min_distance = 999999_m;
     for (auto it = sensor_fusion.begin(); it != sensor_fusion.end(); ++it) {
@@ -175,7 +175,7 @@ float TrajectoryCost::collision_cost(const TrajectoryKinematics &trajectory, con
     CoordinateSystemReference local_system(car.cartesian);
     auto keep_lane = trajectory.initial_lane == trajectory.target_lane;
     auto preceding_vehicle_id = this->map.find_next_vehicle_in_lane(car.frenet.s, trajectory.initial_lane, sensor_fusion);
-    auto t_step = std::min(1_s, std::max(0.02_s, 2_m / this->max_speed));
+    auto t_step = std::min(1_s, std::max(0.02_s, 3_m / this->max_speed));
     for (auto it = sensor_fusion.begin(); it != sensor_fusion.end(); ++it) {
         if (keep_lane && it->id != preceding_vehicle_id) {
             // vehicle not interesting for trajectory
@@ -207,7 +207,7 @@ float TrajectoryCost::safety_zone_cost(const TrajectoryKinematics &trajectory, c
     */
     auto keep_lane = trajectory.initial_lane == trajectory.target_lane;
     auto preceding_vehicle_id = this->map.find_next_vehicle_in_lane(car.frenet.s, trajectory.initial_lane, sensor_fusion);
-    auto t_step = std::min(1_s, std::max(0.02_s, 2_m / this->max_speed));
+    auto t_step = std::min(1_s, std::max(0.02_s, 3_m / this->max_speed));
     auto min_actual_safety_time_self = this->min_safety_zone_time;
     auto min_actual_safety_time_other = this->min_safety_zone_time;
     for (auto it = sensor_fusion.begin(); it != sensor_fusion.end(); ++it) {
@@ -270,7 +270,7 @@ float TrajectoryCost::efficiency_cost(const TrajectoryKinematics &trajectory, co
 }
 
 float TrajectoryCost::total_acceleration_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
-    auto t_step = std::min(1_s, std::max(0.02_s, 2_m / this->max_speed));
+    auto t_step = std::min(1_s, std::max(0.02_s, 3_m / this->max_speed));
     auto sum_accel = 0_m / 1_s / 1_s;
     auto count = 0;
     auto last_speed = car.speed;
@@ -294,7 +294,7 @@ float TrajectoryCost::max_acceleration_cost(const TrajectoryKinematics &trajecto
 }
 
 float TrajectoryCost::total_jerk_cost(const TrajectoryKinematics &trajectory, const VehicleState &car, const Time timestep, const Time time_horizon, const std::vector<VehicleState> &sensor_fusion) const {
-    // auto t_step = std::min(1_s, std::max(0.02_s, 2_m / this->max_speed));
+    // auto t_step = std::min(1_s, std::max(0.02_s, 3_m / this->max_speed));
     // auto sum_jerk = 0_m / 1_s / 1_s / 1_s;
     // auto count = 0;
     // auto last_acceleration = car.acceleration;
