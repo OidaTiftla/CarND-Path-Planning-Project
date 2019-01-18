@@ -199,7 +199,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
     }
 
     // define end points
-    auto local_target = local_system.to_local(target_state.cartesian.coord);
+    // auto local_target = local_system.to_local(target_state.cartesian.coord);
     // X.push_back(local_target.x.value);
     // Y.push_back(local_target.y.value);
     // log(3) << "add local waypoint " << local_target << std::endl;
