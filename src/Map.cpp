@@ -143,7 +143,7 @@ Distance Map::get_frenet_s_distance_from_to(const Distance from, const Distance 
 
 Distance Map::get_lane_distance_from_to(const FrenetCoordinate from, const FrenetCoordinate to) const {
     auto s_diff = this->get_frenet_s_distance_from_to(from.s, to.s);
-    auto steps = ceil(s_diff / 2_m);
+    auto steps = ceil(s_diff / 5_m);
     auto s_step = s_diff / steps;
     auto d_step = (to.d - from.d) / steps;
 
