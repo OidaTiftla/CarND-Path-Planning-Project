@@ -185,3 +185,5 @@ To keep the performance untouched, this is done at compile-time.
 **Trajectory planner calculates the angle of the car:** The angle of the car in the current part of the spline is calculated, so the speed can be calculated more acurately (reduces speed violations).
 
 **Increase maximum speed:** Due to some other fixes the maximum speed could be increased from 48 MPH to 49.5 MPH.
+
+**Reduced maximum speed:** While doing a lane change, the simulator sometimes outputs a `max velocity` or `max acceleration` violation. Due to this the maximum speed was reduced from 49.5 MPH to 49 MPH. This is still an inprovement to the fist submission, where even 48 MPH produced many `max velocity` or `max acceleration` violations.
