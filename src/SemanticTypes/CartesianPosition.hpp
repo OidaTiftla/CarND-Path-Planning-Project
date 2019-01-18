@@ -15,6 +15,7 @@ public:
 
     CartesianPosition() : coord(), theta(0) {}
     CartesianPosition(const Distance x, const Distance y, const AngleRad theta) : coord(x, y), theta(theta) {}
+    CartesianPosition(const CartesianCoordinate<TReference> coord, const AngleRad theta) : coord(coord), theta(theta) {}
 
     Distance distance_to(const CartesianPosition<TReference> p) const {
         return coord.distance_to(p.coord);

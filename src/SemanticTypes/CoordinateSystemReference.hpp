@@ -36,7 +36,7 @@ public:
     // where the car is at (x, y) in the map and also has an orientation.
     LocalCartesianPosition to_local(const GlobalCartesianPosition& g) const {
         auto coordl = this->to_local(g.coord);
-        return LocalCartesianPosition(coordl.x, coordl.y,
+        return LocalCartesianPosition(coordl,
             g.theta - this->reference.theta);
     }
 
@@ -44,7 +44,7 @@ public:
     // where the car is at (x, y) in the map and also has an orientation.
     GlobalCartesianPosition to_global(const LocalCartesianPosition& l) const {
         auto coordg = this->to_global(l.coord);
-        return GlobalCartesianPosition(coordg.x, coordg.y,
+        return GlobalCartesianPosition(coordg,
             l.theta + this->reference.theta);
     }
 };

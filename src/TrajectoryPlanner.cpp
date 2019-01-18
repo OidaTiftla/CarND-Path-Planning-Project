@@ -34,7 +34,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
     if (count_previous >= 2) {
         auto last = this->previous_path[count_previous - 1];
         auto last2 = this->previous_path[count_previous - 2];
-        GlobalCartesianPosition pos(last.x, last.y, last2.angle_to(last));
+        GlobalCartesianPosition pos(last, last2.angle_to(last));
         auto frenet = this->map.convert_to_frenet(last);
         auto speed = last2.distance_to(last) / timestep;
         start_state = VehicleState(-1, pos, frenet, speed);
