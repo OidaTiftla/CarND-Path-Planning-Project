@@ -286,10 +286,9 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
 
     auto steps = 20;
     auto distance = 100_m;
-    auto t_step = time_horizon / steps;
     // gp << "set xrange [" << -2 << ":" << (bPlanner.max_lanes * map.lane_width + 2_m).value << "]\n";
-    gp << "set xrange [-" << distance.value << ":" << distance.value << "]\n";
-    gp << "set yrange [-" << distance.value << ":" << distance.value << "]\n";
+    gp << "set xrange [-" << distance.value / 2 << ":" << distance.value / 2 << "]\n";
+    gp << "set yrange [-" << 1 << ":" << distance.value << "]\n";
     gp << "set size ratio -1\n";
     gp << "plot";
     bool first = true;
@@ -303,6 +302,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
     }
     gp << ", '-' with points title 'vehicle ego'";
     gp << ", '-' with lines title 'spline'";
+    gp << ", '-' with linespoints title 'spline control points'";
     gp << "\n";
 
     std::vector<std::pair<double, double>> points;
@@ -327,8 +327,14 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::calculate_trajectory(c
     gp.send1d(points);
     // draw spline
     points.clear();
-    for (auto x = -distance; x <= distance; x += distance / steps) {
+    for (auto x = 0_m; x <= distance; x += distance / steps) {
         LocalCartesianCoordinate local(x, Distance(s(x.value)));
+        points.push_back(std::make_pair(-local.y.value, local.x.value));
+    }
+    gp.send1d(points);
+    points.clear();
+    for (size_t i = 0; i < X.size(); ++i) {
+        LocalCartesianCoordinate local(X[i] * 1_m, Y[i] * 1_m);
         points.push_back(std::make_pair(-local.y.value, local.x.value));
     }
     gp.send1d(points);
