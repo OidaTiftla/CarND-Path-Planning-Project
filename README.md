@@ -159,3 +159,29 @@ After the needed acceleration is calculated, the planner uses the cartesian coor
 All calculations use semantic units, such as Meter, Second, Radian, Degree.
 This ensures, that the expected unit of the calculated values is the same as the formula creates.
 To keep the performance untouched, this is done at compile-time.
+
+### Changes in 2nd Submission
+
+**Event-based logging and prefixes:** only write somthing to the log, if the state which you'd like to watch has changed. Also there are prefixes in front of each line, to idetify from which part of the software the change occured.
+
+**Behavior planner maximum speed:** Behavior planner always asks for maximum speed, because the trajectory planner itself can decide, when to reduce speed, because of traffic or maximum acceleration.
+
+**Behavior planner watch traffic during (prepare) lane change:** Behavior planner looks some distance behind the current frenet s coordinate in the new lane, to see if there is traffic and tries to slow down, if there is a car, to get behind this car.
+
+**Behavior planner update time:** reduced the update time from 3 seconds to 800 milliseconds. This was able because of other fixes. Now the car changes lanes more often.
+
+**Prediction of cars into the future:** Assume the cars will stay in the lane they are at the moment (no lane change) all the time. This can lead to collisions if any car does a lane change, but this is so rare, that the benefit is greater.
+
+**Added some more GnuPlot debugging plots:** One to analyze the map and coordinate conversion. And another to analyze the trajectory planner.
+
+**Fix some issues during coordinate conversion:** `next_way_point_index` did not return the next waypoint at each position around the track. In the function `normalize_around_zero` the define `M_2_PI` was used wrong. It was thought to be 2 times pi but actualy it was about 0.2 times pi and this introduced big issues in the coordinate conversion calculations. `M_2_PI` is now replaced with the correct value of `2 * M_PI`.
+
+**Trajectory planner reuse previous points:** Increase the amount of reused points. This reduces the errors during lane change, which the simulator outputs (max acceleration and max velocity).
+
+**Trajectory planner activly limits maximum speed:** The maximum speed is activly limited by the trajectory planner, during coordinate calculation.
+
+**Trajecotry planner has a fixed lane change distance:** The trajectory planner does no more calculate the speed of the lane change based on the current speed. It now uses a fixed distance of 50 meters to change from one lane to another.
+
+**Trajectory planner calculates the angle of the car:** The angle of the car in the current part of the spline is calculated, so the speed can be calculated more acurately (reduces speed violations).
+
+**Increase maximum speed:** Due to some other fixes the maximum speed could be increased from 48 MPH to 49.5 MPH.
