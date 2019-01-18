@@ -159,14 +159,26 @@ Distance Map::get_lane_distance_from_to(const FrenetCoordinate from, const Frene
 }
 
 FrenetCoordinate Map::add_lane_distance(const FrenetCoordinate from, const Distance distance, const Distance target_d) const {
-    auto s_step = distance;
-    auto s = from.s;
-    while (s_step > 0.1_m) {
+    auto s_step = distance / 5;
+    auto s = from.s + distance;
+
+    FrenetCoordinate to(s, target_d);
+    auto min_diff = abs(this->get_lane_distance_from_to(from, to) - distance);
+    while (s_step > 0.2_m) {
         FrenetCoordinate to(s + s_step, target_d);
-        if (this->get_lane_distance_from_to(from, to) <= distance) {
+        auto diff = abs(this->get_lane_distance_from_to(from, to) - distance);
+        if (diff < min_diff) {
+            min_diff = diff;
             s += s_step;
         } else {
-            s_step /= 2;
+            FrenetCoordinate to(s - s_step, target_d);
+            auto diff = abs(this->get_lane_distance_from_to(from, to) - distance);
+            if (diff < min_diff) {
+                min_diff = diff;
+                s -= s_step;
+            } else {
+                s_step /= 2;
+            }
         }
     }
     return FrenetCoordinate(s, target_d);
