@@ -56,7 +56,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
     }
     auto target_speed = start_state.speed + acceleration * remaining_time_horizon;
     auto target_distance = start_state.speed * remaining_time_horizon + 0.5 * acceleration * pow<2>(remaining_time_horizon);
-    auto target_frenet = this->map.add_lane_distance(
+    auto target_frenet = this->map.add_s_distance(
         start_state.frenet,
         target_distance,
         this->map.get_frenet_d_from_lane(behavior.lane));
@@ -98,7 +98,7 @@ std::vector<GlobalCartesianCoordinate> TrajectoryPlanner::plan_next_trajectory(c
                 log(2) << "exceed min speed (preceding vehicle) [new acceleration: " << acceleration << "]" << std::endl;
             }
             target_distance = start_state.speed * remaining_time_horizon + 0.5 * acceleration * pow<2>(remaining_time_horizon);
-            target_frenet = this->map.add_lane_distance(
+            target_frenet = this->map.add_s_distance(
                 start_state.frenet,
                 target_distance,
                 this->map.get_frenet_d_from_lane(behavior.lane));

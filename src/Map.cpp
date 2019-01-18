@@ -184,6 +184,10 @@ FrenetCoordinate Map::add_lane_distance(const FrenetCoordinate from, const Dista
     return FrenetCoordinate(s, target_d);
 }
 
+FrenetCoordinate Map::add_s_distance(const FrenetCoordinate from, const Distance distance, const Distance target_d) const {
+    return FrenetCoordinate(from.s + distance, target_d);
+}
+
 Distance Map::normalize_s(Distance s) const {
     while (s >= this->max_s) {
         s -= this->max_s;

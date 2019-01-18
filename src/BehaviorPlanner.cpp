@@ -100,7 +100,7 @@ TrajectoryKinematics BehaviorPlanner::try_follow_vehicle(const VehicleState &car
     auto target_speed = car.speed + acceleration * time_horizon;
     auto target_distance = car.speed * time_horizon + 0.5 * acceleration * pow<2>(time_horizon);
     // vehicle position, in the future
-    auto frenet_target = this->map.add_lane_distance(
+    auto frenet_target = this->map.add_s_distance(
         car.frenet,
         target_distance,
         this->map.get_frenet_d_from_lane(this->lane));
@@ -138,7 +138,7 @@ TrajectoryKinematics BehaviorPlanner::try_follow_vehicle(const VehicleState &car
             }
             target_distance = car.speed * time_horizon + 0.5 * acceleration * pow<2>(time_horizon);
             // vehicle position, in the future
-            frenet_target = this->map.add_lane_distance(
+            frenet_target = this->map.add_s_distance(
                 car.frenet,
                 target_distance,
                 this->map.get_frenet_d_from_lane(this->lane));
